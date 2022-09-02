@@ -26,15 +26,21 @@ export type Bind = {
 	Destroy: <a>(self: a) -> (),
 }
 
+
 --[=[
 	@class Bind
 	
 	A Bind class that is used as an interface for binding keys to ContextActionService.
-	@param name string -- The name of the action.
-	@param keys {Enum.KeyCode} -- The list of keys you want to bind.
-	@param boundFunction BoundFunction -- Function that the binding is bound to.
-	@param enabled boolean? -- Determines if the binding should be enabled upon creation; defaults to true.
-	@param mobileButton boolean? -- Determines if a mobile button should be added with this binding; defaults to false.
+]=]
+
+--[=[
+	@within Bind
+	
+	@param name -- The name of the action.
+	@param keys -- The list of keys you want to bind.
+	@param boundFunction -- Function that the binding is bound to.
+	@param enabled -- Determines if the binding should be enabled upon creation; defaults to true.
+	@param mobileButton -- Determines if a mobile button should be added with this binding; defaults to false.
 	
 	@return Bind
 ]=]
@@ -58,6 +64,8 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 	}
 	
 	--[=[
+		@within Bind
+		
 		Replaces the bound function mapped to new keys.
 		
 		@param keys {Enum.KeyCode} -- The list of keys you want to bind.

@@ -1,0 +1,12 @@
+title = "Packager"
+gitSourceBranch = "main"
+
+#[[classOrder]]
+#classes = ["Bind"]
+
+[home]
+enabled = true
+includeReadme = true
+
+[docusaurus]
+tagline = "Utility modules!!"
