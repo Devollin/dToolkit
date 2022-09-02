@@ -13,6 +13,11 @@ Additional credits to:
 local RunService = game:GetService("RunService")
 
 
+--[=[
+	@class Network
+	A library to handle networking more easily.
+]=]
+
 if RunService:IsClient() then
 	return require(script:WaitForChild("Client"))
 else

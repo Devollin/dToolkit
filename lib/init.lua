@@ -1,10 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Packager | Written by Devi (Devollin) | 2022 | v3.0.0
 	Description: Package manager.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -31,8 +31,6 @@ packages.Color3Helper = require(script:WaitForChild("Color3Helper", yield))
 packages.PlayerUtil = require(script:WaitForChild("PlayerUtil", yield))
 packages.Displays = require(script:WaitForChild("Displays", yield))
 packages.Network = require(script:WaitForChild("Network", yield))
-packages.Presets = require(script:WaitForChild("Presets", yield))
-packages.Wrapper = require(script:WaitForChild("Wrapper", yield))
 packages.Serial = require(script:WaitForChild("Serial", yield))
 packages.Util = require(script:WaitForChild("Util", yield))
 
@@ -68,7 +66,7 @@ export type FlowModifiersInput = Flow.FlowModifiersInput
 
 export type DataStoreResult = Storage.DataStoreResult
 export type OrderedDataStoreResult = Storage.OrderedDataStoreResult
-export type Storage = Storage.Storage
+export type StorageResult = Storage.StorageResult
 export type BaseStorage = Storage.BaseStorage
 export type BaseStorageResult = Storage.BaseStorageResult
 export type PlayerStorage = Storage.PlayerStorage

@@ -1,16 +1,15 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
-Flow | Written by Devi (@Devollin) | 2022 | v1.0.1
+Flow | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: Interface for tweening.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 --VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 --TODO: Clean this up / rewrite?
 --^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 type StepType = "Heartbeat" | "RenderStepped" | "Stepped"
 type Direction = "In" | "Out" | "InOut" | "OutIn"
@@ -61,8 +60,8 @@ export type FlowModifiers = Modifiers
 
 local RunService = game:GetService("RunService")
 
-local Presets = require(script.Parent:WaitForChild("Presets"))
 local Signal = require(script.Parent:WaitForChild("Signal"))
+local Util = require(script.Parent:WaitForChild("Util"))
 
 local Styles = require(script:WaitForChild("Styles"))
 local Types = require(script:WaitForChild("Types"))
@@ -75,9 +74,9 @@ export type Flow = {
 	Destroy: <a>(self: a) -> (),
 	Restart: <a>(self: a) -> (),
 	
-	Completed: Signal.Signal<>,
-	Stepped: Signal.Signal<>,
-	Cancelled: Signal.Signal<>,
+	Completed: Signal.Signal<nil>,
+	Stepped: Signal.Signal<nil>,
+	Cancelled: Signal.Signal<nil>,
 }
 
 
@@ -117,8 +116,47 @@ end
 
 local Flow = {}
 
+
+--[=[
+	@type StepType "Heartbeat" | "RenderStepped" | "Stepped"
+	@within Flow
+]=]
+--[=[
+	@type Style = "Linear" | "Smooth" | "Smoother" | "RidiculousWiggle" | "ReverseBack" | "Spring" | "SoftSpring" | "Quad" | "Cubic" | "Quart" | "Quint" | "Back" | "Sine" | "Bounce" | "Elastic" | "Exponential" | "Circular"
+	@within Flow
+]=]
+--[=[
+	@type Direction "In" | "Out" | "InOut" | "OutIn"
+	@within Flow
+]=]
+--[=[
+	@type Properties {[string]: any}
+	@within Flow
+]=]
+--[=[
+	@type Target Instance | {[string]: any} | {Instance}
+	@within Flow
+]=]
+--[=[
+	@type ModifierInput {Time: number?, EasingStyle: Style?, EasingDirection: Direction?, AutoPlay: boolean?, Destroy: boolean?, Reverse: boolean?, RepeatCount: number?, DelayTime: number?, StepType: StepType?}
+	Additionally, you can use shorthand for each parameter, based off of the capitalized letters in each member.
+	Ex: Time -> T
+	
+	@within Flow
+]=]
+
+--[=[
+	@class Flow
+	Interface for tweening.
+]=]
+
+--[=[
+	Creates a new Flow object.
+	
+	@within Flow
+]=]
 function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?): Flow
-	local modifiers: Modifiers = Presets({Default = Default}, "Default", modifiers or {})
+	local modifiers: Modifiers = Util:Presets({Default = Default}, "Default", modifiers or {})
 	local applicators: {(delta: number) -> ()} = {}
 	local newTargets: {} | Instance
 	local connection: RBXScriptConnection?
@@ -163,7 +201,10 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Cancelled = Signal.new(),
 	}
 	
-	
+	--[=[
+		Runs the Flow.
+		@within Flow
+	]=]
 	function object:Play()
 		running = true
 		connection = connection or RunService[modifiers.StepType]:Connect(function(step, deltaTime)
@@ -252,6 +293,10 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		end)
 	end
 	
+	--[=[
+		Stops the Flow.
+		@within Flow
+	]=]
 	function object:Stop()
 		if connection then
 			connection:Disconnect()
@@ -268,6 +313,10 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		end
 	end
 	
+	--[=[
+		Pauses the Flow.
+		@within Flow
+	]=]
 	function object:Pause()
 		running = false
 		
@@ -277,6 +326,10 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		end
 	end
 	
+	--[=[
+		Destroys the Flow.
+		@within Flow
+	]=]
 	function object:Destroy()
 		table.clear(applicators)
 		
@@ -297,6 +350,10 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		end
 	end
 	
+	--[=[
+		Restarts the Flow.
+		@within Flow
+	]=]
 	function object:Restart()
 		if connection then
 			connection:Disconnect()
@@ -313,10 +370,9 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		object:Play()
 	end
 	
+	
 	return object
 end
 
 
-return function(targets: Target, goals: Properties, modifiers: ModifierInput?)
-	return Flow.new(targets, goals, modifiers)
-end
+return Flow

@@ -1,10 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: A library to aid in OrderedDataStore-related functions.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local Types = require(script.Parent:WaitForChild("Types"))
@@ -127,17 +127,24 @@ local callbacks = {
 	},
 }
 
+local interface = {}
 
---[[**
-Returns a OrderedDataStore object, given a name and an optional scope parameter.
 
-@param [t:string] name The name of the OrderedDataStore.
-@param [t:string?] scope The scope of the OrderedDataStore.
+--[=[
+	@class OrderedStorage
+	A basic OrderedDataStore wrapper object.
+	@server
+]=]
 
-@returns [t:OrderedDataStoreResult] A table containing data members for success, message, and result. The message data member
-	is only used when success is false, and result is only used when success is true, and contains the OrderedDataStore.
-**--]]
-local function GetOrderedDataStore(name: string, scope: string?): OrderedDataStoreResult
+--[=[
+	Returns a OrderedDataStore object, given a name and an optional scope parameter.
+	
+	@param name -- The name of the OrderedDataStore.
+	@param scope -- The scope of the OrderedDataStore.
+	
+	@within OrderedStorage
+]=]
+function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDataStoreResult
 	local success, result
 	local iterations = 0
 	
@@ -170,23 +177,17 @@ local function GetOrderedDataStore(name: string, scope: string?): OrderedDataSto
 	end
 end
 
-
-local interface = {}
-
-
---[[**
-Creates a new Storage object.
-
-@param [t:string] name The name of the DataStore.
-@param [t:string?] scope The scope of the DataStore.
-@param [t:Options?] options Options to modify DataStores.
-@param [t:table] default Default data to be used for blank entries.
-
-@returns [t:OrderedStorageResult] A dictionary containing a success boolean, a message (if getting the DataStore fails), and
-	a result (if getting the DataStore succeeds, this is the OrderedStorage object).
-**--]]
+--[=[
+	Creates a new Storage object.
+	
+	@param name --The name of the DataStore.
+	@param scope -- The scope of the DataStore.
+	@param default -- Default data to be used for blank entries.
+	
+	@within OrderedStorage
+]=]
 function interface.new(name: string, scope: string?, default: Default): OrderedStorageResult
-	local dataStore = GetOrderedDataStore(name, scope)
+	local dataStore = interface:GetOrderedDataStore(name, scope)
 	
 	if not dataStore.success then
 		return {
@@ -210,14 +211,13 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		GetSortedAsyncFail = Signal.new() :: Signal.Signal<string, string, string?>,
 	}
 	
-	--[[**
-	Performs GetAsync if the data requested by the index does not exist, and returns the data.
-	
-	@param [t:string] index The key within the OrderedDataStore.
-	
-	@returns [t:DataResult] A dictionary containing a success boolean, a message (if getting the data fails), and a result
-		(if getting the data succeeds, this is the data).
-	**--]]
+	--[=[
+		Performs GetAsync if the data requested by the index does not exist, and returns the data.
+		
+		@param index -- The key within the OrderedDataStore.
+		
+		@within OrderedStorage
+	]=]
 	function object:HardLoad(index: string): DataResult
 		local data = members[index]
 		
@@ -303,15 +303,13 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	
-	--[[**
-	Returns data associated with the index, if it has been loaded already.
-	
-	@param [t:string] index The key within the OrderedDataStore.
-	
-	@returns [t:DataResult] A dictionary containing a success boolean, a message (if getting the data fails), and a result
-		(if getting the data succeeds, this is the data).
-	**--]]
+	--[=[
+		Returns data associated with the index, if it has been loaded already.
+		
+		@param index -- The key within the OrderedDataStore.
+		
+		@within OrderedStorage
+	]=]
 	function object:SoftLoad(index: string): DataResult
 		local data = members[index]
 		
@@ -348,14 +346,14 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	--[[**
-	Performs SetAsync with the data associated with the index, if it isn't already being saved.
-	
-	@param [t:string] index The key within the OrderedDataStore.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
-	function object:HardSave(index: string, ids: {[number]: number}?, setOptions: DataStoreSetOptions?): SaveResult
+	--[=[
+		Performs SetAsync with the data associated with the index, if it isn't already being saved.
+		
+		@param index -- The key within the OrderedDataStore.
+		
+		@within OrderedStorage
+	]=]
+	function object:HardSave(index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -418,13 +416,13 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	--[[**
-	Replaces all the data associated with the index.
-	
-	@param [t:string] index The key within the OrderedDataStore.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
+	--[=[
+		Replaces all the data associated with the index.
+		
+		@param index -- The key within the OrderedDataStore.
+		
+		@within OrderedStorage
+	]=]
 	function object:SoftSave(index: string, newData: any): SaveResult
 		local data = members[index]
 		
@@ -463,17 +461,16 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	--[[**
-	Returns a DataStoreKeyPages object.
-	
-	@param [t:boolean] ascending Whether the list is in descending order or ascending order.
-	@param [t:number] pageSize The length of each page.
-	@param [t:number] min The minimum value to be included in the pages.
-	@param [t:number] max The maximum value to be included in the pages.
-	
-	@returns [t:PageResult] A dictionary containing a success boolean, a message (if saving the data fails), and a result (if
-		getting the data succeeds, then this is the DataStoreKeyPages object).
-	**--]]
+	--[=[
+		Returns a DataStoreKeyPages object.
+		
+		@param ascending -- Whether the list is in descending order or ascending order.
+		@param pageSize -- The length of each page.
+		@param min -- The minimum value to be included in the pages.
+		@param max -- The maximum value to be included in the pages.
+		
+		@within OrderedStorage
+	]=]
 	function object:GetPages(ascending: boolean, pageSize: number, min: number, max: number): PageResult
 		local success, result
 		local iterations = 0
@@ -510,11 +507,13 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	--[[**
-	Hard saves the data, then removes the data associated with the index.
-	
-	@param [t:string] index The key within the DataStore.
-	**--]]
+	--[=[
+		Hard saves the data, then removes the data associated with the index.
+		
+		@param index -- The key within the DataStore.
+		
+		@within OrderedStorage
+	]=]
 	function object:Clear(index: string)
 		local data = members[index]
 		
@@ -529,9 +528,10 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		end
 	end
 	
-	--[[**
-	Saves all data, and clears it's own members.
-	**--]]
+	--[=[
+		Saves all data, and clears it's own members.
+		@within OrderedStorage
+	]=]
 	function object:Close()
 		for key, data in pairs(members) do
 			task.spawn(function()
@@ -549,21 +549,6 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		result = object,
 	}
 end
-
-
---[[**
-Returns a OrderedDataStore object, given a name and an optional scope parameter.
-
-@param [t:string] name The name of the OrderedDataStore.
-@param [t:string?] scope The scope of the OrderedDataStore.
-
-@returns [t:OrderedDataStoreResult] A table containing data members for success, message, and result. The message data member
-	is only used when success is false, and result is only used when success is true, and contains the OrderedDataStore.
-**--]]
-function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDataStoreResult
-	return GetOrderedDataStore(name, scope)
-end
-
 
 
 game:BindToClose(function()

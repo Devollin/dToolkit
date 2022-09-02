@@ -1,11 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Platform | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A set of variables meant to aide in determining the
-		platform a player is on.
+	Description: A set of variables meant to aide in determining the platform a player is on.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 export type Platform = "Xbox" | "VR" | "Desktop" | "Laptop" | "Phone" | "Tablet" | "Unknown"
@@ -31,11 +30,109 @@ local ui = Util:Synth("ScreenGui", {
 	ResetOnSpawn = false,
 }) :: ScreenGui
 
+--[=[
+	@type Platform "Xbox" | "VR" | "Desktop" | "Laptop" | "Phone" | "Tablet" | "Unknown"
+	The platform the player is currently on.
+	
+	:::caution Inconsistency & Studio
+	When using the Studio device emulator, Platform can't determine the platform very well. However, it does work
+	consistently in live testing. For more specific checks, use the individual values within Platform.
+	
+	@within Platform
+]=]
+
+--[=[
+	@class Platform
+	@client
+	A set of [Value] objects meant to aide in determining the platform a [Player] is on.
+]=]
+
+--[=[
+	@prop platform Value<Platform>
+	The platform the [Player] is currently on.
+	
+	@within Platform
+]=]
+--[=[
+	@prop mobile Value<boolean>
+	Whether or not the [Player] is using a mobile device.
+	
+	@within Platform
+]=]
+--[=[
+	@prop pc Value<boolean>
+	Whether or not the [Player] is using a laptop or desktop.
+	
+	@within Platform
+]=]
+--[=[
+	@prop xbox Value<boolean>
+	Whether or not the [Player] is using an Xbox.
+	
+	@within Platform
+]=]
+--[=[
+	@prop vr Value<boolean>
+	Whether or not the [Player] is using a VR headset.
+	
+	@within Platform
+]=]
+--[=[
+	@prop keyboard Value<boolean>
+	Whether or not the platform the [Player] is using has keyboard input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop touch Value<boolean>
+	Whether or not the platform the [Player] is using has touch input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop mouse Value<boolean>
+	Whether or not the platform the [Player] is using has mouse input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop gamepad Value<boolean>
+	Whether or not the platform the [Player] is using has gamepad input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop accelerometer Value<boolean>
+	Whether or not the platform the [Player] is using has accelerometer input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop gyroscope Value<boolean>
+	Whether or not the platform the [Player] is using has gyroscope input.
+	
+	@within Platform
+]=]
+--[=[
+	@prop screenSize Value<Vector2>
+	The size of the screen that the platform the [Player] on is using.
+	
+	@within Platform
+]=]
+--[=[
+	@prop PlayerGui PlayerGui
+	A reference to the [Player]'s [PlayerGui].
+	
+	@within Platform
+]=]
+
 local interface = {
 	platform = Value.new("Unknown" :: Platform),
 	
 	mobile = Value.new(false),
 	pc = Value.new(false),
+	xbox = Value.new(GuiService:IsTenFootInterface()),
+	vr = Value.new(UserInputService.VREnabled),
 	
 	keyboard = Value.new(UserInputService.KeyboardEnabled),
 	touch = Value.new(UserInputService.TouchEnabled),
@@ -43,9 +140,6 @@ local interface = {
 	gamepad = Value.new(UserInputService.GamepadEnabled),
 	accelerometer = Value.new(UserInputService.AccelerometerEnabled),
 	gyroscope = Value.new(UserInputService.GyroscopeEnabled),
-	
-	xbox = Value.new(GuiService:IsTenFootInterface()),
-	vr = Value.new(UserInputService.VREnabled),
 	
 	screenSize = Value.new(ui.AbsoluteSize),
 	

@@ -1,10 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Timer | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: A stopwatch class.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local RunService = game:GetService("RunService")
@@ -27,15 +27,19 @@ export type Stopwatch = {
 }
 
 
-local interface = {}
+local Stopwatch = {}
 
 
---[[**
-Creates a new Stopwatch object.
+--[=[
+	@class Stopwatch
+	A class that tracks time; like a stopwatch!
+]=]
 
-@returns [t:Stopwatch] The new Stopwatch object.
-**--]]
-function interface.new(): Stopwatch
+--[=[
+	Creates a new [Stopwatch] object.
+	@within Stopwatch
+]=]
+function Stopwatch.new(): Stopwatch
 	local totalElapsed = 0
 	local destroyed = false
 	local connection: RBXScriptConnection?
@@ -44,9 +48,10 @@ function interface.new(): Stopwatch
 		Updated = Signal.new() :: Signal<number>,
 	}
 	
-	--[[**
-	Starts or resumes the Stopwatch.
-	**--]]
+	--[=[
+		Starts or resumes the [Stopwatch].
+		@within Stopwatch
+	]=]
 	function object:Start()
 		if destroyed then
 			return
@@ -59,11 +64,11 @@ function interface.new(): Stopwatch
 		end)
 	end
 	
-	--[[**
-	Stops the Stopwatch, and resets the total elapsed time.
-	
-	@returns [t:number?] Returns nil if it fails, or the total elapsed time if it succeeds.
-	**--]]
+	--[=[
+		Stops the [Stopwatch], and resets the total elapsed time. If it fails returns nil, or the elapsed time if it
+		succeeds.
+		@within Stopwatch
+	]=]
 	function object:Stop(): number?
 		if destroyed then
 			return
@@ -81,9 +86,10 @@ function interface.new(): Stopwatch
 		return elapsed
 	end
 	
-	--[[**
-	Pauses the Stopwatch.
-	**--]]
+	--[=[
+		Pauses the [Stopwatch].
+		@within Stopwatch
+	]=]
 	function object:Pause()
 		if destroyed then
 			return
@@ -95,9 +101,10 @@ function interface.new(): Stopwatch
 		end
 	end
 	
-	--[[**
-	Destroys the Stopwatch object.
-	**--]]
+	--[=[
+		Destroys the [Stopwatch] object.
+		@within Stopwatch
+	]=]
 	function object:Destroy()
 		if destroyed then
 			return
@@ -115,4 +122,4 @@ function interface.new(): Stopwatch
 end
 
 
-return interface
+return Stopwatch

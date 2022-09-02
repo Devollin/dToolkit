@@ -1,11 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 UIUtil | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A helpful library meant for use in solving UI-related
-		problems.
+	Description: A library meant for use in solving UI-related problems.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local UserInputService = game:GetService("UserInputService")
@@ -19,13 +18,15 @@ local PlayerGui: PlayerGui = Platform.PlayerGui
 local interface = {}
 
 
---[[**
-Returns the mouse's position relative to the center of the inferred GuiObject.
+--[=[
+	@class UIUtil
+	A library meant for use in solving UI-related problems.
+]=]
 
-@param [t:Vector2] absoluteSize
-
-@returns [t:Vector2]
-**--]]
+--[=[
+	Returns the mouse's position relative to the center of the inferred GuiObject.
+	@within UIUtil
+]=]
 function interface:GetMousePositionRelativeToCenter(absoluteSize: Vector2): Vector2
 	local location = UserInputService:GetMouseLocation()
 	
@@ -35,14 +36,10 @@ function interface:GetMousePositionRelativeToCenter(absoluteSize: Vector2): Vect
 	)
 end
 
---[[**
-Returns the mouse's position relative to the given point and of the inferred GuiObject.
-
-@param [t:Vector2] absoluteSize
-@param [t:Vector2] point
-
-@returns [t:Vector2]
-**--]]
+--[=[
+	Returns the mouse's position relative to the given point and of the inferred GuiObject.
+	@within UIUtil
+]=]
 function interface:GetMousePositionRelativeToPoint(absoluteSize: Vector2, point: Vector2): Vector2
 	local location = UserInputService:GetMouseLocation()
 	
@@ -52,14 +49,10 @@ function interface:GetMousePositionRelativeToPoint(absoluteSize: Vector2, point:
 	)
 end
 
---[[**
-Returns a boolean that describes if there the provided position is within the given GuiObject.
-
-@param [t:Vector2] position
-@param [t:GuiObject] frame
-
-@returns [t:boolean]
-**--]]
+--[=[
+	Returns a boolean that describes if there the provided position is within the given GuiObject.
+	@within UIUtil
+]=]
 function interface:IsPositionInFrame(position: Vector2, frame: GuiObject): boolean
 	local objects = PlayerGui:GetGuiObjectsAtPosition(position.X, position.Y) or {}
 	

@@ -1,10 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Serial | Written by Devi (@Devollin) | 2021 | v1.0.0
-	Description: A function used to serialize / deserialize any data type.
+	Description: A library used to serialize / deserialize any data type.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 type Vector3Data = {x: number, y: number, z: number}
@@ -18,7 +18,7 @@ local deserializers = {}
 local interface = {}
 
 
---==========================================================================--
+--================================================================================================--
 
 
 function serializers.CFrame(input: CFrame): {number}
@@ -117,7 +117,7 @@ function serializers.EnumItem(input: EnumItem): {type: string, name: string}
 end
 
 
---==========================================================================--
+--================================================================================================--
 
 
 function deserializers.CFrame(input: {number}): CFrame
@@ -219,16 +219,23 @@ function deserializers.EnumItem(input: {type: string, name: string}): EnumItem
 end
 
 
---==========================================================================--
+--================================================================================================--
 
 
---[[**
-Serializes the given input, if supported.
+--[=[
+	@class Serial
+	A library used to serialize / deserialize any data type.
+]=]
 
-@param [t:any] input The data to be serialized.
-
-@returns [t:any] The serialized data, or nil if it failed to serialize.
-**--]]
+--[=[
+	Serializes the given input, if supported.
+	
+	@param input -- The data to be serialized.
+	
+	@return any -- The serialized data, or nil if it failed to serialize.
+	
+	@within Serial
+]=]
 function interface:Serialize(input: any): any
 	local serializer = serializers[typeof(input)]
 	
@@ -241,13 +248,13 @@ function interface:Serialize(input: any): any
 	return
 end
 
---[[**
-Serializes the given input, if supported.
-
-@param [t:{[any]:any}] input The array of data to be serialized.
-
-@returns [t:{[any]:any}] The serialized data.
-**--]]
+--[=[
+	Serializes the given input, if supported.
+	
+	@param input -- The array of data to be serialized.
+	
+	@within Serial
+]=]
 function interface:SerializeList(input: {[any]: any}): {[any]: any}
 	local result = {}
 	
@@ -266,13 +273,15 @@ function interface:SerializeList(input: {[any]: any}): {[any]: any}
 	return result
 end
 
---[[**
-Deserializes the given input, if supported.
-
-@param [t:any] input The data to be deserialized.
-
-@returns [t:any] The deserialized data, or nil if it failed to deserialize.
-**--]]
+--[=[
+	Deserializes the given input, if supported.
+	
+	@param input -- The data to be deserialized.
+	
+	@return any -- The deserialized data, or nil if it failed to deserialize.
+	
+	@within Serial
+]=]
 function interface:Deserialize(input: any): any
 	local deserializer = deserializers[input.type]
 	
@@ -285,13 +294,13 @@ function interface:Deserialize(input: any): any
 	return
 end
 
---[[**
-Deserializes the given input, if supported.
-
-@param [t:{[any]:any}] input The array of data to be deserialized.
-
-@returns [t:{[any]:any}] The deserialized data.
-**--]]
+--[=[
+	Deserializes the given input, if supported.
+	
+	@param input -- The array of data to be deserialized.
+	
+	@within Serial
+]=]
 function interface:DeserializeList(input: {[any]: any}): {[any]: any}
 	local result = {}
 	

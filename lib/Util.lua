@@ -1,24 +1,27 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Util | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: Library of helpful general-use functions.
+	Description: A library of helpful general-use functions.
 
-========================================================================]]
+==================================================================================================]]
 
 
 local interface = {}
 
 
---[[**
-Returns the magnitude between the two vectors.
-Note: 'a' AND 'b' must be the same data type.
+--[=[
+	@class Util
+	A library of helpful general-use functions.
+]=]
 
-@param [t:Vector2|Vector3] a
-@param [t:Vector2|Vector3] b
-
-@returns [t:number] The magnitude between points 'a' and 'b'.
-**--]]
+--[=[
+	Returns the magnitude between the two vectors.
+	@within Util
+	
+	:::note Consistency
+	a AND b must be the same data type in order for this to work properly.
+]=]
 function interface:GetMagnitude(a: Vector2 | Vector3, b: Vector2 | Vector3): number
 	local typeA = typeof(a)
 	local typeB = typeof(b)
@@ -32,40 +35,37 @@ function interface:GetMagnitude(a: Vector2 | Vector3, b: Vector2 | Vector3): num
 	return 0
 end
 
---[[**
-Returns a rounded number
-Note: 'a' AND 'b' must be the same data type.
-
-@param [t:number] number The number you want to round.
-@param [t:number?] place The place value you want to round to; defaults to 0.
-
-@returns [t:number] Returns the number rounded to a given place value or 0.
-**--]]
+--[=[
+	Returns a rounded number.
+	
+	@param number -- The number you want to round.
+	@param place -- The place value you want to round to; defaults to 0.
+	
+	@return number -- Returns the number rounded to the given place value or 0.
+	
+	@within Util
+]=]
 function interface:RoundNumber(number: number, place: number?): number
 	local adjust = 10 ^ (place or 0)
 	
 	return math.ceil((number * adjust) - 0.5) / adjust
 end
 
---[[**
-Gets the hypotenuse between a and b.
-
-@param [t:number] a
-@param [t:number] b
-
-@returns [t:number] The length of the hypotenuse.
-**--]]
+--[=[
+	Gets the hypotenuse between a and b.
+	
+	@return number -- The length of the hypotenuse.
+	
+	@within Util
+]=]
 function interface:FindHypotenuse(a: number, b: number): number
 	return math.sqrt((a ^ 2) + (b ^ 2))
 end
 
---[[**
-Returns the length of 'dictionary'.
-
-@param [t:{[any]:any}] dictionary
-
-@returns [t:number] The length of the dictionary.
-**--]]
+--[=[
+	Returns the length of the dictionary.
+	@within Util
+]=]
 function interface:GetDictionaryLength(dictionary: {[any]: any}): number
 	local length = 0
 	
@@ -76,15 +76,11 @@ function interface:GetDictionaryLength(dictionary: {[any]: any}): number
 	return length
 end
 
---[[**
-Returns a shallow-merged table of 'b' into 'a'.
-
-@param [t:{[any]:any}] a
-@param [t:{[any]:any}] b
-
-@returns [t: {[any]:any}] The merged table of 'a' and 'b'.
-**--]]
-function interface:TableMerge(a: {[any]: any}, b: {[any]: any})
+--[=[
+	Returns a new shallow-merged table of b into a.
+	@within Util
+]=]
+function interface:TableMerge(a: {[any]: any}, b: {[any]: any}): {[any]: any}
 	local c = {}
 	
 	for index, value in pairs(a) do
@@ -98,14 +94,10 @@ function interface:TableMerge(a: {[any]: any}, b: {[any]: any})
 	return c
 end
 
---[[**
-Returns a deep-merged table of table 'b' into table 'a'.
-
-@param [t:{[any]:any}] a
-@param [t:{[any]:any}] b
-
-@returns [t:{[any]:any}] The merged table of 'a' and 'b'.
-**--]]
+--[=[
+	Returns a deep-merged table of table b into table a.
+	@within Util
+]=]
 function interface:DeepTableMerge(a: {[any]: any}, b: {[any]: any}): {[any]: any}
 	local c = {}
 	
@@ -136,13 +128,10 @@ function interface:DeepTableMerge(a: {[any]: any}, b: {[any]: any}): {[any]: any
 	return c
 end
 
---[[**
-Returns a deep-copied table of table 'a'.
-
-@param [t:{[any]:any}] a
-
-@returns [t:{[any]:any}] A deep-copy of table 'a'.
-**--]]
+--[=[
+	Returns a deep-copied table of table a.
+	@within Util
+]=]
 function interface:DeepCloneTable(a: {[any]: any}): {[any]: any}
 	local b = {}
 	
@@ -157,14 +146,12 @@ function interface:DeepCloneTable(a: {[any]: any}): {[any]: any}
 	return b
 end
 
---[[**
-Returns a new, shuffled array.
-
-@param [t:{[number]:any}] array The array (not dictionary) you want to shuffle.
-
-@returns [t:{[number]:any}] A copy of array with its contents shuffled.
-**--]]
-function interface:ShuffleArray(array: {[number]: any}): {[number]: any}
+--[=[
+	Returns a copy of the given array, but with its contents shuffled.
+	
+	@within Util
+]=]
+function interface:ShuffleArray(array: {any}): {any}
 	local length = #array
 	local shuffled = {}
 	
@@ -181,25 +168,24 @@ function interface:ShuffleArray(array: {[number]: any}): {[number]: any}
 	end
 end
 
---[[**
-Returns a random value picked out from the array.
-
-@param [t:{[number]:any}] array
-
-@returns [t:any] Value picked from the array.
-**--]]
-function interface:RandomPickFromArray(array: {[number]: any}): any
+--[=[
+	Returns a random value picked out from the array.
+	@within Util
+]=]
+function interface:RandomPickFromArray(array: {any}): any
 	return array[math.random(1, #array)]
 end
 
---[[**
-Creates an object or applies given properties to a given object, and returns it.
-
-@param [t:string|Instance] object An instance, or string defining what instance to create.
-@param [t:{[string]:any}] properties A dictionary of properties to apply to the instance.
-
-@returns [t:Instance] Returns the given object or specified object with the properties applied to it.
-**--]]
+--[=[
+	Creates an object or applies given properties to a given object, and returns it.
+	
+	@param object -- An instance, or string defining what instance to create.
+	@param properties -- A dictionary of properties to apply to the instance.
+	
+	@return Instance Returns the given object or specified object with the properties applied to it.
+	
+	@within Util
+]=]
 function interface:Synth(object: string | Instance, properties: {[string]: any}): Instance
 	local final =
 		if typeof(object) == "Instance" then object
@@ -224,12 +210,13 @@ function interface:Synth(object: string | Instance, properties: {[string]: any})
 	return final
 end
 
---[[**
-Returns the given objects with the properties applied to each instance.
-
-@param [t:{[any]:Instance}] objects An table of instances.
-@param [t:{[string]:any}] properties A dictionary of properties to apply to the instance.
-**--]]
+--[=[
+	Returns the given objects with the properties applied to each instance.
+	
+	@param properties -- A dictionary of properties to apply to the instances.
+	
+	@within Util
+]=]
 function interface:ApplyToGroup(objects: {[any]: Instance}, properties: {[string]: any})
 	local instances = {}
 	
@@ -240,13 +227,13 @@ function interface:ApplyToGroup(objects: {[any]: Instance}, properties: {[string
 	end
 end
 
---[[**
-Returns the volume of the part, or 1 if it cannot be calculated.
-
-@param [t:BasePart?] part The part you want to get the volume of.
-
-@returns [t:number] The volume of 'part', or 0 if there is no part.
-**--]]
+--[=[
+	Returns the volume of the part, or 1 if it cannot be calculated.
+	
+	@return number -- The volume of 'part', or 0 if there is no part.
+	
+	@within Util
+]=]
 function interface:GetVolumeOfPart(part: BasePart?): number
 	if part == nil then
 		return 0
@@ -261,13 +248,14 @@ function interface:GetVolumeOfPart(part: BasePart?): number
 	end
 end
 
---[[**
-Welds a model together.
-
-@param [t:Model] model The model to weld together.
-@param [t:BasePart] corePart The part to weld every other part to.
-@param [t:{[any]:BasePart}?] ignore A table of instances to ignore when welding.
-**--]]
+--[=[
+	Welds a model together.
+	
+	@param corePart -- The part to weld every other part to.
+	@param ignore -- A table of instances to ignore when welding.
+	
+	@within Util
+]=]
 function interface:Weld(model: Model, corePart: BasePart, ignore: {[any]: BasePart}?)
 	local ignoreList = {}
 	
@@ -297,6 +285,105 @@ function interface:Weld(model: Model, corePart: BasePart, ignore: {[any]: BasePa
 			descendant.Anchored = false
 		end
 	end
+end
+
+-- Written by Algoritmi; Modified by Devi (@Devollin) | 2020 | v1.0.0
+--[=[
+	Returns the wrapped instance with the given custom attributes.
+	
+	@param userdata -- The instance to apply the wrapper to.
+	@param attributes -- The array to be applied to the wrapper.
+	
+	@within Util
+]=]
+function interface:Wrapper(userdata: Instance, attributes: {[any]: any}): any
+	local wrapper = {}
+	
+	for _, attribute in pairs(attributes) do
+		local passthrough = {}
+		
+		local passthrough_FENV = setmetatable({}, {
+			__index = function(t, i)
+				if passthrough[i] then
+					return passthrough
+				elseif i == "self" then
+					return wrapper
+				else
+					return getfenv(2)[i]
+				end
+			end,
+			__newindex = function(t, i, v)
+				passthrough[i] = v
+			end
+		})
+		
+		if typeof(attribute) == "function" then
+			setfenv(attribute, passthrough_FENV :: any)
+		end
+	end
+	
+	return setmetatable(wrapper, {
+		__index = function (t, i)
+			local success = pcall(function()
+				return userdata[i]
+			end)
+			
+			if i == "self" then
+				return userdata
+			end
+			
+			if attributes[i] ~= nil then
+				return attributes[i]
+			end
+			
+			if success then
+				return userdata[i]
+			end
+			
+			return
+		end,
+		
+		__newindex = function (t, i, v)
+			local success = pcall(function()
+				userdata[i] = v
+			end)
+			
+			if not success then
+				rawset(t, i, v)
+			end
+		end
+	})
+end
+
+--[=[
+	Reconsiles the data from modifiers into either the value of the list of index name, or data indexed as Default in list.
+	@within Util
+]=]
+function interface:Presets(list: {[string]: any}, name: string?, modifiers: {[string]: any}): {[string]: any}
+	modifiers = modifiers or {}
+	
+	local preset = if name then list[name] else list.Default
+	local result = {}
+	
+	for index, value in pairs(list.Default) do
+		local capture = modifiers[string.gsub(index, "%l", "")]
+		
+		if capture ~= nil then
+			result[index] = capture
+		else
+			if preset[index] ~= nil then
+				result[index] = preset[index]
+			else
+				if modifiers[index] ~= nil then
+					result[index] = modifiers[index]
+				else
+					result[index] = value
+				end
+			end
+		end
+	end
+	
+	return result
 end
 
 

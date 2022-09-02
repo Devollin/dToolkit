@@ -1,16 +1,14 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.0
-	Description: Lua-side duplication of the API of events on Roblox
-		objects.
-		Signals are needed for to ensure that for local events objects
-		are passed by reference rather than by value where possible, as
-		the BindableEvent objects always pass signal arguments by value,
-		meaning tables will be deep copied. Roblox's deep copy method
-		parses to a non-lua table compatable format.
+	Description: Lua-side duplication of the API of events on Roblox objects.
+		Signals are needed for to ensure that for local events objects are passed by reference
+		rather than by value where possible, as the BindableEvent objects always pass signal
+		arguments by value, meaning tables will be deep copied. Roblox's deep copy method parses to
+		a non-lua table compatable format.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 export type Signal<b...> = {
@@ -24,11 +22,15 @@ export type Signal<b...> = {
 local Signal = {}
 
 
---[[**
-Constructs a new signal.
+--[=[
+	@class SimpleSignal
+	Signal class based on BindableEvents.
+]=]
 
-@returns [t:Signal]
-**--]]
+--[=[
+	Constructs a new signal.
+	@within SimpleSignal
+]=]
 function Signal.new<b...>(): Signal<b...>
 	local event: BindableEvent? = Instance.new("BindableEvent")
 	
@@ -37,11 +39,14 @@ function Signal.new<b...>(): Signal<b...>
 	
 	local object = {}
 	
-	--[[**
-	Fire the event with the given arguments. All handlers will be invoked. Handlers follow Roblox signal conventions.
 	
-	@param [t:any] ... Variable arguments to pass to handler
-	**--]]
+	--[=[
+		Fire the event with the given arguments. All handlers will be invoked. Handlers follow Roblox signal conventions.
+		
+		@param ... -- Variable arguments to pass to handler
+		
+		@within SimpleSignal
+	]=]
 	function object:Fire(...: b...)
 		if event then
 			argData = table.pack(...)
@@ -54,13 +59,15 @@ function Signal.new<b...>(): Signal<b...>
 		end
 	end
 	
-	--[[**
-	Connect a new handler to the event. Returns a connection object that can be disconnected.
-	
-	@param [t:function] callback Function handler called with arguments passed when `:Fire(...)` is called.
-	
-	@returns [t:RBXScriptConnection?] Connection object that can be disconnected.
-	**--]]
+	--[=[
+		Connect a new handler to the event. Returns a connection object that can be disconnected.
+		
+		@param callback -- Function handler called with arguments passed when :Fire(...) is called.
+		
+		@return RBXScriptConnection? -- Connection object that can be disconnected.
+		
+		@within SimpleSignal
+	]=]
 	function object:Connect(callback: (b...) -> ()): RBXScriptConnection?
 		if event then
 			return event.Event:Connect(function()
@@ -71,13 +78,13 @@ function Signal.new<b...>(): Signal<b...>
 		return
 	end
 	
-	--[[**
-	Wait for `:Fire(...)` to be called, and return the arguments it was given.
-	
-	@param [t:type] name desc
-	
-	@returns [t:any] ... Variable arguments from connection
-	**--]]
+	--[=[
+		Wait for `:Fire(...)` to be called, and return the arguments it was given.
+		
+		@return any... -- Variable arguments from connection
+		
+		@within SimpleSignal
+	]=]
 	function object:Wait(): (b...)
 		if event then
 			event.Event:Wait()
@@ -88,9 +95,10 @@ function Signal.new<b...>(): Signal<b...>
 		end
 	end
 	
-	--[[**
-	Disconnects all connected events to the signal. Voids the signal as unusable.
-	**--]]
+	--[=[
+		Disconnects all connected events to the signal. Voids the signal as unusable.
+		@within SimpleSignal
+	]=]
 	function object:Destroy()
 		if event then
 			event:Destroy()

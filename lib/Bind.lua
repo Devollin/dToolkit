@@ -1,11 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Bind | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A Bind class that is used as an interface for binding
-		keys to ContextActionService.
+	Description: A Bind class that is used as an interface for binding keys to ContextActionService.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local ContextActionService = game:GetService("ContextActionService")
@@ -14,7 +13,7 @@ local Bind = {}
 
 
 type Keys = {Enum.KeyCode}
-type BoundFunction = (actionName: string, state: Enum.UserInputState, input: InputObject) -> (...any)
+type BoundFunction = (actionName: string, state: Enum.UserInputState, input: InputObject) -> ()
 
 export type Bind = {
 	boundFunction: BoundFunction,
@@ -28,13 +27,39 @@ export type Bind = {
 
 
 --[=[
-	@class Bind
+	@type Keys {Enum.KeyCode}
+	A list of Enum.KeyCode to bind an action to.
 	
-	A Bind class that is used as an interface for binding keys to ContextActionService.
+	@within Bind
+]=]
+--[=[
+	@type BoundFunction (actionName: string, state: Enum.UserInputState, input: InputObject) -> ()
+	A function used to bind context actions to.
+	
+	@within Bind
 ]=]
 
 --[=[
+	@class Bind
+	@client
+	A [Bind] class that is used as an interface for binding keys to ContextActionService.
+]=]
+
+--[=[
+	@prop boundFunction BoundFunction
+	Function bound to the given [Keys].
+	
 	@within Bind
+]=]
+--[=[
+	@prop keys Keys
+	[Keys] bound to the action.
+	
+	@within Bind
+]=]
+
+--[=[
+	Returns a new Bind class.
 	
 	@param name -- The name of the action.
 	@param keys -- The list of keys you want to bind.
@@ -42,7 +67,13 @@ export type Bind = {
 	@param enabled -- Determines if the binding should be enabled upon creation; defaults to true.
 	@param mobileButton -- Determines if a mobile button should be added with this binding; defaults to false.
 	
-	@return Bind
+	```lua
+	local newBind = Bind.new("Test", {Enum.KeyCode.E}, function(actionName, state, input)
+		print("Wow!")
+	end)
+	```
+	
+	@within Bind
 ]=]
 function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabled: boolean?, mobileButton: boolean?): Bind
 	mobileButton =
@@ -64,11 +95,8 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 	}
 	
 	--[=[
-		@within Bind
-		
 		Replaces the bound function mapped to new keys.
-		
-		@param keys {Enum.KeyCode} -- The list of keys you want to bind.
+		@within Bind
 	]=]
 	function object:Rebind(newKeys: Keys)
 		local success, result = pcall(function()
@@ -87,21 +115,24 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 	end
 	
 	--[=[
-	Enables the binding.
+		Enables the [Bind].
+		@within Bind
 	]=]
 	function object:Enable()
 		enabled = true
 	end
 	
 	--[=[
-	Disables the binding.
+		Disables the [Bind].
+		@within Bind
 	]=]
 	function object:Disable()
 		enabled = false
 	end
 	
 	--[=[
-	Destroys the binding.
+		Destroys the [Bind].
+		@within Bind
 	]=]
 	function object:Destroy()
 		ContextActionService:UnbindAction(name)

@@ -1,19 +1,17 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.0
 	Description: Batched Yield-Safe Signal Implementation
-		This is a Signal class which has effectively identical
-		behavior to a normal RBXScriptSignal, with the only difference
-		being a couple extra stack frames at the bottom of the stack
-		trace when an error is thrown. This implementation caches runner
-		coroutines, so the ability to yield in the signal handlers comes
-		at minimal extra cost over a naive signal implementation that
-		either always or never spawns a thread.
+		This is a Signal class which has effectively identical behavior to a normal RBXScriptSignal,
+		with the only difference being a couple extra stack frames at the bottom of the stack trace
+		when an error is thrown. This implementation caches runner coroutines, so the ability to
+		yield in the signal handlers comes at minimal extra cost over a naive signal implementation
+		that either always or never spawns a thread.
 		
 	Licensed under the MIT license.
 	
-========================================================================]]
+==================================================================================================]]
 
 
 export type Connection<b...> = {
@@ -67,9 +65,18 @@ local function runEventHandlerInFreeThread()
 	end
 end
 
--- Connection class
+--[=[
+	@class Connection
+	A class used to manage connections to a [Signal].
+]=]
 local Connection = {}
 
+--[=[
+	Creates a new Connection object.
+	
+	@within Connection
+	@ignore
+]=]
 function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b...>
 	local object = {
 		_connected = true,
@@ -77,6 +84,10 @@ function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b
 		_next = nil :: Connection<b...>?,
 	}
 	
+	--[=[
+		Disconnects the Connection object from the given Signal; renders it unusable.
+		@within Connection
+	]=]
 	function object:Disconnect()
 		object._connected = false
 		
@@ -103,7 +114,10 @@ function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b
 end
 
 
--- Signal class
+--[=[
+	@class Signal
+	Creates a new Signal object used to create custom events.
+]=]
 local Signal = {}
 
 function Signal.new<b...>(): Signal<b...>
@@ -111,6 +125,10 @@ function Signal.new<b...>(): Signal<b...>
 		_handlerListHead = nil :: (Connection<b...>?),
 	}
 	
+	--[=[
+		Adds a listener for the Signal.
+		@within Signal
+	]=]
 	function object:Connect(callback: (b...) -> ()): Connection<b...>
 		local connection = Connection.new(object, callback)
 		
@@ -125,16 +143,18 @@ function Signal.new<b...>(): Signal<b...>
 		return connection
 	end
 	
-	-- Disconnect all handlers. Since we use a linked list it suffices to clear the
-	-- reference to the head handler.
+	--[=[
+		Disconnects every [Connection] to the Signal.
+		@within Signal
+	]=]
 	function object:Destroy()
 		object._handlerListHead = nil
 	end
 	
-	-- Signal:Fire(...) implemented by running the handler functions on the
-	-- coRunnerThread, and any time the resulting thread yielded without returning
-	-- to us, that means that it yielded to the Roblox scheduler and has been taken
-	-- over by Roblox scheduling, meaning we have to make a new coroutine runner.
+	--[=[
+		Triggers every [Connection] that is subscribed to the Signal, passing along any parameters in the process.
+		@within Signal
+	]=]
 	function object:Fire(...: b...): ()
 		local item = object._handlerListHead
 		
@@ -154,8 +174,11 @@ function Signal.new<b...>(): Signal<b...>
 		end
 	end
 	
-	-- Implement Signal:Wait() in terms of a temporary connection using
-	-- a Signal:Connect() which disconnects itself.
+	--[=[
+		Waits until the Signal is fired, and returns any parameters passed with it.
+		@within Signal
+		@yields
+	]=]
 	function object:Wait(): (b...)
 		local waitingCoroutine = coroutine.running()
 		local connection: Connection<b...>
@@ -169,8 +192,10 @@ function Signal.new<b...>(): Signal<b...>
 		return coroutine.yield()
 	end
 	
-	-- Implement Signal:Once() in terms of a connection which disconnects
-	-- itself before running the handler.
+	--[=[
+		Returns a [Connection], which will be automatically disconnected when the Signal is fired.
+		@within Signal
+	]=]
 	function object:Once(callback: (b...) -> ()): Connection<b...>
 		local connection: Connection<b...>
 		

@@ -1,5 +1,5 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Displays | Written by Devi (@Devollin) | 2021 | v1.0.0
 	Description: Library of helpful display-related functions.
@@ -7,7 +7,7 @@ Displays | Written by Devi (@Devollin) | 2021 | v1.0.0
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
 	
-========================================================================]]
+==================================================================================================]]
 
 
 local numberSuffixes = {"", "k", "m", "b", "t", "qu", "qi", "s", "se", "o", "n", "d"}
@@ -18,15 +18,21 @@ local chars = {"I", "V", "X", "L", "C", "D", "M"}
 local interface = {}
 
 
---[[**
-Returns a rounded number within certain parameters.
+--[=[
+	@class Displays
+	A library of helpful display-related functions.
+]=]
 
-@param [t:number] number The number to round.
-@param [t:number] place The decimal place value to round to.
-@param [t:boolean?] down If false, rounds up; if true, rounds down; if nil, rounds to the nearest integer.
-
-@returns [t:number] The rounded number.
-**--]]
+--[=[
+	Returns a rounded number within certain parameters.
+	
+	@param number -- The number to round.
+	@param place -- The decimal place value to round to.
+	@param down -- If false, rounds up; if true, rounds down; if nil, rounds to the nearest integer.
+	
+	@within Displays
+	@ignore
+]=]
 local function Round(number: number, place: number?, down: boolean?): number
 	local adjust = 10 ^ (place or 0)
 	
@@ -39,13 +45,11 @@ local function Round(number: number, place: number?, down: boolean?): number
 	end
 end
 
---[[**
-Returns the absolute value of the number given, along with the sign (or an empty string).
-
-@param [t:number] number
-
-@returns [t:number,string]
-**--]]
+--[=[
+	Returns the absolute value of the number given, along with the sign (or an empty string).
+	@within Displays
+	@ignore
+]=]
 local function ValidateNumber(number: number): (number, string)
 	local sign = (math.sign(number) <= 0) and "-" or ""
 	
@@ -53,13 +57,13 @@ local function ValidateNumber(number: number): (number, string)
 end
 
 
---[[**
-Returns a formatted string which displays minutes and seconds.
-
-@param [t:number] seconds
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Returns a formatted string which displays minutes and seconds.
+	
+	@return string -- The string formatted as: xx:xx
+	
+	@within Displays
+]=]
 function interface:GetTime(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
 	
@@ -68,13 +72,13 @@ function interface:GetTime(seconds: number): string
 		seconds % 60)
 end
 
---[[**
-Returns a formatted string which displays hours, minutes, and seconds.
-
-@param [t:number] seconds
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Returns a formatted string which displays hours, minutes, and seconds.
+	
+	@return string -- The string formatted as: xx:xx:xx
+	
+	@within Displays
+]=]
 function interface:GetTimeWithHours(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
 	
@@ -84,13 +88,13 @@ function interface:GetTimeWithHours(seconds: number): string
 		seconds % 60)
 end
 
---[[**
-Returns a formatted string which displays days, hours, minutes and seconds.
-
-@param [t:number] seconds
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Returns a formatted string which displays days, hours, minutes and seconds.
+	
+	@return string -- The string formatted as: xx:xx:xx:xx
+	
+	@within Displays
+]=]
 function interface:GetTimeWithDays(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
 	
@@ -101,13 +105,13 @@ function interface:GetTimeWithDays(seconds: number): string
 		seconds % 60)
 end
 
---[[**
-Returns a formatted string which displays minutes, seconds, and milliseconds.
-
-@param [t:number] seconds
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Returns a formatted string which displays minutes, seconds, and milliseconds.
+	
+	@return string -- The string formatted as: xx:xx.xxx
+	
+	@within Displays
+]=]
 function interface:GetTimeWithMilli(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
 	
@@ -117,14 +121,16 @@ function interface:GetTimeWithMilli(seconds: number): string
 		(seconds % 1) * 1000)
 end
 
---[[**
-Returns a shortened form of a number. Ex: 1000 -> 1k, 555555 -> 555k
-
-@param [t:number]
-@param [t:number?] place The decimal place value to show up to. If not given, will show decimals up to 3. Integers only.
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Returns a shortened form of a number.
+	Ex: 1000 -> 1k, 555555 -> 555k
+	
+	@param places -- The decimal place value to show up to. If not given, will show decimals up to 3. Integers only.
+	
+	@return string -- The formatted string.
+	
+	@within Displays
+]=]
 function interface:GetNumberSuffix(number: number, places: number?): string
 	local sign = (math.sign(number) <= 0) and "-" or ""
 	number = math.abs(number)
@@ -143,13 +149,10 @@ function interface:GetNumberSuffix(number: number, places: number?): string
 	end
 end
 
---[[**
-Places commas within a number, and returns the string.
-
-@param [t:number] number
-
-@returns [t:string] The formatted string.
-**--]]
+--[=[
+	Places commas within a number, and returns the string.
+	@within Displays
+]=]
 function interface:PlaceCommasInNumber(number: number): string
 	number = Round(number, nil, false)
 	
@@ -160,13 +163,15 @@ function interface:PlaceCommasInNumber(number: number): string
 	return minus .. int:reverse():gsub("^,", "") .. fraction
 end
 
---[[**
-Returns a string of roman numerals based off of the number given to it.
-
-@param [t:number] number
-
-@returns [t:string] The roman numeral string.
-**--]]
+--[=[
+	Returns a string of roman numerals based off of the number given to it.
+	
+	@param number
+	
+	@return string -- The string of roman numerals.
+	
+	@within Displays
+]=]
 function interface:NumberToRomanNumerals(number: number): string
 	number = math.floor(number)
 	

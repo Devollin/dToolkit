@@ -1,10 +1,10 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 DataStore | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: A library to aid in general DataStore-related functions.
 	
-========================================================================]]
+==================================================================================================]]
 
 local DataStoreService = game:GetService("DataStoreService")
 
@@ -99,18 +99,25 @@ local callbacks = {
 	},
 }
 
+local interface = {}
 
---[[**
-Returns a DataStore object, given a name and optional scope and DataStoreOptions parameters.
 
-@param [t:string] name The name of the DataStore.
-@param [t:string?] scope The scope of the DataStore.
-@param [t:DataStoreOptions?] options The DataStoreOptions used when getting the DataStore.
+--[=[
+	@class BaseStorage
+	A basic DataStore wrapper object.
+	@server
+]=]
 
-@returns [t:DataStoreResult] A table containing data members for success, message, and result. The message data member is
-	only used when success is false, and result is only used when success is true, and contains the DataStore.
-**--]]
-local function GetDataStore(name: string, scope: string?, options: DataStoreOptions?): DataStoreResult
+--[=[
+	Returns a DataStore object, given a name and optional scope and DataStoreOptions parameters.
+	
+	@param name -- The name of the DataStore.
+	@param scope -- The scope of the DataStore.
+	@param options -- The DataStoreOptions used when getting the DataStore.
+	
+	@within BaseStorage
+]=]
+function interface:GetDataStore(name: string, scope: string?, options: DataStoreOptions?): DataStoreResult
 	local success, result
 	local iterations = 0
 	
@@ -143,23 +150,19 @@ local function GetDataStore(name: string, scope: string?, options: DataStoreOpti
 	end
 end
 
-
-local interface = {}
-
-
---[[**
-Creates a new BaseStorage object.
-
-@param [t:string] name The name of the DataStore.
-@param [t:string?] scope The scope of the DataStore.
-@param [t:DataStoreOptions?] options Options to modify DataStores.
-@param [t:table] default Default data to be used for blank entries.
-
-@returns [t:BaseStorageResult] A dictionary containing a success boolean, a message (if getting the DataStore fails), and a
-	result (if getting the DataStore succeeds, this is the BaseStorage object).
-**--]]
+--[=[
+	Creates a new BaseStorage object.
+	
+	@param name -- The name of the DataStore.
+	@param scope -- The scope of the DataStore.
+	@param options -- Options to modify DataStores.
+	@param default -- Default data to be used for blank entries.
+	
+	@within BaseStorage
+	@server
+]=]
 function interface.new(name: string, scope: string?, options: DataStoreOptions?, default: Default): BaseStorageResult
-	local dataStore = GetDataStore(name, scope, options)
+	local dataStore = interface:GetDataStore(name, scope, options)
 	
 	if not dataStore.success then
 		return {
@@ -183,14 +186,14 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		DeepKeyUpdated = Signal.new() :: Signal.Signal<string, any, any, {string | number}>,
 	}
 	
-	--[[**
-	Performs GetAsync if the data requested by the index does not exist, and returns the data.
 	
-	@param [t:string] index The key within the DataStore.
-	
-	@returns [t:DataResult] A dictionary containing a success boolean, a message (if getting the data fails), and a result
-		(if getting the data succeeds, this is the data).
-	**--]]
+	--[=[
+		Performs GetAsync if the data requested by the index does not exist, and returns the data.
+		
+		@param index -- The key within the DataStore.
+		
+		@within BaseStorage
+	]=]
 	function object:HardLoad(index: string): DataResult
 		local data = members[index]
 		
@@ -277,15 +280,13 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	
-	--[[**
-	Returns data associated with the index, if it has been loaded already.
-	
-	@param [t:string] index The key within the DataStore.
-	
-	@returns [t:DataResult] A dictionary containing a success boolean, a message (if getting the data fails), and a result
-		(if getting the data succeeds, this is the data).
-	**--]]
+	--[=[
+		Returns data associated with the index, if it has been loaded already.
+		
+		@param index -- The key within the DataStore.
+		
+		@within BaseStorage
+	]=]
 	function object:SoftLoad(index: string): DataResult
 		local data = members[index]
 		
@@ -322,16 +323,16 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Performs SetAsync with the data associated with the index, if it isn't already being saved.
-	
-	@param [t:string] index The key within the DataStore.
-	@param [t:{number}?] ids An optional list of user IDs associated with the data.
-	@param [t:DataStoreSetOptions?] setOptions Options used to adjust SetAsync.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
-	function object:HardSave(index: string, ids: {[number]: number}?, setOptions: DataStoreSetOptions?): SaveResult
+	--[=[
+		Performs SetAsync with the data associated with the index, if it isn't already being saved.
+		
+		@param index -- The key within the DataStore.
+		@param ids -- An optional list of user IDs associated with the data.
+		@param setOptions -- Options used to adjust SetAsync.
+		
+		@within BaseStorage
+	]=]
+	function object:HardSave(index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -395,13 +396,13 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Replaces all the data associated with the index.
-	
-	@param [t:string] index The key within the DataStore.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
+	--[=[
+		Replaces all the data associated with the index.
+		
+		@param index -- The key within the DataStore.
+		
+		@within BaseStorage
+	]=]
 	function object:SoftSave(index: string, newData: any): SaveResult
 		local data = members[index]
 		
@@ -440,15 +441,15 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Saves the data associated with the index, if it isn't already being saved.
-	
-	@param [t:string] index The key within the DataStore.
-	@param [t:string|number] key The key within the data.
-	@param [t:any] newData The data to replace the contents of the key.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
+	--[=[
+		Saves the data associated with the index, if it isn't already being saved.
+		
+		@param index -- The key within the DataStore.
+		@param key -- The key within the data.
+		@param newData -- The data to replace the contents of the key.
+		
+		@within BaseStorage
+	]=]
 	function object:Update(index: string, key: (string | number), newData: any): SaveResult
 		local data = members[index]
 		
@@ -491,16 +492,16 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Saves the data associated with the indexes, if it isn't already being saved.
-	
-	@param [t:string] index The key within the DataStore.
-	@param [t:any] newData The data to replace the contents of the key.
-	@param [t:string|number] key The key within the data.
-	@param [t:string|number] ... The key indexer(s) within the data.
-	
-	@returns [t:SaveResult] A dictionary containing a success boolean, and a message (if saving the data fails).
-	**--]]
+	--[=[
+		Saves the data associated with the indexes, if it isn't already being saved.
+		
+		@param index -- The key within the DataStore.
+		@param newData -- The data to replace the contents of the key.
+		@param key -- The key within the data.
+		@param ... -- The key indexer(s) within the data.
+		
+		@within BaseStorage
+	]=]
 	function object:DeepUpdate(index: string, newData: any, key: (string | number), ...: (string | number)): SaveResult
 		local data = members[index]
 		
@@ -571,11 +572,13 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Hard saves the data, then removes the data associated with the index.
-	
-	@param [t:string] index The key within the DataStore.
-	**--]]
+	--[=[
+		Hard saves the data, then removes the data associated with the index.
+		
+		@param index -- The key within the DataStore.
+		
+		@within BaseStorage
+	]=]
 	function object:Clear(index: string)
 		local data = members[index]
 		
@@ -586,9 +589,10 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		end
 	end
 	
-	--[[**
-	Saves all data, and clears it's own members.
-	**--]]
+	--[=[
+		Saves all data, and clears it's own members.
+		@within BaseStorage
+	]=]
 	function object:Close()
 		for key, data in pairs(members) do
 			task.spawn(function()
@@ -605,20 +609,6 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		success = true,
 		result = object,
 	}
-end
-
---[[**
-Returns a DataStore object, given a name and optional scope and DataStoreOptions parameters.
-
-@param [t:string] name The name of the DataStore.
-@param [t:string?] scope The scope of the DataStore.
-@param [t:DataStoreOptions?] options The DataStoreOptions used when getting the DataStore.
-
-@returns [t:DataStoreResult] A table containing data members for success, message, and result. The message data member is
-	only used when success is false, and result is only used when success is true, and contains the DataStore.
-**--]]
-function interface:GetDataStore(name: string, scope: string?, options: DataStoreOptions?): DataStoreResult
-	return GetDataStore(name, scope, options)
 end
 
 

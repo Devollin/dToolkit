@@ -1,9 +1,111 @@
 --!strict
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
+
+--[=[
+	@type StorageType "Player" | "Base" | "Ordered"
+	The type of DataStore; Player contains specific functionality used for players, Ordered creates a OrderedDataStore,
+		and Base creates a general-purpose DataStore.
+	
+	@within Storage
+]=]
+--[=[
+	@type Default {[string | number]: any}
+	Default data to be used for blank entries.
+	
+	@within Storage
+]=]
+--[=[
+	@type Result <a>{success: boolean, message: string?, result: a, metadata: DataStoreKeyInfo?}
+	@within Storage
+]=]
+--[=[
+	@type SaveResult Result<boolean?>
+	A dictionary containing a success boolean, and a message (if saving the data fails).
+	
+	@within Storage
+]=]
+--[=[
+	@type PageResult Result<DataStoreKeyPages?>
+	A dictionary containing a success boolean, a message (if saving the data fails), and a result (if getting the data
+		succeeds, then this is the DataStoreKeyPages object).
+	
+	@within OrderedStorage
+]=]
+--[=[
+	@type OrderedDataStoreResult Result<OrderedDataStore?>
+	A table containing data members for success, message, and result. The message data member is only used when success is
+		false, and result is only used when success is true, and contains the OrderedDataStore.
+	
+	@within OrderedStorage
+]=]
+--[=[
+	@type DataStoreResult Result<GlobalDataStore?>
+	A table containing data members for success, message, and result. The message data member is only used when success is
+		false, and result is only used when success is true, and contains the DataStore.
+	
+	@within Storage
+]=]
+--[=[
+	@type SaveStatus "Saving" | "Failed" | "Ready" | "NotReady"
+	@within Storage
+	@ignore
+]=]
+--[=[
+	@type LoadStatus "Loading" | "Failed" | "Ready"
+	@within Storage
+	@ignore
+]=]
+--[=[
+	@type BaseData {saveStatus: SaveStatus, loadStatus: LoadStatus, canSave: boolean, data: any}
+	@within Storage
+]=]
+--[=[
+	@type DataResult Result<any>
+	A dictionary containing a success boolean, a message (if getting the data fails), and a result (if getting the data
+		succeeds, this is the data).
+	
+	@within Storage
+]=]
+--[=[
+	@type BaseResult Result<(GlobalDataStore | OrderedDataStore)?>
+	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
+		DataStore succeeds, this is the DataStore).
+	
+	@within Storage
+]=]
+--[=[
+	@type BaseStorageResult Result<BaseStorage?>
+	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
+		DataStore succeeds, this is the BaseStorage object).
+	
+	@within BaseStorage
+]=]
+--[=[
+	@type PlayerStorageResult Result<PlayerStorage?>
+	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
+		DataStore succeeds, this is the PlayerStorage object).
+	
+	@within PlayerStorage
+]=]
+--[=[
+	@type OrderedStorageResult Result<OrderedStorage?>
+	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
+		DataStore succeeds, this is the OrderedStorage object).
+	
+	@within OrderedStorage
+]=]
+--[=[
+	@type StorageResult Result<(OrderedStorage | PlayerStorage | BaseStorage)?>
+	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
+		DataStore succeeds, this is the Storage object).
+	
+	@within Storage
+]=]
+
+
 export type StorageType = "Player" | "Base" | "Ordered"
-export type Default = {[string]: any}
-export type PageResult = Result<DataStoreKeyPages?>
+export type Default = {[string | number]: any}
 
 type Result<a> = {
 	success: boolean,
@@ -12,6 +114,7 @@ type Result<a> = {
 	metadata: DataStoreKeyInfo?,
 }
 
+export type PageResult = Result<DataStoreKeyPages?>
 export type DataStoreResult = Result<GlobalDataStore?>
 export type OrderedDataStoreResult = Result<OrderedDataStore?>
 export type SaveResult = Result<boolean?>
@@ -88,6 +191,8 @@ export type OrderedStorage = {
 	Close: <a>(self: a) -> (),
 }
 export type OrderedStorageResult = Result<OrderedStorage?>
+export type StorageResult = Result<(OrderedStorage | PlayerStorage | BaseStorage)?>
+export type BaseResult = Result<(GlobalDataStore | OrderedDataStore)?>
 
 
 return {}

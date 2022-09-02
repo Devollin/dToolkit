@@ -1,8 +1,19 @@
 title = "Packager"
 gitSourceBranch = "main"
 
-#[[classOrder]]
-#classes = ["Bind"]
+[[classOrder]]
+classes = ["Bind", "CameraUtil", "Platform"]
+
+[[classOrder]]
+section = "Signal"
+classes = ["Signal", "Connection"]
+
+[[classOrder]]
+classes = ["Color3Helper", "Displays", ]
+
+[[classOrder]]
+section = "Storage"
+classes = ["Storage", "BaseStorage", "PlayerStorage", "OrderedStorage"]
 
 [home]
 enabled = true
