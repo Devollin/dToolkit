@@ -26,19 +26,18 @@ export type Bind = {
 	Destroy: <a>(self: a) -> (),
 }
 
-
---[[**
-Returns a new Bind class.
-
-@param [t:string] name The name of the action.
-@param [t:{Enum.KeyCode}] keys The list of keys you want to bind.
-@param [t:function] boundFunction Function that the binding is bound to.
-	(actionName: string, state: Enum.UserInputState, input: InputObject) -> (...any)
-@param [t:boolean?] enabled Determines if the binding should be enabled upon creation; defaults to true.
-@param [t:boolean?] mobileButton Determines if a button should be added with this binding when on mobile; defaults to false.
-
-@returns [t:Bind]
-**--]]
+--[=[
+	@class Bind
+	
+	A Bind class that is used as an interface for binding keys to ContextActionService.
+	@param name string -- The name of the action.
+	@param keys {Enum.KeyCode} -- The list of keys you want to bind.
+	@param boundFunction BoundFunction -- Function that the binding is bound to.
+	@param enabled boolean? -- Determines if the binding should be enabled upon creation; defaults to true.
+	@param mobileButton boolean? -- Determines if a mobile button should be added with this binding; defaults to false.
+	
+	@return Bind
+]=]
 function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabled: boolean?, mobileButton: boolean?): Bind
 	mobileButton =
 		if mobileButton == nil then false
@@ -58,11 +57,11 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 		keys = keys,
 	}
 	
-	--[[**
-	Replaces the bound function mapped to new keys.
-	
-	@param [t:{Enum.KeyCode}] keys The list of keys you want to bind.
-	**--]]
+	--[=[
+		Replaces the bound function mapped to new keys.
+		
+		@param keys {Enum.KeyCode} -- The list of keys you want to bind.
+	]=]
 	function object:Rebind(newKeys: Keys)
 		local success, result = pcall(function()
 			ContextActionService:UnbindAction(name)
@@ -79,23 +78,23 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 		end, mobileButton, table.unpack(newKeys))
 	end
 	
-	--[[**
+	--[=[
 	Enables the binding.
-	**--]]
+	]=]
 	function object:Enable()
 		enabled = true
 	end
 	
-	--[[**
+	--[=[
 	Disables the binding.
-	**--]]
+	]=]
 	function object:Disable()
 		enabled = false
 	end
 	
-	--[[**
+	--[=[
 	Destroys the binding.
-	**--]]
+	]=]
 	function object:Destroy()
 		ContextActionService:UnbindAction(name)
 	end
