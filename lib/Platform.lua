@@ -35,9 +35,12 @@ local ui = Util:Synth("ScreenGui", {
 	The platform the player is currently on.
 	
 	:::caution Inconsistency & Studio
-	When using the Studio device emulator, Platform can't determine the platform very well. However, it does work
-	consistently in live testing. For more specific checks, use the individual values within Platform.
-	
+	When using the Studio device emulator, Platform can't determine the platform very well (It is a little too accurate!).
+	However, it does work consistently in live testing. 
+	:::
+	:::tip Granular Checking
+	For more specific checks, use the individual [Value] members within Platform.
+	:::
 	@within Platform
 ]=]
 

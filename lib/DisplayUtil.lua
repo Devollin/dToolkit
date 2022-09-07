@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Displays | Written by Devi (@Devollin) | 2021 | v1.0.0
+DisplayUtil | Written by Devi (@Devollin) | 2021 | v1.0.0
 	Description: Library of helpful display-related functions.
 	
 Additional credits to:
@@ -19,7 +19,7 @@ local interface = {}
 
 
 --[=[
-	@class Displays
+	@class DisplayUtil
 	A library of helpful display-related functions.
 ]=]
 
@@ -30,7 +30,7 @@ local interface = {}
 	@param place -- The decimal place value to round to.
 	@param down -- If false, rounds up; if true, rounds down; if nil, rounds to the nearest integer.
 	
-	@within Displays
+	@within DisplayUtil
 	@ignore
 ]=]
 local function Round(number: number, place: number?, down: boolean?): number
@@ -47,7 +47,7 @@ end
 
 --[=[
 	Returns the absolute value of the number given, along with the sign (or an empty string).
-	@within Displays
+	@within DisplayUtil
 	@ignore
 ]=]
 local function ValidateNumber(number: number): (number, string)
@@ -58,11 +58,15 @@ end
 
 
 --[=[
-	Returns a formatted string which displays minutes and seconds.
+	Returns a string formatted as: xx:xx
 	
-	@return string -- The string formatted as: xx:xx
+	```lua
+	local timeString = DisplayUtil:GetTime(630)
 	
-	@within Displays
+	print(timeString) --> 10:30
+	```
+	
+	@within DisplayUtil
 ]=]
 function interface:GetTime(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
@@ -73,11 +77,15 @@ function interface:GetTime(seconds: number): string
 end
 
 --[=[
-	Returns a formatted string which displays hours, minutes, and seconds.
+	Returns a string formatted as: xx:xx:xx
 	
-	@return string -- The string formatted as: xx:xx:xx
+	```lua
+	local timeString = DisplayUtil:GetTimeWithHours(630 * 60)
 	
-	@within Displays
+	print(timeString) --> 10:30:00
+	```
+	
+	@within DisplayUtil
 ]=]
 function interface:GetTimeWithHours(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
@@ -89,11 +97,15 @@ function interface:GetTimeWithHours(seconds: number): string
 end
 
 --[=[
-	Returns a formatted string which displays days, hours, minutes and seconds.
+	Returns a string formatted as: xx:xx:xx:xx
 	
-	@return string -- The string formatted as: xx:xx:xx:xx
+	```lua
+	local timeString = DisplayUtil:GetTimeWithDays(2.5 * 24 * 60 * 60)
 	
-	@within Displays
+	print(timeString) --> 2:12:00:00
+	```
+	
+	@within DisplayUtil
 ]=]
 function interface:GetTimeWithDays(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
@@ -106,11 +118,15 @@ function interface:GetTimeWithDays(seconds: number): string
 end
 
 --[=[
-	Returns a formatted string which displays minutes, seconds, and milliseconds.
+	Returns a string formatted as: xx:xx.xxx
 	
-	@return string -- The string formatted as: xx:xx.xxx
+	```lua
+	local timeString = DisplayUtil:GetTimeWithMilli(78.512)
 	
-	@within Displays
+	print(timeString) --> 1:18.512
+	```
+	
+	@within DisplayUtil
 ]=]
 function interface:GetTimeWithMilli(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
@@ -125,11 +141,15 @@ end
 	Returns a shortened form of a number.
 	Ex: 1000 -> 1k, 555555 -> 555k
 	
+	```lua
+	local shortenedNumber = DisplayUtil:GetNumberSuffix(5254, 2)
+	
+	print(shortenedNumber) --> 5.25k
+	```
+	
 	@param places -- The decimal place value to show up to. If not given, will show decimals up to 3. Integers only.
 	
-	@return string -- The formatted string.
-	
-	@within Displays
+	@within DisplayUtil
 ]=]
 function interface:GetNumberSuffix(number: number, places: number?): string
 	local sign = (math.sign(number) <= 0) and "-" or ""
@@ -151,7 +171,15 @@ end
 
 --[=[
 	Places commas within a number, and returns the string.
-	@within Displays
+	Ex: 1000 -> 1,000, 555555 -> 555,555
+	
+	```lua
+	local lengthenedNumber = DisplayUtil:PlaceCommasInNumber(5254)
+	
+	print(lengthenedNumber) --> 5,254
+	```
+	
+	@within DisplayUtil
 ]=]
 function interface:PlaceCommasInNumber(number: number): string
 	number = Round(number, nil, false)
@@ -166,11 +194,13 @@ end
 --[=[
 	Returns a string of roman numerals based off of the number given to it.
 	
-	@param number
+	```lua
+	local romanNumerals = DisplayUtil:NumberToRomanNumerals(10)
 	
-	@return string -- The string of roman numerals.
+	print(romanNumerals) --> X
+	```
 	
-	@within Displays
+	@within DisplayUtil
 ]=]
 function interface:NumberToRomanNumerals(number: number): string
 	number = math.floor(number)

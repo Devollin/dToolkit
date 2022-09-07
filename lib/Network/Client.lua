@@ -1,5 +1,5 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Network | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: A library to handle Networking more easily.
@@ -7,7 +7,7 @@ Network | Written by Devi (@Devollin) | 2022 | v1.0.0
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
 	
-========================================================================]]
+==================================================================================================]]
 
 
 type Metadata = {
@@ -17,8 +17,6 @@ type Metadata = {
 	id: number?,
 }
 
-
-local RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
@@ -52,9 +50,8 @@ local function GenerateMetadata(name: string, type: string): Metadata
 	end
 end
 
-
 --[=[
-	Connects a callback to an remote event.
+	Connects a callback to an [RemoteEvent].
 	
 	@param name -- The name of the stream you want to connect to.
 	@param callback -- The callback that you want to connect to this stream.
@@ -114,7 +111,7 @@ function interface:Wait(name: string): (...any)
 end
 
 --[=[
-	Fires a remote event to the server within the given data stream.
+	Fires a [RemoteEvent] to the server within the given data stream.
 	
 	@param name -- The name of the stream.
 	@param ... -- Any additional parameters you want to provide.
@@ -127,7 +124,7 @@ function interface:Fire(name: string, ...: any)
 end
 
 --[=[
-	Fires a remote event to the server within the given data stream, and yields until the server responds.
+	Fires a [RemoteEvent] to the server within the given data stream, and yields until the server responds.
 	
 	@param name -- The name of the stream.
 	@param ... -- Any additional parameters you want to provide.

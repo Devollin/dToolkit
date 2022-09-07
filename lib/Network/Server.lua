@@ -1,5 +1,5 @@
 --!strict
---[[======================================================================
+--[[================================================================================================
 
 Network | Written by Devi (@Devollin) | 2022 | v1.0.0
 	Description: A library to handle Networking more easily.
@@ -7,7 +7,7 @@ Network | Written by Devi (@Devollin) | 2022 | v1.0.0
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
 	
-========================================================================]]
+==================================================================================================]]
 
 
 type Metadata = {
@@ -25,8 +25,8 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 local remote = script.Parent:WaitForChild("RemoteEvent", 1)
 
 if not remote then
-    remote = Instance.new("RemoteEvent")
-    remote.Parent = script.Parent
+	remote = Instance.new("RemoteEvent")
+	remote.Parent = script.Parent
 end
 
 local connections = {}
@@ -59,7 +59,7 @@ end
 
 
 --[=[
-	Connects a callback to an remote event.
+	Connects a callback to an [RemoteEvent].
 	
 	@param name -- The name of the stream you want to connect to.
 	@param callback -- The callback that you want to connect to this stream.
@@ -119,7 +119,7 @@ function interface:Wait(name: string): (...any)
 end
 
 --[=[
-	Fires a remote event to the given player within the given data stream.
+	Fires a [RemoteEvent] to the given player within the given data stream.
 	
 	@param name -- The name of the stream.
 	@param player -- The player you want to fire an event to.
@@ -133,7 +133,7 @@ function interface:Fire(name: string, player: Player, ...: any)
 end
 
 --[=[
-	Fires a remote event to all the given players within the given data stream.
+	Fires a [RemoteEvent] to all the given players within the given data stream.
 	
 	@param name -- The name of the stream.
 	@param players -- An array of the players you want to fire an event to.
@@ -149,7 +149,7 @@ function interface:FirePlayers(name: string, players: {[any]: Player}, ...: any)
 end
 
 --[=[
-	Fires a remote event to all players within the given data stream.
+	Fires a [RemoteEvent] to all players within the given data stream.
 	
 	@param name -- The name of the stream.
 	@param ... -- Any additional parameters you want to provide.
@@ -162,7 +162,7 @@ function interface:FireAllPlayers(name: string, ...: any)
 end
 
 --[=[
-	Fires a remote event to a player within the given data stream, and yields until the player responds.
+	Fires a [RemoteEvent] to a player within the given data stream, and yields until the player responds.
 	
 	@param name -- The name of the stream.
 	@param player -- The player you want to request from.

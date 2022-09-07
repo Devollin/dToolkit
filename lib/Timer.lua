@@ -11,6 +11,8 @@ local RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
 
+local timerSignal: Signal.Signal<number> = Signal.new()
+
 
 export type Timer = {
 	id: string,
@@ -37,9 +39,40 @@ local Timer = {}
 	@class Timer
 	A timer class.
 ]=]
+--[=[
+	@type Finished Signal<>
+	Fired when the Timer finishes running.
+	
+	@within Timer
+]=]
+--[=[
+	@type Paused Signal<>
+	Fired when the Timer has been paused.
+	
+	@within Timer
+]=]
+--[=[
+	@type Updated Signal<number, number>
+	Fired when the Timer has been updated. The first number is the time remaining, the second is the time elapsed.
+	
+	@within Timer
+]=]
 
 --[=[
 	Creates and returns a new [Timer] object.
+	
+	```lua
+	local newTimer = Timer.new()
+	newTimer:SetDuration(5)
+	
+	newTimer.Finished:Connect(function()
+		print("Finished!")
+		
+		newTimer:Start()
+	end)
+	
+	newTimer:Start()
+	```
 	
 	@param duration -- The duration you want to give to the [Timer]; or nil, if you need to set it dynamically.
 	
@@ -51,7 +84,7 @@ function Timer.new(duration: number?): Timer
 	local initDuration = duration or 0
 	local remaining = duration or 0
 	local elapsed = 0
-	local connection: RBXScriptConnection?
+	local connection: Signal.Connection<number>?
 	
 	local object = {
 		Finished = Signal.new(),
@@ -71,12 +104,16 @@ function Timer.new(duration: number?): Timer
 			return
 		end
 		
+		if connection then
+			return
+		end
+		
 		if finished then
 			finished = false
 			remaining = initDuration
 		end
 		
-		connection = RunService.Heartbeat:Connect(function(delta: number)
+		connection = timerSignal:Connect(function(delta: number)
 			remaining = math.clamp(remaining - delta, 0, math.huge)
 			elapsed = initDuration - remaining
 			
@@ -88,14 +125,10 @@ function Timer.new(duration: number?): Timer
 					connection = nil
 				end
 				
-				if remaining <= 0 then
-					finished = true
-					elapsed = initDuration
-					
-					object.Finished:Fire()
-				else
-					object.Paused:Fire()
-				end
+				finished = true
+				elapsed = initDuration
+				
+				object.Finished:Fire()
 			end
 		end)
 	end
@@ -140,6 +173,8 @@ function Timer.new(duration: number?): Timer
 			connection:Disconnect()
 			connection = nil
 		end
+		
+		object.Paused:Fire()
 	end
 	
 	--[=[
@@ -204,6 +239,19 @@ function Timer.new(duration: number?): Timer
 	
 	
 	return object
+end
+
+
+do
+	local previousTick = time()
+	
+	RunService.Heartbeat:Connect(function()
+		local currentTime = time()
+		
+		timerSignal:Fire(currentTime - previousTick)
+		
+		previousTick = currentTime
+	end)
 end
 
 

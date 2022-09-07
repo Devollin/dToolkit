@@ -228,7 +228,7 @@ function interface:ApplyToGroup(objects: {[any]: Instance}, properties: {[string
 end
 
 --[=[
-	Returns the volume of the part, or 1 if it cannot be calculated.
+	Returns the volume of the part, or 0 if it cannot be calculated.
 	
 	@return number -- The volume of 'part', or 0 if there is no part.
 	
@@ -241,7 +241,7 @@ function interface:GetVolumeOfPart(part: BasePart?): number
 		local physicalProperties = part.CustomPhysicalProperties or PhysicalProperties.new(part.Material)
 		
 		if part.Massless or physicalProperties.Density == 0 then
-			return 1
+			return 0
 		end
 		
 		return (part:GetMass() / physicalProperties.Density)
@@ -287,10 +287,13 @@ function interface:Weld(model: Model, corePart: BasePart, ignore: {[any]: BasePa
 	end
 end
 
--- Written by Algoritmi; Modified by Devi (@Devollin) | 2020 | v1.0.0
 --[=[
 	Returns the wrapped instance with the given custom attributes.
-	
+
+	:::note
+	Written by Algoritmi; modified by Devi (@Devollin)
+	:::
+
 	@param userdata -- The instance to apply the wrapper to.
 	@param attributes -- The array to be applied to the wrapper.
 	

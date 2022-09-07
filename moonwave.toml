@@ -1,15 +1,15 @@
-title = "Packager"
+title = "dToolkit"
 gitSourceBranch = "main"
+gitRepoUrl = "https://github.com/devollin/dToolkit" # From Git
+
 
 [[classOrder]]
-classes = ["Bind", "CameraUtil", "Platform"]
+section = "Client"
+classes = ["Bind", "CameraUtil", "Platform", "UIUtil"]
 
 [[classOrder]]
 section = "Signal"
 classes = ["Signal", "Connection"]
-
-[[classOrder]]
-classes = ["Color3Helper", "Displays", ]
 
 [[classOrder]]
 section = "Storage"
@@ -20,4 +20,6 @@ enabled = true
 includeReadme = true
 
 [docusaurus]
-tagline = "Utility modules!!"
+url = "https://devollin.github.io"
+baseUrl = "/dToolkit/"
+tagline = "A versatile and simple toolkit made for everyone!"

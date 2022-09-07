@@ -72,7 +72,7 @@ end
 local Connection = {}
 
 --[=[
-	Creates a new Connection object.
+	Creates a new [Connection] object.
 	
 	@within Connection
 	@ignore
@@ -85,7 +85,7 @@ function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b
 	}
 	
 	--[=[
-		Disconnects the Connection object from the given Signal; renders it unusable.
+		Disconnects the [Connection] object from the given [Signal]; renders it unusable.
 		@within Connection
 	]=]
 	function object:Disconnect()
@@ -116,17 +116,54 @@ end
 
 --[=[
 	@class Signal
-	Creates a new Signal object used to create custom events.
+	A Signal class used to create custom events.
+	
+	```lua
+	local newSignal: Signal<boolean, string> = Signal.new()
+	
+	local newConnection = newSignal:Connect(function(foo, bar)
+		if foo then
+			print(bar)
+		else
+			print(bar:reverse())
+		end
+	end)
+	
+	newSignal:Fire(true, "boot")
+	
+	newConnection:Disconnect()
+	```
 ]=]
 local Signal = {}
 
+
+--[=[
+	Creates a new Signal object.
+	
+	```lua
+	local newSignal: Signal<boolean, string> = Signal.new()
+	```
+	
+	@within Signal
+]=]
 function Signal.new<b...>(): Signal<b...>
 	local object = {
 		_handlerListHead = nil :: (Connection<b...>?),
 	}
 	
 	--[=[
-		Adds a listener for the Signal.
+		Adds a listener for the [Signal], and returns a [Connection].
+		
+		```lua
+		local newConnection = newSignal:Connect(function(foo, bar)
+			if foo then
+				print(bar)
+			else
+				print(bar:reverse())
+			end
+		end)
+		```
+		
 		@within Signal
 	]=]
 	function object:Connect(callback: (b...) -> ()): Connection<b...>
@@ -144,7 +181,12 @@ function Signal.new<b...>(): Signal<b...>
 	end
 	
 	--[=[
-		Disconnects every [Connection] to the Signal.
+		Disconnects every [Connection] to the [Signal].
+		
+		```lua
+		newSignal:Destroy()
+		```
+		
 		@within Signal
 	]=]
 	function object:Destroy()
@@ -152,7 +194,12 @@ function Signal.new<b...>(): Signal<b...>
 	end
 	
 	--[=[
-		Triggers every [Connection] that is subscribed to the Signal, passing along any parameters in the process.
+		Triggers every [Connection] that is subscribed to the [Signal], passing along any parameters in the process.
+		
+		```lua
+		newSignal:Fire(true, "boot")
+		```
+		
 		@within Signal
 	]=]
 	function object:Fire(...: b...): ()
@@ -175,7 +222,18 @@ function Signal.new<b...>(): Signal<b...>
 	end
 	
 	--[=[
-		Waits until the Signal is fired, and returns any parameters passed with it.
+		Waits until the [Signal] is fired, and returns any parameters passed with it.
+		
+		```lua
+		task.spawn(function()
+			task.wait(5)
+			
+			newSignal:Fire(false, "bar")
+		end)
+		
+		local foo, bar = newSignal:Wait()
+		```
+		
 		@within Signal
 		@yields
 	]=]
@@ -193,7 +251,17 @@ function Signal.new<b...>(): Signal<b...>
 	end
 	
 	--[=[
-		Returns a [Connection], which will be automatically disconnected when the Signal is fired.
+		Returns a [Connection], which will be automatically disconnected when the [Signal] is fired.
+		
+		```lua
+		local tempConnection = newSignal:Once(function(foo, bar)
+			print("i am self-destructing now!", foo, bar)
+		end)
+		
+		newSignal:Fire(true, "boo!")
+		newSignal:Fire(false, "scared them too much, oops")
+		```
+		
 		@within Signal
 	]=]
 	function object:Once(callback: (b...) -> ()): Connection<b...>

@@ -7,7 +7,6 @@ CameraUtil | Written by Devi (@Devollin) | 2022 | v1.0.0
 ==================================================================================================]]
 
 
-local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local PlayerUtil = require(script.Parent:WaitForChild("PlayerUtil"))
@@ -28,6 +27,11 @@ local interface = {}
 
 --[=[
 	Fixes the reference to the camera.
+	
+	```lua
+	CameraUtil:SetCamera()
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:SetCamera()
@@ -36,6 +40,11 @@ end
 
 --[[**
 	Returns the current Camera.
+	
+	```lua
+	local camera = CameraUtil:GetCamera()
+	```
+	
 	@within CameraUtil
 **--]]
 function interface:GetCamera(): Camera
@@ -46,6 +55,11 @@ end
 
 --[=[
 	Destroys the Camera, and replaces it with a new one.
+	
+	```lua
+	CameraUtil:HardReset()
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:HardReset()
@@ -62,6 +76,11 @@ end
 
 --[=[
 	Resets the CameraSubject and CameraType of the Camera.
+	
+	```lua
+	CameraUtil:SoftReset()
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:SoftReset()
@@ -73,6 +92,21 @@ end
 
 --[=[
 	Returns the Camera's distance to the player's head. Can be nil if the player's head doesn't exist.
+	
+	```lua
+	local distanceToHead = CameraUtil:GetCameraDistanceToHead()
+	
+	if distanceToHead then
+		if distanceToHead > 5 then
+			print("Greater than 5!")
+		else
+			print("Less than 5!")
+		end
+	else
+		print("Failed to get the distance!")
+	end
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:GetCameraDistanceToHead(): number?
@@ -84,6 +118,13 @@ end
 
 --[=[
 	Returns a boolean describing if the Camera is zoomed in fully or not. Can be nil if the player's head doesn't exist.
+	
+	```lua
+	local isZoomedIn = CameraUtil:IsCameraZoomedInFully()
+	
+	print(isZoomedIn)
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:IsCameraZoomedInFully(): boolean?
@@ -94,6 +135,13 @@ end
 
 --[=[
 	Returns a boolean describing if the Camera is zoomed out fully or not. Can be nil if the player's head doesn't exist.
+	
+	```lua
+	local isZoomedOut = CameraUtil:IsCameraZoomedOutFully()
+	
+	print(isZoomedOut)
+	```
+	
 	@within CameraUtil
 ]=]
 function interface:IsCameraZoomedOutFully(): boolean?

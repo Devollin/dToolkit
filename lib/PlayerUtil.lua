@@ -435,6 +435,7 @@ end
 	A [Signal] that is fired when the [Player]'s character [Model] is created, and passes along its [Humanoid].
 	
 	@within PlayerUtil
+	@tag Event
 	@client
 ]=]
 --[=[
@@ -442,6 +443,7 @@ end
 	A [Signal] that is fired when the [Player]'s [Humanoid] dies, and passes along the character [Model] and [Humanoid].
 	
 	@within PlayerUtil
+	@tag Event
 	@client
 ]=]
 

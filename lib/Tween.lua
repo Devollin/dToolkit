@@ -118,6 +118,19 @@ local interface = {}
 --[=[
 	Tweens the properties of an object.
 	
+	```lua
+	local part = Instance.new("Part")
+	part.CFrame = CFrame.new(0, 0, 0)
+	part.Anchored = true
+	part.Parent = workspace
+
+	Tween.new(part, {
+		CFrame = CFrame.new(0, 5, 0),
+	}, {T = 5, ES = "Exponential", ED = "InOut"}).Completed:Connect(function()
+		print("Finished!")
+	end)
+	```
+	
 	@param object -- An Instance.
 	@param properties -- The properties to tween.
 	@param modifiers -- A dictionary of modifiers used in adjusting tween properties.
@@ -189,6 +202,25 @@ end
 
 --[=[
 	Tweens the properties of multiple objects.
+	
+	```lua
+	local part = Instance.new("Part")
+	part.CFrame = CFrame.new(0, 0, 0)
+	part.Anchored = true
+	part.Parent = workspace
+	
+	local part2 = part:Clone()
+	part.CFrame = CFrame.new(0, 5, 0)
+	part.Parent = workspace
+	
+	local groupTween = Tween.fromGroup({part, part2}, {
+		CFrame = CFrame.new(0, 2.5, 0)
+	}, {T = 2.5, ES = "Back", ED = "Out"})
+	
+	task.wait(1.25)
+	
+	groupTween:Cancel()
+	```
 	
 	@param objects -- An array of objects.
 	@param properties -- The properties to tween.

@@ -32,18 +32,65 @@ if RunService:IsServer() then
 	
 	--[=[
 		@class Storage
-		A DataStore wrapper object.
+		A DataStore wrapper service.
 		@server
 	]=]
 	
 	--[=[
-		Creates a new Storage object.
+		Returns a [StorageResult] object.
 		
-		@param name -- The name of the DataStore.
-		@param scope -- The scope of the DataStore.
+		```lua
+		local storageResult = Storage.new("Base", "TEST", nil, {
+			foo = 5,
+			bar = 10,
+			qux = {
+				foo = 10,
+				bar = 5
+				boot = "doot",
+				
+				secret = {
+					REALLYSECRET = {
+						key = "oof!",
+					}
+				},
+			},
+		})
+
+		if storageResult.success then
+			local storage = storageResult.result
+			
+			storage.DeepKeyUpdated:Connect(function(index, oldData, newData, indexers)
+				print(index, indexers, table.unpack(indexers), oldData, newData)
+			end)
+			
+			storage.KeyUpdate:Connect(function(index, key, newData, oldData)
+				print(index, key, newData, oldData)
+			end)
+			
+			do
+				local data = storage:HardLoad("qux")
+				
+				if data.success then
+					storage:DeepUpdate("qux", "doh!", "secret", "REALLYSECRET")
+				end
+			end
+			
+			do
+				local data = storage:HardLoad("foo")
+				
+				if data.success then
+					storage:Update("foo", 10)
+				end
+			end
+		end
+		```
+		
+		@param name -- The name of the [Storage].
+		@param scope -- The scope of the [Storage].
 		@param options -- Options to modify DataStores.
 		
 		@within Storage
+		@yields
 	]=]
 	function interface.new(type: StorageType, name: string, scope: string?, default: Default, options: DataStoreOptions?): StorageResult
 		if type == "Player" then
@@ -58,9 +105,13 @@ if RunService:IsServer() then
 	end
 	
 	--[=[
-		Returns an already-existing Storage object, given a name.
+		Returns an already-existing [StorageResult] object, given a name.
 		
-		@param name -- The name of the DataStore.
+		```lua
+		local storageResult = Storage:GetStorage("TEST")
+		```
+		
+		@param name -- The name of the [Storage].
 		
 		@within Storage
 	]=]
@@ -69,11 +120,15 @@ if RunService:IsServer() then
 	end
 	
 	--[=[
-		Returns a DataStore or OrderedDataStore object.
+		Returns a [BaseResult] object.
 		
-		@param type -- The type of DataStore; "Base" or "Ordered".
-		@param name -- The name of the DataStore.
-		@param scope -- The scope of the DataStore.
+		```lua
+		local baseResult = Storage:GetBaseStorage("Base", "TEST2")
+		```
+		
+		@param type -- The type of [Storage]; "Base" or "Ordered".
+		@param name -- The name of the [Storage].
+		@param scope -- The scope of the [Storage].
 		@param options -- Options to modify DataStores.
 		
 		@within Storage

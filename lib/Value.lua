@@ -26,18 +26,57 @@ export type Value<b...> = {
 --[=[
 	@class Value
 	An object used to store states, and trigger every [Connection] listening to its [Signal] members.
+	
+	```lua
+	local state = Value.new(false, true)
+	
+	state.WillChange:Connect(function(foo, bar)
+		print(foo, bar)
+	end)
+	
+	state.Changed:Connect(function(foo, bar)
+		print(foo, bar)
+	end)
+	
+	state:Set(true, false)
+	
+	task.wait(1)
+	
+	local copiedState = state:Clone()
+	
+	print("These are the current states:", copiedState:Get())
+	
+	copiedState:Destroy()
+	```
+	
+	:::caution String Literals
+	It should be noted that for one reason or another, Value is not able to typecheck string literals properly.
 ]=]
 
 --[=[
-	@prop WillChange [Signal]
+	@prop WillChange Signal<b...>
 	Is fired before the value changes for [Value].
 	
+	```lua
+	state.WillChange:Connect(function(foo, bar)
+		print(foo, bar)
+	end)
+	```
+	
+	@tag Event
 	@within Value
 ]=]
 --[=[
-	@prop Changed [Signal]
+	@prop Changed Signal<b...>
 	Is fired after the value changes for [Value].
 	
+	```lua
+	state.Changed:Connect(function(foo, bar)
+		print(foo, bar)
+	end)
+	```
+	
+	@tag Event
 	@within Value
 ]=]
 local Value = {}
@@ -45,6 +84,10 @@ local Value = {}
 
 --[=[
 	Creates a new Value object. This will also determine the types for the object, if they were not strictly given.
+	
+	```lua
+	local state = Value.new(false, true)
+	```
 	
 	@param ... -- The initial values you want to store in the new Value object.
 	
@@ -62,6 +105,11 @@ function Value.new<b...>(...: b...): Value<b...>
 	
 	--[=[
 		Updates the value(s) inside the Value object.
+		
+		```lua
+		state:Set(true, false)
+		```
+		
 		@within Value
 	]=]
 	function object:Set(...: b...)
@@ -76,6 +124,11 @@ function Value.new<b...>(...: b...): Value<b...>
 	
 	--[=[
 		Returns all values inside of the Value object.
+		
+		```lua
+		print(state:Get())
+		```
+		
 		@within Value
 	]=]
 	function object:Get(): (b...)
@@ -86,6 +139,11 @@ function Value.new<b...>(...: b...): Value<b...>
 	
 	--[=[
 		Returns a new Value object with the same values as the original.
+		
+		```lua
+		local copiedState = state:Clone()
+		```
+		
 		@within Value
 	]=]
 	function object:Clone(): Value<b...>
@@ -94,6 +152,11 @@ function Value.new<b...>(...: b...): Value<b...>
 	
 	--[=[
 		Destroys the Value object and makes it unusable.
+		
+		```lua
+		copiedState:Destroy()
+		```
+		
 		@within Value
 	]=]
 	function object:Destroy()

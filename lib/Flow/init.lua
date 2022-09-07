@@ -92,7 +92,7 @@ local Default: Modifiers = {
 	StepType = "Heartbeat",
 }
 
-local function applier(target: (Instance | {[string]: any}), property, goal: any): ((delta: number) -> ())
+local function applier(target: (Instance | {[string]: any}), property: any, goal: any): ((delta: number) -> ())
 	local iterator = Types[typeof(goal)]
 	
 	local target = target :: any
@@ -122,7 +122,7 @@ local Flow = {}
 	@within Flow
 ]=]
 --[=[
-	@type Style = "Linear" | "Smooth" | "Smoother" | "RidiculousWiggle" | "ReverseBack" | "Spring" | "SoftSpring" | "Quad" | "Cubic" | "Quart" | "Quint" | "Back" | "Sine" | "Bounce" | "Elastic" | "Exponential" | "Circular"
+	@type Style "Linear" | "Smooth" | "Smoother" | "RidiculousWiggle" | "ReverseBack" | "Spring" | "SoftSpring" | "Quad" | "Cubic" | "Quart" | "Quint" | "Back" | "Sine" | "Bounce" | "Elastic" | "Exponential" | "Circular"
 	@within Flow
 ]=]
 --[=[
@@ -152,6 +152,20 @@ local Flow = {}
 
 --[=[
 	Creates a new Flow object.
+	
+	```lua
+	local array = {
+		foo = 5,
+		bar = Vector2.new(5, 2),
+	}
+	
+	Flow.new(array, {
+		foo = 1,
+		bar = Vector2.new(2, 5),
+	}, {T = 5, ES = "Exponential", ED = "InOut"}).Stepped:Connect(function()
+		print(array)
+	end)
+	```
 	
 	@within Flow
 ]=]

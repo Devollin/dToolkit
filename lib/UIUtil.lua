@@ -21,6 +21,7 @@ local interface = {}
 --[=[
 	@class UIUtil
 	A library meant for use in solving UI-related problems.
+	@client
 ]=]
 
 --[=[

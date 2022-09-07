@@ -132,17 +132,94 @@ local interface = {}
 
 --[=[
 	@class OrderedStorage
-	A basic OrderedDataStore wrapper object.
+	A basic [OrderedDataStore] wrapper object.
 	@server
+]=]
+--[=[
+	@prop LoadRetry Signal<string, string, string?, string>
+	Fired when Storage is going to retry loading the requested data, if it previously failed.
+	The first param is the error message, the second param is the name of the Storage, the third param is the scope, and the
+	last param is the key.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop LoadFail Signal<string, string, string?, string>
+	Fired when Storage failed to load the requested data after retrying several times.
+	The first param is the error message, the second param is the name of the Storage, the third param is the scope, and the
+	last param is the key.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop SaveStart Signal<string>
+	Fired when Storage is going to try to save to [OrderedDataStore].
+	The only param passed is the index.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop SaveRetry Signal<string, string, string?, string>
+	Fired when Storage is going to retry saving the requested data, if it previously failed.
+	The first param is the error message, the second param is the name of the Storage, the third param is the scope, and the
+	last param is the key.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop SaveFail Signal<string, string, string?, string>
+	Fired when Storage failed to load the requested data after retrying several times.
+	The first param is the error message, the second param is the name of the Storage, the third param is the scope, and the
+	last param is the key.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop SaveSuccess Signal<string>
+	Fired when Storage successfully saved to the [OrderedDataStore].
+	The only param passed is the index.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop FilledBlankStorage Signal<string, string?, string>
+	Fired when Storage fills in an empty key.
+	The first param is the name of the Storage, the second param is the scope, and the last param is the index.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop GetSortedAsyncRetry Signal<string, string, string?>
+	Fired when Storage is going to retry getting the requested page data, if it previously failed.
+	The first param is the error message, the second param is the name of the Storage, and the last param is the scope.
+	
+	@within OrderedStorage
+	@tag Event
+]=]
+--[=[
+	@prop GetSortedAsyncFail Signal<string, string, string?>
+	Fired when Storage failed to load the requested page data after retrying several times.
+	The first param is the error message, the second param is the name of the Storage, and the last param is the scope.
+	
+	@within OrderedStorage
+	@tag Event
 ]=]
 
 --[=[
-	Returns a OrderedDataStore object, given a name and an optional scope parameter.
+	Returns a [OrderedDataStore] object, given a name and an optional scope parameter.
 	
-	@param name -- The name of the OrderedDataStore.
-	@param scope -- The scope of the OrderedDataStore.
+	@param name -- The name of the [OrderedDataStore].
+	@param scope -- The scope of the [OrderedDataStore].
 	
 	@within OrderedStorage
+	@yields
 ]=]
 function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDataStoreResult
 	local success, result
@@ -178,13 +255,14 @@ function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDat
 end
 
 --[=[
-	Creates a new Storage object.
+	Creates a new [OrderedStorageResult] object.
 	
-	@param name --The name of the DataStore.
-	@param scope -- The scope of the DataStore.
+	@param name --The name of the [OrderedDataStore].
+	@param scope -- The scope of the [OrderedDataStore].
 	@param default -- Default data to be used for blank entries.
 	
 	@within OrderedStorage
+	@yields
 ]=]
 function interface.new(name: string, scope: string?, default: Default): OrderedStorageResult
 	local dataStore = interface:GetOrderedDataStore(name, scope)
@@ -214,9 +292,10 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Performs GetAsync if the data requested by the index does not exist, and returns the data.
 		
-		@param index -- The key within the OrderedDataStore.
+		@param index -- The key within the [OrderedDataStore].
 		
 		@within OrderedStorage
+		@yields
 	]=]
 	function object:HardLoad(index: string): DataResult
 		local data = members[index]
@@ -306,7 +385,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Returns data associated with the index, if it has been loaded already.
 		
-		@param index -- The key within the OrderedDataStore.
+		@param index -- The key within the [OrderedDataStore].
 		
 		@within OrderedStorage
 	]=]
@@ -349,9 +428,10 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Performs SetAsync with the data associated with the index, if it isn't already being saved.
 		
-		@param index -- The key within the OrderedDataStore.
+		@param index -- The key within the [OrderedDataStore].
 		
 		@within OrderedStorage
+		@yields
 	]=]
 	function object:HardSave(index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
 		local data = members[index]
@@ -419,7 +499,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Replaces all the data associated with the index.
 		
-		@param index -- The key within the OrderedDataStore.
+		@param index -- The key within the [OrderedDataStore].
 		
 		@within OrderedStorage
 	]=]
@@ -462,7 +542,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	end
 	
 	--[=[
-		Returns a DataStoreKeyPages object.
+		Returns a [PageResult] object.
 		
 		@param ascending -- Whether the list is in descending order or ascending order.
 		@param pageSize -- The length of each page.
@@ -470,6 +550,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 		@param max -- The maximum value to be included in the pages.
 		
 		@within OrderedStorage
+		@yields
 	]=]
 	function object:GetPages(ascending: boolean, pageSize: number, min: number, max: number): PageResult
 		local success, result
@@ -510,9 +591,10 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Hard saves the data, then removes the data associated with the index.
 		
-		@param index -- The key within the DataStore.
+		@param index -- The key within the [OrderedDataStore].
 		
 		@within OrderedStorage
+		@yields
 	]=]
 	function object:Clear(index: string)
 		local data = members[index]
@@ -531,6 +613,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 	--[=[
 		Saves all data, and clears it's own members.
 		@within OrderedStorage
+		@yields
 	]=]
 	function object:Close()
 		for key, data in pairs(members) do

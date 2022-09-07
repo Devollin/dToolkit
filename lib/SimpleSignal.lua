@@ -25,10 +25,31 @@ local Signal = {}
 --[=[
 	@class SimpleSignal
 	Signal class based on BindableEvents.
+	
+	```lua
+	local newSimpleSignal: SimpleSignal<boolean, string> = SimpleSignal.new()
+	
+	local newConnection = newSimpleSignal:Connect(function(foo, bar)
+		if foo then
+			print(bar)
+		else
+			print(bar:reverse())
+		end
+	end)
+	
+	newSimpleSignal:Fire(true, "boot")
+	
+	newConnection:Disconnect()
+	```
 ]=]
 
 --[=[
 	Constructs a new signal.
+	
+	```lua
+	local newSimpleSignal: SimpleSignal<boolean, string> = SimpleSignal.new()
+	```
+	
 	@within SimpleSignal
 ]=]
 function Signal.new<b...>(): Signal<b...>
@@ -42,6 +63,10 @@ function Signal.new<b...>(): Signal<b...>
 	
 	--[=[
 		Fire the event with the given arguments. All handlers will be invoked. Handlers follow Roblox signal conventions.
+		
+		```lua
+		newSimpleSignal:Fire(true, "boot")
+		```
 		
 		@param ... -- Variable arguments to pass to handler
 		
@@ -62,6 +87,16 @@ function Signal.new<b...>(): Signal<b...>
 	--[=[
 		Connect a new handler to the event. Returns a connection object that can be disconnected.
 		
+		```lua
+		local newConnection = newSimpleSignal:Connect(function(foo, bar)
+			if foo then
+				print(bar)
+			else
+				print(bar:reverse())
+			end
+		end)
+		```
+		
 		@param callback -- Function handler called with arguments passed when :Fire(...) is called.
 		
 		@return RBXScriptConnection? -- Connection object that can be disconnected.
@@ -81,6 +116,16 @@ function Signal.new<b...>(): Signal<b...>
 	--[=[
 		Wait for `:Fire(...)` to be called, and return the arguments it was given.
 		
+		```lua
+		task.spawn(function()
+			task.wait(5)
+			
+			newSimpleSignal:Fire(false, "bar")
+		end)
+		
+		local foo, bar = newSimpleSignal:Wait()
+		```
+		
 		@return any... -- Variable arguments from connection
 		
 		@within SimpleSignal
@@ -97,6 +142,11 @@ function Signal.new<b...>(): Signal<b...>
 	
 	--[=[
 		Disconnects all connected events to the signal. Voids the signal as unusable.
+		
+		```lua
+		newSimpleSignal:Destroy()
+		```
+		
 		@within SimpleSignal
 	]=]
 	function object:Destroy()
