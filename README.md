@@ -1,8 +1,8 @@
-# Packager
-Is a general-use library filled with...questionable code!
+![dToolkit](https://github.com/Devollin/dToolkit/blob/master/moonwave/static/img/logo.png?raw=true)
+
 <!--moonwave-hide-before-this-line-->
-# What is Packager?
-Packager is a set of libraries and classes meant to aide in the development of new experiences on Roblox! It is in a constant state of development!
+# What is dToolkit?
+dToolkit is a set of libraries and classes meant to aide in the development of new experiences on Roblox! It is in a constant state of development!
 
 # What's Included?
 Plenty of things! But, we'll start by listing the classes:
@@ -33,9 +33,9 @@ A class that allows you to create tweens for arrays, and expands upon the existi
 ### [Storage](https://devollin.github.io/api/Storage)
 A wrapper class for DataStoreService to help make managing DataStores easier!
 
+Now, for some of the libraries inclued in dToolkit:
 
 ### [CameraUtil](https://devollin.github.io/api/CameraUtil)
-is also a thing, but maybe you can't use it!
-```lua
-boombox
-```
+A library containing a few useful methods for the Camera.
+
+[MORE TO COME]
