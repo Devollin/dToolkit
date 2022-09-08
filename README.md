@@ -1,4 +1,4 @@
-![dToolkit](https://github.com/Devollin/dToolkit/blob/master/moonwave/static/img/logo.png?raw=true)
+![dToolkit](https://github.com/Devollin/dToolkit/blob/main/.moonwave/static/img/logo.png)
 
 <!--moonwave-hide-before-this-line-->
 # What is dToolkit?
