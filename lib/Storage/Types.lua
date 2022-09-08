@@ -191,8 +191,8 @@ export type OrderedStorage = {
 	Close: <a>(self: a) -> (),
 }
 export type OrderedStorageResult = Result<OrderedStorage?>
-export type StorageResult = Result<(OrderedStorage | PlayerStorage | BaseStorage)?>
-export type BaseResult = Result<(GlobalDataStore | OrderedDataStore)?>
+export type StorageResult = Result<((OrderedStorage | PlayerStorage | BaseStorage)?)>
+export type BaseResult = Result<((GlobalDataStore | OrderedDataStore)?)>
 
 
 return {}
