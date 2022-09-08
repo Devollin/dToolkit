@@ -132,6 +132,8 @@ function Stopwatch.new(): Stopwatch
 			
 			return lap
 		end
+		
+		return
 	end
 	
 	--[=[
