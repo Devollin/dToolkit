@@ -19,6 +19,4 @@ enabled = true
 includeReadme = true
 
 [docusaurus]
-url = "https://devollin.github.io"
-baseUrl = "/dToolkit/"
 tagline = "A versatile and simple toolkit made for everyone!"
