@@ -7,10 +7,6 @@ Flow | Written by Devi (@Devollin) | 2022 | v1.0.0
 ==================================================================================================]]
 
 
---VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
---TODO: Clean this up / rewrite?
---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 type StepType = "Heartbeat" | "RenderStepped" | "Stepped"
 type Direction = "In" | "Out" | "InOut" | "OutIn"
 type Style = "Linear" | "Smooth" | "Smoother" | "RidiculousWiggle" | "ReverseBack" | "Spring" | "SoftSpring" | "Quad"
