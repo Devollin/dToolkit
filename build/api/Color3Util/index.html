@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Docusaurus v2.0.1">
+<title data-rh="true">Color3Util | dToolkit</title><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Devollin.github.io/dToolkit/api/Color3Util"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Color3Util | dToolkit"><meta data-rh="true" name="description" content="A library with a number of Color3 helper functions."><meta data-rh="true" property="og:description" content="A library with a number of Color3 helper functions."><link data-rh="true" rel="canonical" href="https://Devollin.github.io/dToolkit/api/Color3Util"><link data-rh="true" rel="alternate" href="https://Devollin.github.io/dToolkit/api/Color3Util" hreflang="en"><link data-rh="true" rel="alternate" href="https://Devollin.github.io/dToolkit/api/Color3Util" hreflang="x-default"><link rel="stylesheet" href="/dToolkit/assets/css/styles.ecf04e60.css">
+<link rel="preload" href="/dToolkit/assets/js/runtime~main.5823e586.js" as="script">
+<link rel="preload" href="/dToolkit/assets/js/main.64613878.js" as="script">
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
+<div role="region"><a href="#" class="skipToContent_fXgn">Skip to main content</a></div><nav class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Navigation bar toggle" class="navbar__toggle clean-btn" type="button" tabindex="0"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/dToolkit/"><b class="navbar__title text--truncate">dToolkit</b></a><a class="navbar__item navbar__link" href="/dToolkit/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/dToolkit/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Devollin/dToolkit" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="searchBox_ZlJk"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input type="search" id="search_input_react" placeholder="Press S to Search..." aria-label="Search" class="navbar__search-input search-bar"></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Bind">Client</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Signal">Signal</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Storage">Storage</a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/dToolkit/api/Color3Util">​Color3​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/DisplayUtil">​Display​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Flow">​Flow</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Network">​Network</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/PlayerUtil">​Player​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Serial">​Serial</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/SimpleSignal">​Simple​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Stopwatch">​Stopwatch</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Timer">​Timer</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Tween">​Tween</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Util">​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Value">​Value</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Color3</span><span style="display:inline-block">Util</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>A library with a number of Color3 helper functions.</p>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a class="hash-link" href="#types" title="Direct link to heading">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="NumberOrRange"><code style="text-decoration:none">NumberOrRange</code><a class="hash-link" href="#NumberOrRange" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L22"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">type</code> <code>NumberOrRange<!-- --> = </code> <code class="purple_ieR2">(</code><code class="blue_P4bS">number</code><code class="op_lSLc"> | </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/NumberRange" target="_blank" rel="noopener noreferrer">NumberRange<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code></div><div>
+<p>A number, NumberRange, or nil.</p>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a class="hash-link" href="#functions" title="Direct link to heading">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ClampRGB"><code style="text-decoration:none">ClampRGB</code><a class="hash-link" href="#ClampRGB" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L60"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">ClampRGB</code><code>(</code><div class="inset_uKQm"><div><code>r<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code></div><div><code>g<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code></div><div><code>b<!-- -->: </code><code class="blue_P4bS">number</code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a Color3 with clamped R, G, and B values.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> clampedColor <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">ClampRGB</span><span class="token punctuation">(</span><span class="token number">300</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2500</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>clampedColor<span class="token punctuation">)</span> <span class="token comment">--> 255, 0, 5</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ClampHSV"><code style="text-decoration:none">ClampHSV</code><a class="hash-link" href="#ClampHSV" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L75"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">ClampHSV</code><code>(</code><div class="inset_uKQm"><div><code>h<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code></div><div><code>s<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code></div><div><code>v<!-- -->: </code><code class="blue_P4bS">number</code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a Color3 with clamped H, S, and V values.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> clampedColor <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">ClampHSV</span><span class="token punctuation">(</span><span class="token number">300</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">2500</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>clampedColor<span class="token punctuation">)</span> <span class="token comment">--> 255, 0, 5</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetRandomColor"><code style="text-decoration:none">GetRandomColor</code><a class="hash-link" href="#GetRandomColor" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L88"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetRandomColor</code><code>(</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a random color.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token function">print</span><span class="token punctuation">(</span>Color3Util<span class="token punctuation">:</span><span class="token function">GetRandomColor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetRandomColorWithLimitsInRGB"><code style="text-decoration:none">GetRandomColorWithLimitsInRGB</code><a class="hash-link" href="#GetRandomColorWithLimitsInRGB" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L107"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetRandomColorWithLimitsInRGB</code><code>(</code><div class="inset_uKQm"><div><code>r<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code><code>,</code></div><div><code>g<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code><code>,</code></div><div><code>b<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a randomized color within given boundaries in RGB [0-255].</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> limitedColor <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">GetRandomColorWithLimitsInRGB</span><span class="token punctuation">(</span>NumberRange<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">nil</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>limitedColor<span class="token punctuation">)</span>
+</code></pre>
+<div class="admonition admonition-info alert alert--info">
+  <div class="admonition-heading">
+    <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16">
+          <path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path>
+        </svg></span>info</h5>
+  </div>
+  <div class="admonition-content">
+    <p>
+      If a parameter is given nil, it has no boundaries; if given a NumberRange, it randomizes within that range; if given a
+      number, it sets it to that number, and does no randomization.
+    </p>
+  </div>
+</div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetRandomColorWithLimitsInHSV"><code style="text-decoration:none">GetRandomColorWithLimitsInHSV</code><a class="hash-link" href="#GetRandomColorWithLimitsInHSV" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L126"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetRandomColorWithLimitsInHSV</code><code>(</code><div class="inset_uKQm"><div><code>h<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code><code>,</code></div><div><code>s<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code><code>,</code></div><div><code>v<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Color3Util#NumberOrRange">NumberOrRange</a></code></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a randomized color within given boundaries in HSV [0-255].</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> limitedColor <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">GetRandomColorWithLimitsInHSV</span><span class="token punctuation">(</span>NumberRange<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">nil</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>limitedColor<span class="token punctuation">)</span>
+</code></pre>
+<div class="admonition admonition-info alert alert--info">
+  <div class="admonition-heading">
+    <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16">
+          <path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path>
+        </svg></span>info</h5>
+  </div>
+  <div class="admonition-content">
+    <p>
+      If a parameter is given nil, it has no boundaries; if given a NumberRange, it randomizes
+      within that range; if given a number, it sets it to that number, and does no randomization.
+    </p>
+  </div>
+</div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetVariantColor"><code style="text-decoration:none">GetVariantColor</code><a class="hash-link" href="#GetVariantColor" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L146"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetVariantColor</code><code>(</code><div class="inset_uKQm"><div><code>color<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The color to use as a base.</p>
+</span></span></div><div><code>amplitude<!-- -->: </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>The amount to variate the color by (0-255)</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a color that is a variation of the one given, within a given amplitude.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> originalColor <span class="token operator">=</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> <span class="token number">0.25</span><span class="token punctuation">,</span> <span class="token number">0.75</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> variationColorA <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">GetVariantColor</span><span class="token punctuation">(</span>originalColor<span class="token punctuation">,</span> <span class="token number">55</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> variationColorB <span class="token operator">=</span> Color3Util<span class="token punctuation">:</span><span class="token function">GetVariantColor</span><span class="token punctuation">(</span>originalColor<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Original:"</span><span class="token punctuation">,</span> originalColor<span class="token punctuation">,</span> <span class="token string">"| A:"</span><span class="token punctuation">,</span> variationColorA<span class="token punctuation">,</span> <span class="token string">"| B:"</span><span class="token punctuation">,</span> variationColorB<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetColorAtPointFromSequence"><code style="text-decoration:none">GetColorAtPointFromSequence</code><a class="hash-link" href="#GetColorAtPointFromSequence" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L175"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetColorAtPointFromSequence</code><code>(</code><div class="inset_uKQm"><div><code>sequence<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/ColorSequence" target="_blank" rel="noopener noreferrer">ColorSequence<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The sequence to pull the color from.</p>
+</span></span></div><div><code>point<!-- -->: </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>The time to get the color from. [0, 1]</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns the color at the given point within the ColorSequence.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> sequence <span class="token operator">=</span> ColorSequence<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>Color3Util<span class="token punctuation">:</span><span class="token function">GetColorAtPointFromSequence</span><span class="token punctuation">(</span>sequence<span class="token punctuation">,</span> <span class="token number">0.25</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetRandomColorOnSequence"><code style="text-decoration:none">GetRandomColorOnSequence</code><a class="hash-link" href="#GetRandomColorOnSequence" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Color3Util.lua#L224"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Color3Util<!-- -->:</code><code class="green_DgR4">GetRandomColorOnSequence</code><code>(</code><div class="inset_uKQm"><div><code>sequence<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/ColorSequence" target="_blank" rel="noopener noreferrer">ColorSequence<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The sequence to pull the color from.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
+<p>Returns a color from anywhere on the ColorSequence.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> sequence <span class="token operator">=</span> ColorSequence<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	ColorSequenceKeypoint<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> Color3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>Color3Util<span class="token punctuation">:</span><span class="token function">GetRandomColorOnSequence</span><span class="token punctuation">(</span>sequence<span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;GetLimitedColor&quot;,
+            &quot;desc&quot;: &quot;Returns a number value that is either randomized or uses the given number.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;a&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;ignore&quot;: true,
+            &quot;source&quot;: {
+                &quot;line&quot;: 34,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ClampRGB&quot;,
+            &quot;desc&quot;: &quot;Returns a Color3 with clamped R, G, and B values.\n\n```lua\nlocal clampedColor = Color3Util:ClampRGB(300, -2500, 5)\n\nprint(clampedColor) --&gt; 255, 0, 5\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;r&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;g&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;b&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 60,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ClampHSV&quot;,
+            &quot;desc&quot;: &quot;Returns a Color3 with clamped H, S, and V values.\n\n```lua\nlocal clampedColor = Color3Util:ClampHSV(300, -2500, 5)\n\nprint(clampedColor) --&gt; 255, 0, 5\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;h&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;s&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;v&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 75,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetRandomColor&quot;,
+            &quot;desc&quot;: &quot;Returns a random color.\n\n```lua\nprint(Color3Util:GetRandomColor())\n```&quot;,
+            &quot;params&quot;: [],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 88,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetRandomColorWithLimitsInRGB&quot;,
+            &quot;desc&quot;: &quot;Returns a randomized color within given boundaries in RGB [0-255].\n\n```lua\nlocal limitedColor = Color3Util:GetRandomColorWithLimitsInRGB(NumberRange.new(50, 255), nil, 5)\n\nprint(limitedColor)\n```\n\n:::info\nIf a parameter is given nil, it has no boundaries; if given a NumberRange, it randomizes within that range; if given a\nnumber, it sets it to that number, and does no randomization.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;r&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;g&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;b&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 107,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetRandomColorWithLimitsInHSV&quot;,
+            &quot;desc&quot;: &quot;Returns a randomized color within given boundaries in HSV [0-255].\n\n```lua\nlocal limitedColor = Color3Util:GetRandomColorWithLimitsInHSV(NumberRange.new(50, 255), nil, 5)\n\nprint(limitedColor)\n```\n\n:::info\nIf a parameter is given nil, it has no boundaries; if given a NumberRange, it randomizes\nwithin that range; if given a number, it sets it to that number, and does no randomization.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;h&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;s&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;v&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;NumberOrRange&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 126,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetVariantColor&quot;,
+            &quot;desc&quot;: &quot;Returns a color that is a variation of the one given, within a given amplitude.\n\n```lua\nlocal originalColor = Color3.new(0.5, 0.25, 0.75)\nlocal variationColorA = Color3Util:GetVariantColor(originalColor, 55)\nlocal variationColorB = Color3Util:GetVariantColor(originalColor, 20)\n\nprint(\&quot;Original:\&quot;, originalColor, \&quot;| A:\&quot;, variationColorA, \&quot;| B:\&quot;, variationColorB)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;color&quot;,
+                    &quot;desc&quot;: &quot;The color to use as a base.&quot;,
+                    &quot;lua_type&quot;: &quot;Color3&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;amplitude&quot;,
+                    &quot;desc&quot;: &quot;The amount to variate the color by (0-255)&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 146,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetColorAtPointFromSequence&quot;,
+            &quot;desc&quot;: &quot;Returns the color at the given point within the ColorSequence.\n\n```lua\nlocal sequence = ColorSequence.new({\n\tColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),\n\tColorSequenceKeypoint.new(0.5, Color3.new(0, 1, 0)),\n\tColorSequenceKeypoint.new(1, Color3.new(1, 0, 1)),\n})\n\nprint(Color3Util:GetColorAtPointFromSequence(sequence, 0.25))\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;sequence&quot;,
+                    &quot;desc&quot;: &quot;The sequence to pull the color from.&quot;,
+                    &quot;lua_type&quot;: &quot;ColorSequence&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;point&quot;,
+                    &quot;desc&quot;: &quot;The time to get the color from. [0, 1]&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 175,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;GetRandomColorOnSequence&quot;,
+            &quot;desc&quot;: &quot;Returns a color from anywhere on the ColorSequence.\n\n```lua\nlocal sequence = ColorSequence.new({\n\tColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),\n\tColorSequenceKeypoint.new(0.5, Color3.new(0, 1, 0)),\n\tColorSequenceKeypoint.new(1, Color3.new(1, 0, 1)),\n})\n\nprint(Color3Util:GetRandomColorOnSequence(sequence))\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;sequence&quot;,
+                    &quot;desc&quot;: &quot;The sequence to pull the color from.&quot;,
+                    &quot;lua_type&quot;: &quot;ColorSequence&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Color3\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 224,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;NumberOrRange&quot;,
+            &quot;desc&quot;: &quot;A number, NumberRange, or nil.&quot;,
+            &quot;lua_type&quot;: &quot;(number | NumberRange)?&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 22,
+                &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;Color3Util&quot;,
+    &quot;desc&quot;: &quot;A library with a number of Color3 helper functions.&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 27,
+        &quot;path&quot;: &quot;lib/Color3Util.lua&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#NumberOrRange" class="table-of-contents__link toc-highlight">NumberOrRange</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#ClampHSV" class="table-of-contents__link toc-highlight">:ClampHSV</a></li><li><a href="#ClampRGB" class="table-of-contents__link toc-highlight">:ClampRGB</a></li><li><a href="#GetColorAtPointFromSequence" class="table-of-contents__link toc-highlight">:GetColorAtPointFromSequence</a></li><li><a href="#GetRandomColor" class="table-of-contents__link toc-highlight">:GetRandomColor</a></li><li><a href="#GetRandomColorOnSequence" class="table-of-contents__link toc-highlight">:GetRandomColorOnSequence</a></li><li><a href="#GetRandomColorWithLimitsInHSV" class="table-of-contents__link toc-highlight">:GetRandomColorWithLimitsInHSV</a></li><li><a href="#GetRandomColorWithLimitsInRGB" class="table-of-contents__link toc-highlight">:GetRandomColorWithLimitsInRGB</a></li><li><a href="#GetVariantColor" class="table-of-contents__link toc-highlight">:GetVariantColor</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2022 Devollin. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/dToolkit/assets/js/runtime~main.5823e586.js"></script>
+<script src="/dToolkit/assets/js/main.64613878.js"></script>
+</body>
+</html>
