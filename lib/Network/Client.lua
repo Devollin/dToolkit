@@ -20,7 +20,13 @@ type Metadata = {
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
-local remote = script.Parent:WaitForChild("RemoteEvent")
+local remote = script.Parent:WaitForChild("RemoteEvent", 5)
+
+if not remote then
+	warn("Failed to find remote event; did you forget to require Network on the server?")
+	
+	return {}
+end
 
 local connections = {}
 local requests: {[string]: Signal.Connection<...any>?} = {}
