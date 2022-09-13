@@ -25,7 +25,7 @@ local remote = script.Parent:WaitForChild("RemoteEvent", 5)
 if not remote then
 	warn("Failed to find remote event; did you forget to require Network on the server?")
 	
-	return {}
+	remote = script.Parent:WaitForChild("RemoteEvent")
 end
 
 local connections = {}
