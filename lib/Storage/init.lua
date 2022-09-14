@@ -12,6 +12,9 @@ local RunService = game:GetService("RunService")
 local Types = require(script:WaitForChild("Types"))
 
 
+export type OrderedStorage = Types.OrderedStorage
+export type PlayerStorage = Types.PlayerStorage
+export type BaseStorage = Types.BaseStorage
 export type StorageResult = Types.StorageResult
 
 type BaseResult = Types.BaseResult
