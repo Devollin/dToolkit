@@ -38,4 +38,5 @@ Now, for some of the libraries inclued in dToolkit:
 ### [CameraUtil](https://devollin.github.io/api/CameraUtil)
 A library containing a few useful methods for the Camera.
 
-[MORE TO COME]
+AND *MUCH* MORE!
+Take a look at the documentation to see everything that dToolkit has to offer!
