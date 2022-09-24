@@ -3,9 +3,9 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
 
 --[=[
-	@type StorageType "Player" | "Base" | "Ordered"
-	The type of DataStore; Player contains specific functionality used for players, Ordered creates a OrderedDataStore,
-		and Base creates a general-purpose DataStore.
+	@type StorageType "Player" | "Base"
+	The type of DataStore; Player contains specific functionality used for players, and Base creates a general-purpose
+		DataStore.
 	
 	@within Storage
 ]=]
@@ -96,7 +96,7 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 	@within OrderedStorage
 ]=]
 --[=[
-	@type StorageResult Result<(OrderedStorage | PlayerStorage | BaseStorage)?>
+	@type StorageResult Result<(PlayerStorage | BaseStorage)?>
 	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
 		DataStore succeeds, this is the Storage object).
 	
@@ -104,7 +104,7 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 ]=]
 
 
-export type StorageType = "Player" | "Base" | "Ordered"
+export type StorageType = "Player" | "Base"
 export type Default = {[string | number]: any}
 
 type Result<a> = {
@@ -191,7 +191,7 @@ export type OrderedStorage = {
 	Close: <a>(self: a) -> (),
 }
 export type OrderedStorageResult = Result<OrderedStorage?>
-export type StorageResult = Result<((OrderedStorage | PlayerStorage | BaseStorage)?)>
+export type StorageResult = Result<((PlayerStorage | BaseStorage)?)>
 export type BaseResult = Result<((GlobalDataStore | OrderedDataStore)?)>
 
 

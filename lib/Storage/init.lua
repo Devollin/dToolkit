@@ -20,6 +20,7 @@ export type StorageResult = Types.StorageResult
 type BaseResult = Types.BaseResult
 type BaseTypes = "Base" | "Ordered"
 type StorageType = Types.StorageType
+type OrderedStorageResult = Types.OrderedStorageResult
 type Default = Types.Default
 
 
@@ -98,11 +99,25 @@ if RunService:IsServer() then
 	function interface.new(type: StorageType, name: string, scope: string?, default: Default, options: DataStoreOptions?): StorageResult
 		if type == "Player" then
 			storages[name] = PlayerDataStore.new(name, scope, options, default)
-		elseif type == "Ordered" then
-			storages[name] = OrderedDataStore.new(name, scope, default)
 		elseif type == "Base" then
 			storages[name] = DataStore.new(name, scope, options, default)
 		end
+		
+		return storages[name]
+	end
+	
+	--[=[
+		Returns a [OrderedStorageResult] object.
+		
+		@param name -- The name of the [OrderedStorage].
+		@param scope -- The scope of the [OrderedStorage].
+		@param options -- Options to modify DataStores.
+		
+		@within Storage
+		@yields
+	]=]
+	function interface.newOrdered(name: string, scope: string?, default: number): StorageResult
+		storages[name] = OrderedDataStore.new(name, scope, default)
 		
 		return storages[name]
 	end

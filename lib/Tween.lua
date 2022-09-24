@@ -14,8 +14,8 @@ type Style =
 type Properties = {[string]: any}
 type ModifierInput = {
 	Time: number?,
-	EasingStyle: Style,
-	EasingDirection: Direction,
+	EasingStyle: Style?,
+	EasingDirection: Direction?,
 	AutoPlay: boolean?,
 	Destroy: boolean?,
 	Reverse: boolean?,
@@ -23,8 +23,8 @@ type ModifierInput = {
 	DelayTime: number?,
 	
 	T: number?,
-	ES: Style,
-	ED: Direction,
+	ES: Style?,
+	ED: Direction?,
 	AP: boolean?,
 	D: boolean?,
 	R: boolean?,

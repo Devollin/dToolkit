@@ -16,7 +16,6 @@ type BaseStorage = Types.BaseStorage
 type PageResult = Types.PageResult
 type SaveResult = Types.SaveResult
 type DataResult = Types.DataResult
-type Default = Types.Default
 type Data = Types.BaseData
 
 
@@ -264,7 +263,7 @@ end
 	@within OrderedStorage
 	@yields
 ]=]
-function interface.new(name: string, scope: string?, default: Default): OrderedStorageResult
+function interface.new(name: string, scope: string?, default: number): OrderedStorageResult
 	local dataStore = interface:GetOrderedDataStore(name, scope)
 	
 	if not dataStore.success then
@@ -360,7 +359,7 @@ function interface.new(name: string, scope: string?, default: Default): OrderedS
 					object.FilledBlankStorage:Fire(name, scope, index)
 				end
 				
-				members[index].data = if result == nil then Util:DeepCloneTable(default) else result
+				members[index].data = if result == nil then default else result
 				members[index].loadStatus = "Ready"
 				
 				return {
