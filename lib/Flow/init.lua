@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Flow | Written by Devi (@Devollin) | 2022 | v1.0.0
+Flow | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Interface for tweening.
 	
 ==================================================================================================]]
@@ -166,7 +166,66 @@ local Flow = {}
 	@within Flow
 ]=]
 function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?): Flow
-	local modifiers: Modifiers = Util:Presets({Default = Default}, "Default", modifiers or {})
+	local final: Modifiers = {
+		Time = 0.25,
+		EasingStyle = "Linear",
+		EasingDirection = "Out",
+		AutoPlay = true,
+		Destroy = true,
+		Reverse = false,
+		RepeatCount = 0,
+		DelayTime = 0,
+		StepType = "Heartbeat",
+	}
+	
+	if modifiers then
+		final.Time =
+			if modifiers.T then modifiers.T
+			elseif modifiers.Time then modifiers.Time
+			else final.Time
+		
+		final.EasingStyle =
+			if modifiers.ES then modifiers.ES
+			elseif modifiers.EasingStyle then modifiers.EasingStyle
+			else final.EasingStyle
+		
+		final.EasingDirection =
+			if modifiers.ED then modifiers.ED
+			elseif modifiers.EasingDirection then modifiers.EasingDirection
+			else final.EasingDirection
+		
+		final.AutoPlay =
+			if modifiers.AP ~= nil then modifiers.AP
+			elseif modifiers.AutoPlay ~= nil then modifiers.AutoPlay
+			else final.AutoPlay
+		
+		final.Destroy =
+			if modifiers.D ~= nil then modifiers.D
+			elseif modifiers.Destroy ~= nil then modifiers.Destroy
+			else final.Destroy
+		
+		final.Reverse =
+			if modifiers.R ~= nil then modifiers.R
+			elseif modifiers.Reverse ~= nil then modifiers.Reverse
+			else final.Reverse
+		
+		final.RepeatCount =
+			if modifiers.RC then modifiers.RC
+			elseif modifiers.RepeatCount then modifiers.RepeatCount
+			else final.RepeatCount
+		
+		final.DelayTime =
+			if modifiers.DT then modifiers.DT
+			elseif modifiers.DelayTime then modifiers.DelayTime
+			else final.DelayTime
+		
+		final.StepType =
+			if modifiers.ST then modifiers.ST
+			elseif modifiers.StepType then modifiers.StepType
+			else final.StepType
+	end
+	
+	
 	local applicators: {(delta: number) -> ()} = {}
 	local newTargets: {} | Instance
 	local connection: RBXScriptConnection?
@@ -200,9 +259,9 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		end
 	end
 	
-	local style = Styles[modifiers.EasingDirection .. modifiers.EasingStyle] :: (delta: number) -> (any)
+	local style = Styles[final.EasingDirection .. final.EasingStyle] :: (delta: number) -> (any)
 	local duration = 0
-	local repeats = modifiers.RepeatCount
+	local repeats = final.RepeatCount
 	local direction = 1
 	
 	local object = {
@@ -217,7 +276,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 	]=]
 	function object:Play()
 		running = true
-		connection = connection or RunService[modifiers.StepType]:Connect(function(step, deltaTime)
+		connection = connection or RunService[final.StepType]:Connect(function(step, deltaTime)
 			local delta = deltaTime or step
 			
 			if not running then
@@ -234,14 +293,14 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 			end
 			
 			task.defer(function()
-				duration = math.clamp(duration + delta, -modifiers.Time, modifiers.Time)
+				duration = math.clamp(duration + delta, -final.Time, final.Time)
 				
-				if modifiers.Time <= duration then
+				if final.Time <= duration then
 					duration = 0
 					
 					object.Completed:Fire()
 					
-					if modifiers.Reverse then
+					if final.Reverse then
 						if direction == 1 then
 							if repeats > 0 or repeats < 0 then
 								repeats -= 1
@@ -255,7 +314,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 									running = false
 								end
 								
-								if modifiers.Destroy then
+								if final.Destroy then
 									object:Destroy()
 								end
 							end
@@ -275,7 +334,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 								running = false
 							end
 							
-							if modifiers.Destroy then
+							if final.Destroy then
 								object:Destroy()
 							end
 						end
@@ -291,9 +350,9 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 						end
 						
 						if direction == -1 then
-							applicator(style(1 - (duration / modifiers.Time)))
+							applicator(style(1 - (duration / final.Time)))
 						else
-							applicator(style(duration / modifiers.Time))
+							applicator(style(duration / final.Time))
 						end
 					end)
 				end
@@ -318,7 +377,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		running = false
 		duration = 0
 		
-		if modifiers.Destroy then
+		if final.Destroy then
 			object:Destroy()
 		end
 	end
@@ -370,13 +429,13 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 			connection = nil
 		end
 		
-		repeats = modifiers.RepeatCount
+		repeats = final.RepeatCount
 		
 		object:Play()
 	end
 	
 	
-	if modifiers.AutoPlay then
+	if final.AutoPlay then
 		object:Play()
 	end
 	

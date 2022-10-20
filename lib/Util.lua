@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Util | Written by Devi (@Devollin) | 2022 | v1.0.0
+Util | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library of helpful general-use functions.
 
 ==================================================================================================]]
@@ -66,7 +66,7 @@ end
 	Returns the length of the dictionary.
 	@within Util
 ]=]
-function interface:GetDictionaryLength(dictionary: {[any]: any}): number
+function interface:GetDictionaryLength(dictionary: {}): number
 	local length = 0
 	
 	for _ in pairs(dictionary) do
@@ -80,7 +80,7 @@ end
 	Returns a new shallow-merged table of b into a.
 	@within Util
 ]=]
-function interface:TableMerge(a: {[any]: any}, b: {[any]: any}): {[any]: any}
+function interface:TableMerge(a: {}, b: {}): {}
 	local c = {}
 	
 	for index, value in pairs(a) do
@@ -98,7 +98,7 @@ end
 	Returns a deep-merged table of table b into table a.
 	@within Util
 ]=]
-function interface:DeepTableMerge(a: {[any]: any}, b: {[any]: any}): {[any]: any}
+function interface:DeepTableMerge(a: {}, b: {}): {}
 	local c = {}
 	
 	for index, value in pairs(a) do
@@ -132,7 +132,7 @@ end
 	Returns a deep-copied table of table a.
 	@within Util
 ]=]
-function interface:DeepCloneTable(a: {[any]: any}): {[any]: any}
+function interface:DeepCloneTable(a: {}): {}
 	local b = {}
 	
 	for index, value in pairs(a) do
@@ -172,7 +172,7 @@ end
 	Returns a random value picked out from the array.
 	@within Util
 ]=]
-function interface:RandomPickFromArray(array: {any}): any
+function interface:RandomPickFromArray<a>(array: {a}): a
 	return array[math.random(1, #array)]
 end
 
@@ -218,12 +218,8 @@ end
 	@within Util
 ]=]
 function interface:ApplyToGroup(objects: {[any]: Instance}, properties: {[string]: any})
-	local instances = {}
-	
 	for _, new in pairs(objects) do
-		if typeof(new) == "Instance" then
-			table.insert(instances, interface:Synth(new, properties))
-		end
+		interface:Synth(new, properties)
 	end
 end
 

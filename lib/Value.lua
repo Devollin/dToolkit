@@ -13,12 +13,14 @@ local Signal = require(script.Parent:WaitForChild("Signal"))
 type Signal<b...> = Signal.Signal<b...>
 
 export type Value<b...> = {
+	ClassName: "Value",
 	WillChange: Signal<b...>,
 	Changed: Signal<b...>,
 	
 	Set: <a>(self: a, b...) -> (),
 	Get: <a>(self: a) -> (b...),
 	Clone: <a>(self: a) -> (Value<b...>),
+	RawSet: <a>(self: a, b...) -> (),
 	Destroy: <a>(self: a) -> (),
 }
 
@@ -97,10 +99,10 @@ function Value.new<b...>(...: b...): Value<b...>
 	local deleted = false
 	local value: any = table.pack(...)
 	
-	local object = {
-		WillChange = Signal.new() :: Signal<b...>,
-		Changed = Signal.new() :: Signal<b...>,
-	}
+	local object = {}
+	object.ClassName = "Value"
+	object.WillChange = Signal.new() :: Signal<b...>
+	object.Changed = Signal.new() :: Signal<b...>
 	
 	
 	--[=[
@@ -148,6 +150,15 @@ function Value.new<b...>(...: b...): Value<b...>
 	]=]
 	function object:Clone(): Value<b...>
 		return Value.new(table.unpack(value))
+	end
+	
+	--[=[
+		Sets the value of the Value object without firing Changed or WillChange.
+		
+		@within Value
+	]=]
+	function object:RawSet(...: b...)
+		value = table.pack(...)
 	end
 	
 	--[=[

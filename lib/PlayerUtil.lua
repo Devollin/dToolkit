@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.0.0
+PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Library of helpful player / character related functions.
 	
 Additional credits to:
@@ -89,9 +89,20 @@ end
 --[=[
 	Returns the root part of the given character, if it exists; or waits if it doesn't.
 	@within PlayerUtil
+	@yields
 ]=]
 function interface:GetRootFromCharacter(character: Model?): BasePart?
-	local root: BasePart? = if character then character.PrimaryPart else nil
+	local root: BasePart? = if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart else nil
+	
+	return root
+end
+
+--[=[
+	Returns the root part of the given character, if it exists.
+	@within PlayerUtil
+]=]
+function interface:GetRootFromCharacterAsync(character: Model?): BasePart?
+	local root: BasePart? = if character then character:FindFirstChild("HumanoidRootPart") :: BasePart else nil
 	
 	return root
 end
@@ -102,8 +113,8 @@ end
 	@yields
 ]=]
 function interface:GetRootFromPlayer(player: Player?): BasePart?
-	local character : Model? = interface:GetCharacterFromPlayer(player)
-	local root: BasePart? = if character then character.PrimaryPart else nil
+	local character: Model? = interface:GetCharacterFromPlayer(player)
+	local root: BasePart? = if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart else nil
 	
 	return root
 end
@@ -114,7 +125,7 @@ end
 ]=]
 function interface:GetRootFromPlayerAsync(player: Player?): BasePart?
 	local character: Model? = interface:GetCharacterFromPlayerAsync(player)
-	local root: BasePart? = if character then character.PrimaryPart else nil
+	local root: BasePart? = if character then character:FindFirstChild("HumanoidRootPart") :: BasePart else nil
 	
 	return root
 end
@@ -192,10 +203,29 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetPlayerFromPart(part: BasePart?): Player?
-	local assumedCharacter: Model? = if part then part:FindFirstAncestorOfClass("Model") else nil
-	local player: Player? = if assumedCharacter then Players:FindFirstChild(assumedCharacter.Name) else nil
+	local part = part :: BasePart
 	
-	return player
+	if not (part and part.Parent) then
+		return
+	end
+	
+	for _, otherPlayer in pairs(Players:GetPlayers()) do
+		local character = interface:GetCharacterFromPlayerAsync(otherPlayer) :: Model
+		
+		if not (character and character.Parent) then
+			continue
+		end
+		
+		if not (part and part.Parent) then
+			return
+		end
+		
+		if part:IsDescendantOf(character) then
+			return otherPlayer
+		end
+	end
+	
+	return
 end
 
 --[=[
@@ -203,14 +233,10 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetCharacterFromPart(part: BasePart?): Model?
-	local assumedCharacter: Model? = if part then part:FindFirstAncestorOfClass("Model") else nil
-	local humanoid: Humanoid? = if assumedCharacter then assumedCharacter:FindFirstChildOfClass("Humanoid") else nil
+	local player = interface:GetPlayerFromPart(part)
+	local character = if player then player.Character else nil
 	
-	if assumedCharacter and humanoid then
-		return assumedCharacter
-	end
-	
-	return
+	return character
 end
 
 --[=[

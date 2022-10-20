@@ -1,8 +1,8 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A library to handle networking more easily.
+Network | Written by Devi (@Devollin) | 2022 | v1.0.1
+	Description: A library to handle networking easily.
 	
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
@@ -15,11 +15,16 @@ local RunService = game:GetService("RunService")
 
 --[=[
 	@class Network
-	A library to handle networking more easily.
+	A library to handle networking easily.
+	
+	:::caution
+	In dToolkit version 1.0.1 and onwards, Network has been split into Network.Client and Network.Server; make sure to update
+	your references!
+	
+	This has been done to resolve all typechecking-related errors, and to make usage easier!
 ]=]
 
-if RunService:IsClient() then
-	return require(script:WaitForChild("Client"))
-else
-	return require(script:WaitForChild("Server"))
-end
+return {
+	Client = require(script:WaitForChild("Client")),
+	Server = require(script:WaitForChild("Server")),
+}

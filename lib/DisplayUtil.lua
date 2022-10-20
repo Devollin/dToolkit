@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-DisplayUtil | Written by Devi (@Devollin) | 2021 | v1.0.0
+DisplayUtil | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Library of helpful display-related functions.
 	
 Additional credits to:
@@ -70,10 +70,16 @@ end
 ]=]
 function interface:GetTime(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
-	
-	return sign .. string.format("%02i:%02i",
+	local formatted =
+		string.format("%02i:%02i",
 		seconds / 60,
 		seconds % 60)
+	
+	if formatted == "00:00" then
+		return formatted
+	end
+	
+	return sign .. formatted
 end
 
 --[=[
@@ -89,11 +95,17 @@ end
 ]=]
 function interface:GetTimeWithHours(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
-	
-	return sign .. string.format("%02i:%02i:%02i",
+	local formatted =
+		string.format("%02i:%02i:%02i",
 		seconds / (60 ^ 2),
 		(seconds / 60) % 60,
 		seconds % 60)
+	
+	if formatted == "00:00:00" then
+		return formatted
+	end
+	
+	return sign .. formatted
 end
 
 --[=[
@@ -109,12 +121,18 @@ end
 ]=]
 function interface:GetTimeWithDays(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
-	
-	return sign .. string.format("%02i:%02i:%02i:%02i",
+	local formatted =
+		string.format("%02i:%02i:%02i:%02i",
 		seconds / ((60 ^ 2) * 24),
 		(seconds / (60 ^ 2)) % 24,
 		(seconds / 60) % 60,
 		seconds % 60)
+	
+	if formatted == "00:00:00:00" then
+		return formatted
+	end
+	
+	return sign .. formatted
 end
 
 --[=[
@@ -130,11 +148,17 @@ end
 ]=]
 function interface:GetTimeWithMilli(seconds: number): string
 	local seconds, sign = ValidateNumber(seconds)
-	
-	return sign .. string.format("%02i:%02i.%03i",
+	local formatted =
+		string.format("%02i:%02i.%03i",
 		seconds / 60,
 		seconds % 60,
 		(seconds % 1) * 1000)
+	
+	if formatted == "00:00.00" then
+		return formatted
+	end
+	
+	return sign .. formatted
 end
 
 --[=[

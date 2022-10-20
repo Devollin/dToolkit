@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.0.0
+Timer | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -15,6 +15,7 @@ local timerSignal: Signal.Signal<number> = Signal.new()
 
 
 export type Timer = {
+	ClassName: "Timer",
 	id: string,
 	
 	Finished: Signal.Signal<nil>,
@@ -87,10 +88,12 @@ function Timer.new(duration: number?): Timer
 	local connection: Signal.Connection<number>?
 	
 	local object = {
-		Finished = Signal.new(),
-		Paused = Signal.new(),
-		Updated = Signal.new(),
+		ClassName = "Timer" :: "Timer",
 	}
+	
+	object.Finished = Signal.new()
+	object.Paused = Signal.new()
+	object.Updated = Signal.new()
 	
 	object.id = tostring(object)
 	

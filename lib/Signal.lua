@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.0
+Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Batched Yield-Safe Signal Implementation
 		This is a Signal class which has effectively identical behavior to a normal RBXScriptSignal,
 		with the only difference being a couple extra stack frames at the bottom of the stack trace
@@ -15,6 +15,7 @@ Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.0
 
 
 export type Connection<b...> = {
+	ClassName: "Connection",
 	_connected: boolean,
 	_callback: (b...) -> (),
 	_next: Connection<b...>?,
@@ -23,6 +24,7 @@ export type Connection<b...> = {
 }
 
 export type Signal<b...> = {
+	ClassName: "Signal",
 	_handlerListHead: Connection<b...>?,
 	
 	Connect: <a>(self: a, callback: (b...) -> ()) -> (Connection<b...>),
@@ -41,7 +43,7 @@ local freeRunnerThread = nil :: thread?
 -- currently idle one.
 -- If there was a currently idle runner thread already, that's okay, that old
 -- one will just get thrown and eventually GCed.
-local function acquireRunnerThreadAndCallEventHandler(callback: (...any) -> (...any), ...: any)
+local function acquireRunnerThreadAndCallEventHandler<b>(callback: (...b) -> (...b), ...: b)
 	local acquiredRunnerThread = freeRunnerThread
 	freeRunnerThread = nil
 	
@@ -79,10 +81,11 @@ local Connection = {}
 ]=]
 function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b...>
 	local object = {
-		_connected = true,
-		_callback = callback,
-		_next = nil :: Connection<b...>?,
+		ClassName = "Connection" :: "Connection",
 	}
+	object._connected = true
+	object._callback = callback
+	object._next = nil :: Connection<b...>?
 	
 	--[=[
 		Disconnects the [Connection] object from the given [Signal]; renders it unusable.
@@ -148,8 +151,9 @@ local Signal = {}
 ]=]
 function Signal.new<b...>(): Signal<b...>
 	local object = {
-		_handlerListHead = nil :: (Connection<b...>?),
+		ClassName = "Signal" :: "Signal",
 	}
+	object._handlerListHead = nil :: (Connection<b...>?)
 	
 	--[=[
 		Adds a listener for the [Signal], and returns a [Connection].

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Tween | Written by Devi (@Devollin) | 2022 | v1.0.0
+Tween | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A wrapper function for interfacing with TweenService.
 
 ==================================================================================================]]
@@ -47,12 +47,9 @@ type Modifiers = {
 	DelayTime:       number,                -- [DT] Time between each repeat.
 }
 
-export type TweenModifiers = Modifiers
-
-type Tweens = {Tween}
-
 export type TweenGroup = {
-	tweens: Tweens,
+	ClassName: "TweenGroup",
+	tweens: {Tween},
 	Completed: RBXScriptSignal,
 	
 	Cancel: <a>(self: a) -> (),
@@ -63,17 +60,6 @@ export type TweenGroup = {
 
 
 local TweenService = game:GetService("TweenService")
-
-local default: Modifiers = {
-	Time = 0.25,
-	EasingStyle = Enum.EasingStyle.Quart,
-	EasingDirection = Enum.EasingDirection.InOut,
-	AutoPlay = true,
-	Destroy = true,
-	Reverse = false,
-	RepeatCount = 0,
-	DelayTime = 0,
-}
 
 local interface = {}
 
@@ -91,8 +77,8 @@ local interface = {}
 	@within Tween
 ]=]
 --[=[
-	@type ModifierInput {Time: number?, EasingStyle: Style?, EasingDirection: Direction?, AutoPlay: boolean?, Destroy: boolean?, Reverse: boolean?, RepeatCount: number?, DelayTime: number?}
-	Additionally, you can use shorthand for each parameter, based off of the capitalized letters in each member.
+	@type TweenModifiersInput {Time: number?, EasingStyle: Style?, EasingDirection: Direction?, AutoPlay: boolean?, Destroy: boolean?, Reverse: boolean?, RepeatCount: number?, DelayTime: number?}
+	Additionally, you can use shorthand for each parameter, based off of the capitalized letters in each member; however, the shorthand takes priority.
 	Ex: Time -> T
 	
 	@within Tween
@@ -106,7 +92,7 @@ local interface = {}
 	@within Tween
 ]=]
 --[=[
-	@type TweenGroup {tweens: Tweens, Completed: RBXScriptSignal, Cancel: Method, Pause: Method, Play: Method, Destroy: Method}
+	@type TweenGroup {ClassName: "TweenGroup", tweens: Tweens, Completed: RBXScriptSignal, Cancel: Method, Pause: Method, Play: Method, Destroy: Method}
 	@within Tween
 ]=]
 
@@ -138,43 +124,57 @@ local interface = {}
 	@within Tween
 ]=]
 function interface.new(object: Instance, properties: Properties, modifiers: ModifierInput?): Tween
-	local final: Modifiers = table.clone(default)
+	local final: Modifiers = {
+		Time = 0.25,
+		EasingStyle = Enum.EasingStyle.Quart,
+		EasingDirection = Enum.EasingDirection.InOut,
+		AutoPlay = true,
+		Destroy = true,
+		Reverse = false,
+		RepeatCount = 0,
+		DelayTime = 0,
+	}
 	
-	if modifiers ~= nil then
-		for index, value in pairs(default) do
-			local lower = string.gsub(index, "%l", "")
-			local capture = modifiers[lower]
-			
-			if capture ~= nil then
-				if typeof(capture) == "string" then
-					if lower == "ES" then
-						final[index] = Enum.EasingStyle[capture]
-					elseif lower == "ED" then
-						final[index] = Enum.EasingDirection[capture]
-					else
-						final[index] = capture
-					end
-				else
-					final[index] = capture
-				end
-			else
-				if modifiers[index] ~= nil then
-					if typeof(modifiers[index]) == "string" then
-						if index == "EasingStyle" then
-							final[index] = Enum.EasingStyle[modifiers[index]]
-						elseif index == "EasingDirection" then
-							final[index] = Enum.EasingDirection[modifiers[index]]
-						else
-							final[index] = modifiers[index]
-						end
-					else
-						final[index] = modifiers[index]
-					end
-				else
-					final[index] = value
-				end
-			end
-		end
+	if modifiers then
+		final.Time =
+			if modifiers.T then modifiers.T
+			elseif modifiers.Time then modifiers.Time
+			else final.Time
+		
+		final.EasingStyle =
+			if modifiers.ES then Enum.EasingStyle[modifiers.ES]
+			elseif modifiers.EasingStyle then Enum.EasingStyle[modifiers.EasingStyle]
+			else final.EasingStyle
+		
+		final.EasingDirection =
+			if modifiers.ED then Enum.EasingStyle[modifiers.ED]
+			elseif modifiers.EasingDirection then Enum.EasingStyle[modifiers.EasingDirection]
+			else final.EasingDirection
+		
+		final.AutoPlay =
+			if modifiers.AP ~= nil then modifiers.AP
+			elseif modifiers.AutoPlay ~= nil then modifiers.AutoPlay
+			else final.AutoPlay
+		
+		final.Destroy =
+			if modifiers.D ~= nil then modifiers.D
+			elseif modifiers.Destroy ~= nil then modifiers.Destroy
+			else final.Destroy
+		
+		final.Reverse =
+			if modifiers.R ~= nil then modifiers.R
+			elseif modifiers.Reverse ~= nil then modifiers.Reverse
+			else final.Reverse
+		
+		final.RepeatCount =
+			if modifiers.RC then modifiers.RC
+			elseif modifiers.RepeatCount then modifiers.RepeatCount
+			else final.RepeatCount
+		
+		final.DelayTime =
+			if modifiers.DT then modifiers.DT
+			elseif modifiers.DelayTime then modifiers.DelayTime
+			else final.DelayTime
 	end
 	
 	local tween = TweenService:Create(object, TweenInfo.new(
@@ -214,7 +214,7 @@ end
 	part.Parent = workspace
 	
 	local groupTween = Tween.fromGroup({part, part2}, {
-		CFrame = CFrame.new(0, 2.5, 0)
+		CFrame = CFrame.new(0, 2.5, 0),
 	}, {T = 2.5, ES = "Back", ED = "Out"})
 	
 	task.wait(1.25)
@@ -239,9 +239,10 @@ function interface.fromGroup(objects: {Instance}, properties: Properties, modifi
 	
 	
 	local object = {
-		tweens = tweens,
-		Completed = tweens[1].Completed :: RBXScriptSignal,
+		ClassName = "TweenGroup" :: "TweenGroup",
 	}
+	object.tweens = tweens
+	object.Completed = tweens[1].Completed :: RBXScriptSignal
 	
 	function object:Play()
 		for _, tween in ipairs(tweens) do
@@ -268,6 +269,7 @@ function interface.fromGroup(objects: {Instance}, properties: Properties, modifi
 		
 		table.clear(object)
 	end
+	
 	
 	return object
 end

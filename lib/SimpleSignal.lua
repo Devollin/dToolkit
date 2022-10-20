@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.0
+Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Lua-side duplication of the API of events on Roblox objects.
 		Signals are needed for to ensure that for local events objects are passed by reference
 		rather than by value where possible, as the BindableEvent objects always pass signal
@@ -12,6 +12,7 @@ Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.0
 
 
 export type Signal<b...> = {
+	ClassName: "SimpleSignal",
 	Fire: <a>(self: a, b...) -> (),
 	Connect: <a>(self: a, (b...) -> ()) -> (RBXScriptConnection?),
 	Wait: <a>(self: a) -> (b...),
@@ -58,7 +59,9 @@ function Signal.new<b...>(): Signal<b...>
 	local argCount: any = nil -- Prevent edge case of :Fire("A", nil) --> "A" instead of "A", nil
 	local argData: any = nil
 	
-	local object = {}
+	local object = {
+		ClassName = "SimpleSignal" :: "SimpleSignal"
+	}
 	
 	
 	--[=[

@@ -1,8 +1,8 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A library to handle Networking more easily.
+Network | Written by Devi (@Devollin) | 2022 | v1.0.1
+	Description: A library to handle networking easily.
 	
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
@@ -22,11 +22,12 @@ local RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
-local remote = script.Parent:WaitForChild("RemoteEvent", 1)
+local remote = Instance.new("RemoteEvent")
 
-if not remote then
-	remote = Instance.new("RemoteEvent")
+if RunService:IsServer() then
 	remote.Parent = script.Parent
+else
+	remote:Destroy()
 end
 
 local connections = {}
@@ -72,7 +73,7 @@ function interface:Connect(name: string, callback: (player: Player, ...any) -> (
 		connections[name] = Signal.new()
 	end
 	
-	return connections[name]:Connect(function(metadata, ...)
+	return connections[name]:Connect(function(metadata: Metadata, ...: any)
 		if metadata.type == "Normal" then
 			callback(...)
 		end
@@ -142,8 +143,8 @@ end
 	@within Network
 	@server
 ]=]
-function interface:FirePlayers(name: string, players: {[any]: Player}, ...: any)
-	for _, player in pairs(players) do
+function interface:FirePlayers(name: string, players: {Player}, ...: any)
+	for _, player in ipairs(players) do
 		remote:FireClient(player, GenerateMetadata(name, "Normal"), ...)
 	end
 end
@@ -186,12 +187,13 @@ function interface:Request(name: string, player: Player, ...: any): (...any)
 		repeat
 			results = {connections[name]:Wait()}
 		until
-		((results[1].type == "RequestResult") and
+			((results[1].type == "RequestResult") and
 			(results[1].timestamp == metadata.timestamp) and
 			(results[1].id == metadata.id) and
 			(player == results[2])) or (not player)
 		
 		if player then
+			table.remove(results, 1)
 			table.remove(results, 1)
 			
 			return table.unpack(results)
@@ -222,7 +224,7 @@ function interface:OnRequest(name: string, callback: (player: Player, ...any) ->
 		connections[name] = Signal.new()
 	end
 	
-	requests[name] = connections[name]:Connect(function(metadata, player, ...)
+	requests[name] = connections[name]:Connect(function(metadata: Metadata, player: Player, ...: any)
 		if metadata.type == "Request" then
 			metadata.type = "RequestResult"
 			
@@ -236,27 +238,31 @@ function interface:OnRequest(name: string, callback: (player: Player, ...any) ->
 end
 
 
-remote.OnServerEvent:Connect(function(player, metadata, ...)
-	local connection = connections[metadata.name]
-	
-	if connection then
-		connection:Fire(metadata, player, ...)
-	else
+if RunService:IsServer() then
+	remote.OnServerEvent:Connect(function(player: Player, metadata: Metadata, ...: any)
 		local connection = connections[metadata.name]
 		
-		warn("\"" .. metadata.name .. "\" does not have any listeners on the server; now yielding!")
-		
-		repeat
-			connection = connections[metadata.name]
+		if connection then
+			connection:Fire(metadata, player, ...)
+		else
+			local connection = connections[metadata.name]
 			
-			if not connection then
-				task.wait()
-			end
-		until connection
-		
-		connection:Fire(metadata, player, ...)
-	end
-end)
+			warn("\"" .. metadata.name .. "\" does not have any listeners on the server; now yielding!")
+			
+			repeat
+				connection = connections[metadata.name]
+				
+				if not connection then
+					task.wait()
+				end
+			until connection
+			
+			warn("Found listener for \"" .. metadata.name .. "\"!")
+			
+			connection:Fire(metadata, player, ...)
+		end
+	end)
+end
 
 
 return interface

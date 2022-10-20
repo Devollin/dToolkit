@@ -1,13 +1,14 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.0.0
+Timer | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A stopwatch class.
 	
 ==================================================================================================]]
 
 
 export type Stopwatch = {
+	ClassName: "Stopwatch",
 	destroyed: boolean,
 	
 	Start: <a>(self: a) -> (),
@@ -58,7 +59,10 @@ function Stopwatch.new(): Stopwatch
 	local running = false
 	local destroyed = false
 	
-	local object = {destroyed = false}
+	local object = {
+		ClassName = "Stopwatch" :: "Stopwatch",
+	}
+	object.destroyed = false
 	
 	--[=[
 		Starts or resumes the [Stopwatch].

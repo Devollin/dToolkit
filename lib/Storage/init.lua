@@ -111,7 +111,7 @@ if RunService:IsServer() then
 		
 		@param name -- The name of the [OrderedStorage].
 		@param scope -- The scope of the [OrderedStorage].
-		@param options -- Options to modify DataStores.
+		@param default -- The default data for the [OrderedStorage]
 		
 		@within Storage
 		@yields

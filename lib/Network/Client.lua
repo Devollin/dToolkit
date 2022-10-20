@@ -1,8 +1,8 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.0
-	Description: A library to handle Networking more easily.
+Network | Written by Devi (@Devollin) | 2022 | v1.0.1
+	Description: A library to handle networking easily.
 	
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
@@ -18,15 +18,20 @@ type Metadata = {
 }
 
 
+local RunService = game:GetService("RunService")
+
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
-local remote = script.Parent:WaitForChild("RemoteEvent", 5)
+local remote = script.Parent:WaitForChild("RemoteEvent", 5) :: RemoteEvent
 
-if not remote then
-	warn("Failed to find remote event; did you forget to require Network on the server?")
-	
-	remote = script.Parent:WaitForChild("RemoteEvent")
+if RunService:IsClient() then
+	if not remote then
+		warn("Failed to find remote event; did you forget to require Network on the server?")
+		
+		remote = script.Parent:WaitForChild("RemoteEvent") :: RemoteEvent
+	end
 end
+
 
 local connections = {}
 local requests: {[string]: Signal.Connection<...any>?} = {}
@@ -70,7 +75,7 @@ function interface:Connect(name: string, callback: (...any) -> ()): Signal.Conne
 		connections[name] = Signal.new()
 	end
 	
-	return connections[name]:Connect(function(metadata, ...)
+	return connections[name]:Connect(function(metadata: Metadata, ...: any)
 		if metadata.type == "Normal" then
 			callback(...)
 		end
@@ -152,7 +157,7 @@ function interface:Request(name: string, ...: any): (...any)
 	repeat
 		results = {connections[name]:Wait()}
 	until
-	(results[1].type == "RequestResult") and
+		(results[1].type == "RequestResult") and
 		(results[1].timestamp == metadata.timestamp) and
 		(results[1].id == metadata.id)
 	
@@ -184,7 +189,7 @@ function interface:OnRequest(name: string, callback: (...any) -> (...any)): Sign
 		connections[name] = Signal.new()
 	end
 	
-	requests[name] = connections[name]:Connect(function(metadata, ...)
+	requests[name] = connections[name]:Connect(function(metadata: Metadata, ...: any)
 		if metadata.type == "Request" then
 			metadata.type = "RequestResult"
 			
@@ -196,27 +201,31 @@ function interface:OnRequest(name: string, callback: (...any) -> (...any)): Sign
 end
 
 
-remote.OnClientEvent:Connect(function(metadata, ...)
-	local connection = connections[metadata.name]
-	
-	if connection then
-		connection:Fire(metadata, ...)
-	else
+if RunService:IsClient() then
+	remote.OnClientEvent:Connect(function(metadata: Metadata, ...: any)
 		local connection = connections[metadata.name]
 		
-		warn("\"" .. metadata.name .. "\" does not have any listeners on the client; now yielding!")
-		
-		repeat
-			connection = connections[metadata.name]
+		if connection then
+			connection:Fire(metadata, ...)
+		else
+			local connection = connections[metadata.name]
 			
-			if not connection then
-				task.wait()
-			end
-		until connection
-		
-		connection:Fire(metadata, ...)
-	end
-end)
+			warn("\"" .. metadata.name .. "\" does not have any listeners on the client; now yielding!")
+			
+			repeat
+				connection = connections[metadata.name]
+				
+				if not connection then
+					task.wait()
+				end
+			until connection
+			
+			warn("Found listener for \"" .. metadata.name .. "\"!")
+			
+			connection:Fire(metadata, ...)
+		end
+	end)
+end
 
 
 return interface
