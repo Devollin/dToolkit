@@ -147,8 +147,8 @@ function interface.new(object: Instance, properties: Properties, modifiers: Modi
 			else final.EasingStyle
 		
 		final.EasingDirection =
-			if modifiers.ED then Enum.EasingStyle[modifiers.ED]
-			elseif modifiers.EasingDirection then Enum.EasingStyle[modifiers.EasingDirection]
+			if modifiers.ED then Enum.EasingDirection[modifiers.ED]
+			elseif modifiers.EasingDirection then Enum.EasingDirection[modifiers.EasingDirection]
 			else final.EasingDirection
 		
 		final.AutoPlay =
