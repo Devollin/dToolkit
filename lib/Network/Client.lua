@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.1
+Network | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to handle networking easily.
 	
 Additional credits to:
@@ -34,7 +34,7 @@ end
 
 
 local connections = {}
-local requests: {[string]: Signal.Connection<...any>?} = {}
+local requests: {[string]: Signal.Connection<...any>} = {}
 local random = Random.new()
 
 local interface = {}
@@ -70,7 +70,7 @@ end
 	@within Network
 	@client
 ]=]
-function interface:Connect(name: string, callback: (...any) -> ()): Signal.Connection<...any>?
+function interface:Connect(name: string, callback: (...any) -> ()): Signal.Connection<...any>
 	if not connections[name] then
 		connections[name] = Signal.new()
 	end
@@ -175,7 +175,7 @@ end
 	@within Network
 	@client
 ]=]
-function interface:OnRequest(name: string, callback: (...any) -> (...any)): Signal.Connection<...any>?
+function interface:OnRequest(name: string, callback: (...any) -> (...any)): Signal.Connection<...any>
 	local request = requests[name]
 	
 	if request then

@@ -1,16 +1,13 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.1
+Network | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to handle networking easily.
 	
 Additional credits to:
 	Mia (@iGottic) - Cleanup & various modifications
 	
 ==================================================================================================]]
-
-
-local RunService = game:GetService("RunService")
 
 
 --[=[
