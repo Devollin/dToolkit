@@ -18,8 +18,8 @@ export type Timer = {
 	ClassName: "Timer",
 	id: string,
 	
-	Finished: Signal.Signal<>,
-	Paused: Signal.Signal<>,
+	Finished: Signal.Signal<nil>,
+	Paused: Signal.Signal<nil>,
 	Updated: Signal.Signal<number, number>,
 	
 	Start: (self: Timer) -> (),

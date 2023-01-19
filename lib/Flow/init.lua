@@ -70,9 +70,9 @@ export type Flow = {
 	Destroy: (self: Flow) -> (),
 	Restart: (self: Flow) -> (),
 	
-	Completed: Signal.Signal<>,
-	Stepped: Signal.Signal<>,
-	Cancelled: Signal.Signal<>,
+	Completed: Signal.Signal<nil>,
+	Stepped: Signal.Signal<nil>,
+	Cancelled: Signal.Signal<nil>,
 }
 
 
