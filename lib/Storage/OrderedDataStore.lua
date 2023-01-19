@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.0
+OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library to aid in OrderedDataStore-related functions.
 	
 ==================================================================================================]]
@@ -19,7 +19,7 @@ type DataResult = Types.DataResult
 type Data = Types.BaseData
 
 
-local DataStoreService = game:GetService("DataStoreService")
+local DataStoreService: DataStoreService = game:GetService("DataStoreService")
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 local Util = require(script.Parent.Parent:WaitForChild("Util"))
@@ -248,7 +248,7 @@ function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDat
 		
 		return {
 			success = false,
-			message = result,
+			message = result :: any,
 		}
 	end
 end
@@ -296,7 +296,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		@within OrderedStorage
 		@yields
 	]=]
-	function object:HardLoad(index: string): DataResult
+	function object.HardLoad(self: OrderedStorage, index: string): DataResult
 		local data = members[index]
 		
 		if data then
@@ -310,7 +310,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					task.wait()
 				until (data.loadStatus ~= "Loading") or (members[index] == nil)
 				
-				if data.loadStatus == "Ready" then
+				if data.loadStatus :: string == "Ready" then
 					return {
 						success = true,
 						result = data.data,
@@ -341,7 +341,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				end)
 				
 				if not success then
-					object.LoadRetry:Fire(result, name, scope, index)
+					self.LoadRetry:Fire(result, name, scope, index)
 					
 					task.spawn(callbacks.GetAsync.Retry, result, name, scope)
 					
@@ -356,7 +356,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 			
 			if success then
 				if result == nil then
-					object.FilledBlankStorage:Fire(name, scope, index)
+					self.FilledBlankStorage:Fire(name, scope, index)
 				end
 				
 				members[index].data = if result == nil then default else result
@@ -367,7 +367,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					result = result,
 				}
 			else
-				object.LoadFail:Fire(result, name, scope, index)
+				self.LoadFail:Fire(result, name, scope, index)
 				
 				members[index].loadStatus = "Failed"
 				
@@ -388,7 +388,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		
 		@within OrderedStorage
 	]=]
-	function object:SoftLoad(index: string): DataResult
+	function object.SoftLoad(self: OrderedStorage, index: string): DataResult
 		local data = members[index]
 		
 		if data then
@@ -397,7 +397,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					task.wait()
 				until (data.loadStatus ~= "Loading") or (members[index] == nil)
 				
-				if data.loadStatus == "Ready" then
+				if data.loadStatus :: string == "Ready" then
 					return {
 						success = true,
 						result = data.data,
@@ -432,7 +432,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		@within OrderedStorage
 		@yields
 	]=]
-	function object:HardSave(index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
+	function object.HardSave(self: OrderedStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -440,13 +440,13 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				return {
 					success = true,
 				}
-			elseif data.saveStatus == "Ready" then
+			elseif data.saveStatus :: string == "Ready" then
 				local success, result
 				local iterations = 0
 				
 				data.saveStatus = "Saving"
 				
-				object.SaveStart:Fire(index)
+				self.SaveStart:Fire(index)
 				
 				repeat
 					success, result = pcall(function()
@@ -454,7 +454,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					end)
 					
 					if not success then
-						object.SaveRetry:Fire(result, name, scope, index)
+						self.SaveRetry:Fire(result, name, scope, index)
 						
 						task.spawn(callbacks.SetAsync.Retry, result, name, scope, setOptions)
 						
@@ -465,14 +465,14 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				until success or (iterations >= 5)
 				
 				if success then
-					object.SaveSuccess:Fire(index)
+					self.SaveSuccess:Fire(index)
 					data.saveStatus = "Ready"
 					
 					return {
 						success = true,
 					}
 				else
-					object.SaveFail:Fire(result, name, scope, index)
+					self.SaveFail:Fire(result, name, scope, index)
 					
 					data.saveStatus = "Failed"
 					
@@ -502,7 +502,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		
 		@within OrderedStorage
 	]=]
-	function object:SoftSave(index: string, newData: any): SaveResult
+	function object.SoftSave(self: OrderedStorage, index: string, newData: any): SaveResult
 		local data = members[index]
 		
 		if data then
@@ -517,7 +517,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					task.wait()
 				until (data.saveStatus ~= "Saving") or (members[index] == nil)
 				
-				if data.saveStatus == "Ready" then
+				if data.saveStatus :: string == "Ready" then
 					data.data = newData
 					
 					return {
@@ -551,7 +551,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		@within OrderedStorage
 		@yields
 	]=]
-	function object:GetPages(ascending: boolean, pageSize: number, min: number, max: number): PageResult
+	function object.GetPages(self: OrderedStorage, ascending: boolean, pageSize: number, min: number, max: number): PageResult
 		local success, result
 		local iterations = 0
 		
@@ -561,7 +561,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 			end)
 			
 			if not success then
-				object.GetSortedAsyncRetry:Fire(result :: any, name, scope)
+				self.GetSortedAsyncRetry:Fire(result :: any, name, scope)
 				
 				task.spawn(callbacks.GetSortedAsync.Retry, result, name, scope)
 				
@@ -577,7 +577,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				result = result :: DataStoreKeyPages,
 			}
 		else
-			object.GetSortedAsyncFail:Fire(result :: any, name, scope)
+			self.GetSortedAsyncFail:Fire(result :: any, name, scope)
 			
 			task.spawn(callbacks.GetSortedAsync.Failed, result, name, scope)
 			
@@ -595,13 +595,13 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		@within OrderedStorage
 		@yields
 	]=]
-	function object:Clear(index: string)
+	function object.Clear(self: OrderedStorage, index: string)
 		local data = members[index]
 		
 		if data then
 			if data.canSave then
 				if data.saveStatus == "Ready" then
-					object:HardSave(index)
+					self:HardSave(index)
 					
 					members[index] = nil
 				end
@@ -614,10 +614,10 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		@within OrderedStorage
 		@yields
 	]=]
-	function object:Close()
+	function object.Close(self: OrderedStorage)
 		for key, data in pairs(members) do
 			task.spawn(function()
-				object:Clear(key)
+				self:Clear(key)
 			end)
 		end
 	end

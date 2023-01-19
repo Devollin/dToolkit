@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2022 | v1.0.2
+Network | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A library to handle networking easily.
 	
 Additional credits to:
@@ -18,7 +18,7 @@ type Metadata = {
 }
 
 
-local RunService = game:GetService("RunService")
+local RunService: RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
@@ -190,7 +190,7 @@ function interface:Request(name: string, player: Player, ...: any): (...any)
 			((results[1].type == "RequestResult") and
 			(results[1].timestamp == metadata.timestamp) and
 			(results[1].id == metadata.id) and
-			(player == results[2])) or (not player)
+			(player == (results[2] :: any) :: Player)) or (not player)
 		
 		if player then
 			table.remove(results, 1)

@@ -1,13 +1,13 @@
 --!strict
 --[[================================================================================================
 
-Storage | Written by Devi (@Devollin) | 2022 | v1.0.0
+Storage | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library to aid in Data-related functions.
 	
 ==================================================================================================]]
 
 
-local RunService = game:GetService("RunService")
+local RunService: RunService = game:GetService("RunService")
 
 local Types = require(script:WaitForChild("Types"))
 

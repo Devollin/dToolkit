@@ -1,13 +1,13 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.0.1
+Timer | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A timer class.
 	
 ==================================================================================================]]
 
 
-local RunService = game:GetService("RunService")
+local RunService: RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
 
@@ -18,18 +18,18 @@ export type Timer = {
 	ClassName: "Timer",
 	id: string,
 	
-	Finished: Signal.Signal<nil>,
-	Paused: Signal.Signal<nil>,
+	Finished: Signal.Signal<>,
+	Paused: Signal.Signal<>,
 	Updated: Signal.Signal<number, number>,
 	
-	Start: <a>(self: a) -> (),
-	Stop: <a>(self: a) -> (),
-	Pause: <a>(self: a) -> (),
-	IsRunning: <a>(self: a) -> (boolean),
-	SetDuration: <a>(self: a, newDuration: number) -> (),
-	GetDuration: <a>(self: a) -> (number),
-	GetElapsed: <a>(self: a) -> (number),
-	Destroy: <a>(self: a) -> (),
+	Start: (self: Timer) -> (),
+	Stop: (self: Timer) -> (),
+	Pause: (self: Timer) -> (),
+	IsRunning: (self: Timer) -> (boolean),
+	SetDuration: (self: Timer, newDuration: number) -> (),
+	GetDuration: (self: Timer) -> (number),
+	GetElapsed: (self: Timer) -> (number),
+	Destroy: (self: Timer) -> (),
 }
 
 
@@ -102,7 +102,7 @@ function Timer.new(duration: number?): Timer
 		Starts the [Timer].
 		@within Timer
 	]=]
-	function object:Start()
+	function object.Start(self: Timer)
 		if destroyed then
 			return
 		end
@@ -120,7 +120,7 @@ function Timer.new(duration: number?): Timer
 			remaining = math.clamp(remaining - delta, 0, math.huge)
 			elapsed = initDuration - remaining
 			
-			object.Updated:Fire(remaining, elapsed)
+			self.Updated:Fire(remaining, elapsed)
 			
 			if remaining <= 0 then
 				if connection then
@@ -131,7 +131,7 @@ function Timer.new(duration: number?): Timer
 				finished = true
 				elapsed = initDuration
 				
-				object.Finished:Fire()
+				self.Finished:Fire()
 			end
 		end)
 	end
@@ -140,7 +140,7 @@ function Timer.new(duration: number?): Timer
 		Stops the [Timer].
 		@within Timer
 	]=]
-	function object:Stop()
+	function object.Stop(self: Timer)
 		if destroyed then
 			return
 		end
@@ -163,7 +163,7 @@ function Timer.new(duration: number?): Timer
 		Pauses the [Timer].
 		@within Timer
 	]=]
-	function object:Pause()
+	function object.Pause(self: Timer)
 		if destroyed then
 			return
 		end
@@ -177,14 +177,14 @@ function Timer.new(duration: number?): Timer
 			connection = nil
 		end
 		
-		object.Paused:Fire()
+		self.Paused:Fire()
 	end
 	
 	--[=[
 		Returns true or false, depending on if the [Timer] is running or not.
 		@within Timer
 	]=]
-	function object:IsRunning(): boolean
+	function object.IsRunning(self: Timer): boolean
 		return (connection ~= nil)
 	end
 	
@@ -192,12 +192,12 @@ function Timer.new(duration: number?): Timer
 		Sets the duration of the [Timer].
 		@within Timer
 	]=]
-	function object:SetDuration(newDuration: number)
+	function object.SetDuration(self: Timer, newDuration: number)
 		if destroyed then
 			return
 		end
 		
-		if object:IsRunning() then
+		if self:IsRunning() then
 			return
 		end
 		
@@ -209,7 +209,7 @@ function Timer.new(duration: number?): Timer
 		Gets the duration of the [Timer]. Returns 0 if the duration has not been set, otherwise, returns the duration.
 		@within Timer
 	]=]
-	function object:GetDuration(): number
+	function object.GetDuration(self: Timer): number
 		return remaining
 	end
 	
@@ -218,7 +218,7 @@ function Timer.new(duration: number?): Timer
 		otherwise returns the duration.
 		@within Timer
 	]=]
-	function object:GetElapsed(): number
+	function object.GetElapsed(self: Timer): number
 		return elapsed
 	end
 	
@@ -226,18 +226,18 @@ function Timer.new(duration: number?): Timer
 		Destroys the [Timer] object.
 		@within Timer
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Timer)
 		if destroyed then
 			return
 		end
 		
-		object:Stop()
+		self:Stop()
 		
 		destroyed = true
 		
-		object.Finished:Destroy()
-		object.Paused:Destroy()
-		object.Updated:Destroy()
+		self.Finished:Destroy()
+		self.Paused:Destroy()
+		self.Updated:Destroy()
 	end
 	
 	

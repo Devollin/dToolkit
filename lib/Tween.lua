@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Tween | Written by Devi (@Devollin) | 2022 | v1.0.1
+Tween | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A wrapper function for interfacing with TweenService.
 
 ==================================================================================================]]
@@ -52,14 +52,14 @@ export type TweenGroup = {
 	tweens: {Tween},
 	Completed: RBXScriptSignal,
 	
-	Cancel: <a>(self: a) -> (),
-	Pause: <a>(self: a) -> (),
-	Play: <a>(self: a) -> (),
-	Destroy: <a>(self: a) -> (),
+	Cancel: (self: TweenGroup) -> (),
+	Pause: (self: TweenGroup) -> (),
+	Play: (self: TweenGroup) -> (),
+	Destroy: (self: TweenGroup) -> (),
 }
 
 
-local TweenService = game:GetService("TweenService")
+local TweenService: TweenService = game:GetService("TweenService")
 
 local interface = {}
 
@@ -190,7 +190,7 @@ function interface.new(object: Instance, properties: Properties, modifiers: Modi
 	end
 	
 	tween.Completed:Connect(function(state)
-		if (final.Destroy) or (final.Destroy and state == Enum.TweenStatus.Completed) then
+		if (final.Destroy) or (final.Destroy and state == Enum.PlaybackState.Completed) then
 			tween:Destroy()
 		end
 	end)
@@ -244,25 +244,25 @@ function interface.fromGroup(objects: {Instance}, properties: Properties, modifi
 	object.tweens = tweens
 	object.Completed = tweens[1].Completed :: RBXScriptSignal
 	
-	function object:Play()
+	function object.Play(self: TweenGroup)
 		for _, tween in ipairs(tweens) do
 			tween:Play()
 		end
 	end
 	
-	function object:Pause()
+	function object.Pause(self: TweenGroup)
 		for _, tween in ipairs(tweens) do
 			tween:Pause()
 		end
 	end
 	
-	function object:Cancel()
+	function object.Cancel(self: TweenGroup)
 		for _, tween in ipairs(tweens) do
 			tween:Cancel()
 		end
 	end
 	
-	function object:Destroy()
+	function object.Destroy(self: TweenGroup)
 		for _, tween in ipairs(tweens) do
 			tween:Destroy()
 		end

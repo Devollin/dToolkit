@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.1
+Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.2
 	Description: Lua-side duplication of the API of events on Roblox objects.
 		Signals are needed for to ensure that for local events objects are passed by reference
 		rather than by value where possible, as the BindableEvent objects always pass signal
@@ -13,10 +13,10 @@ Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.1
 
 export type Signal<b...> = {
 	ClassName: "SimpleSignal",
-	Fire: <a>(self: a, b...) -> (),
-	Connect: <a>(self: a, (b...) -> ()) -> (RBXScriptConnection?),
-	Wait: <a>(self: a) -> (b...),
-	Destroy: <a>(self: a) -> (),
+	Fire: (self: Signal<b...>, b...) -> (),
+	Connect: (self: Signal<b...>, (b...) -> ()) -> (RBXScriptConnection?),
+	Wait: (self: Signal<b...>) -> (b...),
+	Destroy: (self: Signal<b...>) -> (),
 }
 
 
@@ -75,7 +75,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object:Fire(...: b...)
+	function object.Fire(self: Signal<b...>, ...: b...)
 		if event then
 			argData = table.pack(...)
 			argCount = select("#", ...)
@@ -106,7 +106,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object:Connect(callback: (b...) -> ()): RBXScriptConnection?
+	function object.Connect(self: Signal<b...>, callback: (b...) -> ()): RBXScriptConnection?
 		if event then
 			return event.Event:Connect(function()
 				callback(unpack(argData, 1, argCount))
@@ -133,7 +133,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object:Wait(): (b...)
+	function object.Wait(self: Signal<b...>): (b...)
 		if event then
 			event.Event:Wait()
 			
@@ -152,7 +152,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Signal<b...>)
 		if event then
 			event:Destroy()
 			

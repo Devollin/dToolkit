@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Platform | Written by Devi (@Devollin) | 2022 | v1.0.0
+Platform | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A set of variables meant to aide in determining the platform a player is on.
 	
 ==================================================================================================]]
@@ -10,17 +10,17 @@ Platform | Written by Devi (@Devollin) | 2022 | v1.0.0
 export type Platform = "Xbox" | "VR" | "Desktop" | "Laptop" | "Phone" | "Tablet" | "Unknown"
 
 
-local UserInputService = game:GetService("UserInputService")
-local StarterGui = game:GetService("StarterGui")
-local GuiService = game:GetService("GuiService")
-local Players = game:GetService("Players")
+local UserInputService: UserInputService = game:GetService("UserInputService")
+local StarterGui: StarterGui = game:GetService("StarterGui")
+local GuiService: GuiService = game:GetService("GuiService")
+local Players: Players = game:GetService("Players")
 
 local Value = require(script.Parent:WaitForChild("Value"))
 local Util = require(script.Parent:WaitForChild("Util"))
 
 local Player = Players.LocalPlayer
-local PlayerGui: PlayerGui =
-	if Player then Player:WaitForChild("PlayerGui")
+local PlayerGui: PlayerGui? =
+	if Player then Player:WaitForChild("PlayerGui") :: PlayerGui
 	else nil
 
 local ui = Util:Synth("ScreenGui", {

@@ -1,17 +1,17 @@
 --!strict
 --[[================================================================================================
 
-CameraUtil | Written by Devi (@Devollin) | 2022 | v1.0.0
+CameraUtil | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library meant to aide in the manipulaton of the camera.
 	
 ==================================================================================================]]
 
 
-local StarterPlayer = game:GetService("StarterPlayer")
+local StarterPlayer: StarterPlayer = game:GetService("StarterPlayer")
 
 local PlayerUtil = require(script.Parent:WaitForChild("PlayerUtil"))
 
-local Camera = workspace.CurrentCamera
+local Camera: Camera = workspace.CurrentCamera
 local Player =
 	if PlayerUtil.player then PlayerUtil.player:Get()
 	else nil

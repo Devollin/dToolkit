@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Flow | Written by Devi (@Devollin) | 2022 | v1.0.1
+Flow | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: Interface for tweening.
 	
 ==================================================================================================]]
@@ -54,7 +54,7 @@ type Modifiers = {
 export type FlowModifiers = Modifiers
 
 
-local RunService = game:GetService("RunService")
+local RunService: RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
 local Util = require(script.Parent:WaitForChild("Util"))
@@ -64,15 +64,15 @@ local Types = require(script:WaitForChild("Types"))
 
 
 export type Flow = {
-	Play: <a>(self: a) -> (),
-	Stop: <a>(self: a) -> (),
-	Pause: <a>(self: a) -> (),
-	Destroy: <a>(self: a) -> (),
-	Restart: <a>(self: a) -> (),
+	Play: (self: Flow) -> (),
+	Stop: (self: Flow) -> (),
+	Pause: (self: Flow) -> (),
+	Destroy: (self: Flow) -> (),
+	Restart: (self: Flow) -> (),
 	
-	Completed: Signal.Signal<nil>,
-	Stepped: Signal.Signal<nil>,
-	Cancelled: Signal.Signal<nil>,
+	Completed: Signal.Signal<>,
+	Stepped: Signal.Signal<>,
+	Cancelled: Signal.Signal<>,
 }
 
 
@@ -88,7 +88,10 @@ local Default: Modifiers = {
 	StepType = "Heartbeat",
 }
 
-local function applier(target: (Instance | {[string]: any}), property: any, goal: any): ((delta: number) -> ())
+local Flow = {}
+
+
+local function Applier(target: (Instance | {[string]: any}), property: any, goal: any): ((delta: number) -> ())
 	local iterator = Types[typeof(goal)]
 	
 	local target = target :: any
@@ -109,8 +112,6 @@ local function applier(target: (Instance | {[string]: any}), property: any, goal
 		target[property] = iterator(init, goal, delta)
 	end
 end
-
-local Flow = {}
 
 
 --[=[
@@ -225,7 +226,6 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 			else final.StepType
 	end
 	
-	
 	local applicators: {(delta: number) -> ()} = {}
 	local newTargets: {} | Instance
 	local connection: RBXScriptConnection?
@@ -240,12 +240,12 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 			if typeof(target) == "Instance" then
 				for _, target in pairs(targets) do
 					for property, goal in pairs(goals) do
-						table.insert(applicators, applier(target, property, goal))
+						table.insert(applicators, Applier(target, property, goal))
 					end
 				end
 			else
 				for property, goal in pairs(goals) do
-					table.insert(applicators, applier(targets :: any, property, goal))
+					table.insert(applicators, Applier(targets :: any, property, goal))
 				end
 			end
 			
@@ -255,7 +255,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		newTargets = targets
 		
 		for property, goal in pairs(goals) do
-			table.insert(applicators, applier(targets, property, goal))
+			table.insert(applicators, Applier(targets, property, goal))
 		end
 	end
 	
@@ -274,9 +274,15 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Runs the Flow.
 		@within Flow
 	]=]
-	function object:Play()
+	function object.Play(self: Flow)
 		running = true
-		connection = connection or RunService[final.StepType]:Connect(function(step, deltaTime)
+		
+		local event: RBXScriptSignal =
+			if final.StepType == "RenderStepped" then RunService.RenderStepped
+			elseif final.StepType == "Heartbeat" then RunService.Heartbeat
+			else RunService.Stepped
+		
+		connection = connection or event:Connect(function(step: number, deltaTime: number?)
 			local delta = deltaTime or step
 			
 			if not running then
@@ -298,7 +304,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 				if final.Time <= duration then
 					duration = 0
 					
-					object.Completed:Fire()
+					self.Completed:Fire()
 					
 					if final.Reverse then
 						if direction == 1 then
@@ -315,7 +321,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 								end
 								
 								if final.Destroy then
-									object:Destroy()
+									self:Destroy()
 								end
 							end
 						end
@@ -335,7 +341,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 							end
 							
 							if final.Destroy then
-								object:Destroy()
+								self:Destroy()
 							end
 						end
 					end
@@ -357,7 +363,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 					end)
 				end
 				
-				object.Stepped:Fire()
+				self.Stepped:Fire()
 			end)
 		end)
 	end
@@ -366,19 +372,19 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Stops the Flow.
 		@within Flow
 	]=]
-	function object:Stop()
+	function object.Stop(self: Flow)
 		if connection then
 			connection:Disconnect()
 			connection = nil
 			
-			object.Cancelled:Fire()
+			self.Cancelled:Fire()
 		end
 		
 		running = false
 		duration = 0
 		
 		if final.Destroy then
-			object:Destroy()
+			self:Destroy()
 		end
 	end
 	
@@ -386,7 +392,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Pauses the Flow.
 		@within Flow
 	]=]
-	function object:Pause()
+	function object.Pause(self: Flow)
 		running = false
 		
 		if connection then
@@ -399,7 +405,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Destroys the Flow.
 		@within Flow
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Flow)
 		table.clear(applicators)
 		
 		if connection then
@@ -407,9 +413,9 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 			connection = nil
 		end
 		
-		object.Completed:Destroy()
-		object.Cancelled:Destroy()
-		object.Stepped:Destroy()
+		self.Completed:Destroy()
+		self.Cancelled:Destroy()
+		self.Stepped:Destroy()
 		
 		died = true
 		running = false
@@ -423,7 +429,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		Restarts the Flow.
 		@within Flow
 	]=]
-	function object:Restart()
+	function object.Restart(self: Flow)
 		if connection then
 			connection:Disconnect()
 			connection = nil
@@ -431,7 +437,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		
 		repeats = final.RepeatCount
 		
-		object:Play()
+		self:Play()
 	end
 	
 	

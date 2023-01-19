@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Util | Written by Devi (@Devollin) | 2022 | v1.0.1
+Util | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library of helpful general-use functions.
 
 ==================================================================================================]]
@@ -151,7 +151,7 @@ end
 	
 	@within Util
 ]=]
-function interface:ShuffleArray(array: {any}): {any}
+function interface:ShuffleArray<a>(array: {a}): {a}
 	local length = #array
 	local shuffled = {}
 	
@@ -159,10 +159,10 @@ function interface:ShuffleArray(array: {any}): {any}
 		return array
 	else
 		for index = 1, length - 1 do
-			shuffled[index] = table.remove(array, math.random(1, #array))
+			shuffled[index] = table.remove(array, math.random(1, #array)) :: a
 		end
 		
-		shuffled[length] = table.remove(array, 1)
+		shuffled[length] = table.remove(array, 1) :: a
 		
 		return shuffled
 	end
@@ -240,7 +240,7 @@ function interface:GetVolumeOfPart(part: BasePart?): number
 			return 0
 		end
 		
-		return (part:GetMass() / physicalProperties.Density)
+		return part:GetMass() / physicalProperties.Density
 	end
 end
 
@@ -278,6 +278,7 @@ function interface:Weld(model: Model, corePart: BasePart, ignore: {[any]: BasePa
 			weld.Part1 = descendant
 			weld.Name = descendant.Name
 			weld.Parent = corePart
+			
 			descendant.Anchored = false
 		end
 	end

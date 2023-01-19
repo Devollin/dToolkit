@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Value | Written by Devi (@Devollin) | 2022 | v1.0.0
+Value | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: Interface for creating custom values with changed events.
 	
 ==================================================================================================]]
@@ -17,11 +17,11 @@ export type Value<b...> = {
 	WillChange: Signal<b...>,
 	Changed: Signal<b...>,
 	
-	Set: <a>(self: a, b...) -> (),
-	Get: <a>(self: a) -> (b...),
-	Clone: <a>(self: a) -> (Value<b...>),
-	RawSet: <a>(self: a, b...) -> (),
-	Destroy: <a>(self: a) -> (),
+	Set: (self: Value<b...>, b...) -> (),
+	Get: (self: Value<b...>) -> (b...),
+	Clone: (self: Value<b...>) -> (Value<b...>),
+	RawSet: (self: Value<b...>, b...) -> (),
+	Destroy: (self: Value<b...>) -> (),
 }
 
 
@@ -99,8 +99,9 @@ function Value.new<b...>(...: b...): Value<b...>
 	local deleted = false
 	local value: any = table.pack(...)
 	
-	local object = {}
-	object.ClassName = "Value"
+	local object = {
+		ClassName = "Value" :: "Value",
+	}
 	object.WillChange = Signal.new() :: Signal<b...>
 	object.Changed = Signal.new() :: Signal<b...>
 	
@@ -114,7 +115,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object:Set(...: b...)
+	function object.Set(self: Value<b...>, ...: b...)
 		if not deleted then
 			object.WillChange:Fire(object:Get())
 			
@@ -133,7 +134,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object:Get(): (b...)
+	function object.Get(self: Value<b...>): (b...)
 		if not deleted then
 			return table.unpack(value)
 		end
@@ -148,8 +149,8 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object:Clone(): Value<b...>
-		return Value.new(table.unpack(value))
+	function object.Clone(self: Value<b...>): Value<b...>
+		return Value.new(table.unpack(value)) :: any
 	end
 	
 	--[=[
@@ -157,7 +158,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object:RawSet(...: b...)
+	function object.RawSet(self: Value<b...>, ...: b...)
 		value = table.pack(...)
 	end
 	
@@ -170,7 +171,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Value<b...>)
 		if deleted then
 			return
 		end

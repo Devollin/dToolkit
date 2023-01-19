@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.1
+Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.2
 	Description: Batched Yield-Safe Signal Implementation
 		This is a Signal class which has effectively identical behavior to a normal RBXScriptSignal,
 		with the only difference being a couple extra stack frames at the bottom of the stack trace
@@ -20,18 +20,18 @@ export type Connection<b...> = {
 	_callback: (b...) -> (),
 	_next: Connection<b...>?,
 	
-	Disconnect: <a>(self: a) -> (),
+	Disconnect: (self: Connection<b...>) -> (),
 }
 
 export type Signal<b...> = {
 	ClassName: "Signal",
 	_handlerListHead: Connection<b...>?,
 	
-	Connect: <a>(self: a, callback: (b...) -> ()) -> (Connection<b...>),
-	Destroy: <a>(self: a) -> (),
-	Fire: <a>(self: a, b...) -> (),
-	Wait: <a>(self: a) -> (b...),
-	Once: <a>(self: a, callback: (b...) -> ()) -> (Connection<b...>),
+	Connect: (self: Signal<b...>, callback: (b...) -> ()) -> (Connection<b...>),
+	Destroy: (self: Signal<b...>) -> (),
+	Fire: (self: Signal<b...>, b...) -> (),
+	Wait: (self: Signal<b...>) -> (b...),
+	Once: (self: Signal<b...>, callback: (b...) -> ()) -> (Connection<b...>),
 }
 
 
@@ -79,7 +79,7 @@ local Connection = {}
 	@within Connection
 	@ignore
 ]=]
-function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b...>
+function Connection.new<b...>(signal: Signal<b...>, callback: (b...) -> ()): Connection<b...>
 	local object = {
 		ClassName = "Connection" :: "Connection",
 	}
@@ -91,24 +91,24 @@ function Connection.new<b...>(signal: any, callback: (b...) -> ()): Connection<b
 		Disconnects the [Connection] object from the given [Signal]; renders it unusable.
 		@within Connection
 	]=]
-	function object:Disconnect()
-		object._connected = false
+	function object.Disconnect(self: Connection<b...>)
+		self._connected = false
 		
 		-- Unhook the node, but DON'T clear it. That way any fire calls that are
 		-- currently sitting on this node will be able to iterate forwards off of
 		-- it, but any subsequent fire calls will not hit it, and it will be GCed
 		-- when no more fire calls are sitting on it.
-		if signal._handlerListHead == object then
-			signal._handlerListHead = object._next
+		if signal._handlerListHead == self then
+			signal._handlerListHead = self._next
 		else
 			local prev = signal._handlerListHead
 			
-			while prev and prev._next ~= object do
+			while prev and prev._next ~= self do
 				prev = prev._next
 			end
 			
 			if prev then
-				prev._next = object._next
+				prev._next = self._next
 			end
 		end
 	end
@@ -170,16 +170,14 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object:Connect(callback: (b...) -> ()): Connection<b...>
+	function object.Connect(self: Signal<b...>, callback: (b...) -> ()): Connection<b...>
 		local connection = Connection.new(object, callback)
 		
 		if object._handlerListHead then
 			connection._next = object._handlerListHead
-			
-			object._handlerListHead = connection
-		else
-			object._handlerListHead = connection
 		end
+		
+		object._handlerListHead = connection
 		
 		return connection
 	end
@@ -193,7 +191,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Signal<b...>)
 		object._handlerListHead = nil
 	end
 	
@@ -206,16 +204,17 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object:Fire(...: b...): ()
+	function object.Fire(self: Signal<b...>, ...: b...): ()
 		local item = object._handlerListHead
 		
 		while typeof(item) == "table" do
 			if item._connected then
 				if not freeRunnerThread then
-					freeRunnerThread = coroutine.create(runEventHandlerInFreeThread) :: thread
+					local newThread = coroutine.create(runEventHandlerInFreeThread)
+					freeRunnerThread = newThread
 					
 					-- Get the freeRunnerThread to the first yield
-					coroutine.resume(freeRunnerThread :: any)
+					coroutine.resume(newThread)
 				end
 				
 				task.spawn(freeRunnerThread :: thread, item._callback, ...)
@@ -241,7 +240,7 @@ function Signal.new<b...>(): Signal<b...>
 		@within Signal
 		@yields
 	]=]
-	function object:Wait(): (b...)
+	function object.Wait(self: Signal<b...>): (b...)
 		local waitingCoroutine = coroutine.running()
 		local connection: Connection<b...>
 		
@@ -268,7 +267,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object:Once(callback: (b...) -> ()): Connection<b...>
+	function object.Once(self: Signal<b...>, callback: (b...) -> ()): Connection<b...>
 		local connection: Connection<b...>
 		
 		connection = object:Connect(function(...: b...)
@@ -283,7 +282,7 @@ function Signal.new<b...>(): Signal<b...>
 	end
 	
 	
-	return (object :: any) :: Signal<b...>
+	return object
 end
 
 

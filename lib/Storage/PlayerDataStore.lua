@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.0
+PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library to aid in DataStore-related functions.
 	
 ==================================================================================================]]
@@ -18,7 +18,7 @@ type DataResult = Types.DataResult
 type Default = Types.Default
 
 
-local Players = game:GetService("Players")
+local Players: Players = game:GetService("Players")
 
 local Timer = require(script.Parent.Parent:WaitForChild("Timer"))
 local Util = require(script.Parent.Parent:WaitForChild("Util"))
@@ -160,12 +160,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within PlayerStorage
 		@yields
 	]=]
-	function object:HardLoad(index: number): DataResult
+	function object.HardLoad(self: PlayerStorage, index: number): DataResult
 		local timer = Timer.new()
 		timer:SetDuration(120)
 		
 		timer.Finished:Connect(function()
-			object:HardSave(index)
+			self:HardSave(index)
 			
 			timer:Start()
 		end)
@@ -184,7 +184,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within PlayerStorage
 	]=]
-	function object:SoftLoad(index: number): DataResult
+	function object.SoftLoad(self: PlayerStorage, index: number): DataResult
 		return dataStore:SoftLoad(tostring(index))
 	end
 	
@@ -197,7 +197,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within PlayerStorage
 		@yields
 	]=]
-	function object:HardSave(index: number, setOptions: DataStoreSetOptions?): SaveResult
+	function object.HardSave(self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?): SaveResult
 		return dataStore:HardSave(tostring(index), {index}, setOptions)
 	end
 	
@@ -208,7 +208,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within PlayerStorage
 	]=]
-	function object:SoftSave(index: number, newData: any): SaveResult
+	function object.SoftSave(self: PlayerStorage, index: number, newData: any): SaveResult
 		return dataStore:SoftSave(tostring(index), newData)
 	end
 	
@@ -221,7 +221,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within PlayerStorage
 	]=]
-	function object:Update(index: number, key: (string | number), newData: any): SaveResult
+	function object.Update(self: PlayerStorage, index: number, key: (string | number), newData: any): SaveResult
 		return dataStore:Update(tostring(index), key, newData)
 	end
 	
@@ -235,7 +235,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within PlayerStorage
 	]=]
-	function object:DeepUpdate(index: string, newData: any, key: (string | number), ...: (string | number)): SaveResult
+	function object.DeepUpdate(self: PlayerStorage, index: string, newData: any, key: (string | number), ...: (string | number)): SaveResult
 		return dataStore:DeepUpdate(index, newData, key, ...)
 	end
 	
@@ -248,7 +248,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within PlayerStorage
 		@yields
 	]=]
-	function object:Clear(index: number)
+	function object.Clear(self: PlayerStorage, index: number)
 		dataStore:Clear(tostring(index))
 		
 		autosaveTimers[index]:Stop()
@@ -261,12 +261,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within PlayerStorage
 		@yields
 	]=]
-	function object:Close()
+	function object.Close(self: PlayerStorage)
 		dataStore:Close()
 	end
 	
 	
-	for _, player: Player in pairs(Players:GetPlayers()) do
+	for _, player in pairs(Players:GetPlayers()) do
 		task.spawn(function()
 			object:HardLoad(player.UserId)
 		end)
@@ -283,7 +283,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 end
 
 
-Players.PlayerAdded:Connect(function(player: Player)
+Players.PlayerAdded:Connect(function(player)
 	local id = player.UserId
 	
 	for name, dataStore in pairs(dataStores) do
@@ -291,7 +291,7 @@ Players.PlayerAdded:Connect(function(player: Player)
 	end
 end)
 
-Players.PlayerRemoving:Connect(function(player: Player)
+Players.PlayerRemoving:Connect(function(player)
 	local id = player.UserId
 	
 	task.wait(0.5)

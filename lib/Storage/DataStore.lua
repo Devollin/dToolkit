@@ -1,12 +1,13 @@
 --!strict
 --[[================================================================================================
 
-DataStore | Written by Devi (@Devollin) | 2022 | v1.0.0
+DataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library to aid in general DataStore-related functions.
 	
 ==================================================================================================]]
 
-local DataStoreService = game:GetService("DataStoreService")
+
+local DataStoreService: DataStoreService = game:GetService("DataStoreService")
 
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 local Util = require(script.Parent.Parent:WaitForChild("Util"))
@@ -16,6 +17,7 @@ local Types = require(script.Parent:WaitForChild("Types"))
 
 type BaseStorageResult = Types.BaseStorageResult
 type DataStoreResult = Types.DataStoreResult
+type BaseStorage = Types.BaseStorage
 type SaveResult = Types.SaveResult
 type DataResult = Types.DataResult
 type Default = Types.Default
@@ -224,7 +226,7 @@ function interface:GetDataStore(name: string, scope: string?, options: DataStore
 		
 		return {
 			success = false,
-			message = result,
+			message = result :: any,
 		}
 	end
 end
@@ -274,7 +276,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within BaseStorage
 		@yields
 	]=]
-	function object:HardLoad(index: string): DataResult
+	function object.HardLoad(self: BaseStorage, index: string): DataResult
 		local data = members[index]
 		
 		if data then
@@ -288,7 +290,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					task.wait()
 				until (data.loadStatus ~= "Loading") or (members[index] == nil)
 				
-				if data.loadStatus == "Ready" then
+				if data.loadStatus :: string == "Ready" then
 					return {
 						success = true,
 						result = data.data
@@ -319,7 +321,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				end)
 				
 				if not success then
-					object.LoadRetry:Fire(result, name, scope, index)
+					self.LoadRetry:Fire(result, name, scope, index)
 					
 					task.spawn(callbacks.GetAsync.Retry, result, name, scope, index)
 					
@@ -333,7 +335,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 			
 			if success then
 				if result == nil then
-					object.FilledBlankStorage:Fire(name, scope, index)
+					self.FilledBlankStorage:Fire(name, scope, index)
 				end
 				
 				members[index].data = if result == nil then Util:DeepCloneTable(default) else result
@@ -348,7 +350,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 			else
 				members[index].loadStatus = "Failed"
 				
-				object.LoadFail:Fire(result, name, scope, index)
+				self.LoadFail:Fire(result, name, scope, index)
 				
 				task.spawn(callbacks.GetAsync.Failed, result, name, scope, index)
 				
@@ -367,7 +369,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within BaseStorage
 	]=]
-	function object:SoftLoad(index: string): DataResult
+	function object.SoftLoad(self: BaseStorage, index: string): DataResult
 		local data = members[index]
 		
 		if data then
@@ -376,7 +378,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					task.wait()
 				until (data.loadStatus ~= "Loading") or (members[index] == nil)
 				
-				if data.loadStatus == "Ready" then
+				if data.loadStatus :: string == "Ready" then
 					return {
 						success = true,
 						result = data.data,
@@ -413,7 +415,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within BaseStorage
 		@yields
 	]=]
-	function object:HardSave(index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
+	function object.HardSave(self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -427,7 +429,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				
 				data.saveStatus = "Saving"
 				
-				object.SaveStart:Fire(index)
+				self.SaveStart:Fire(index)
 				
 				repeat
 					success, result = pcall(function()
@@ -435,7 +437,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					end)
 					
 					if not success then
-						object.SaveRetry:Fire(result, name, scope, index)
+						self.SaveRetry:Fire(result, name, scope, index)
 						
 						task.spawn(callbacks.SetAsync.Retry, result, name, scope)
 						
@@ -448,7 +450,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				if success then
 					data.saveStatus = "Ready"
 					
-					object.SaveSuccess:Fire(index)
+					self.SaveSuccess:Fire(index)
 					
 					return {
 						success = true,
@@ -456,7 +458,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				else
 					data.saveStatus = "Failed"
 					
-					object.SaveFail:Fire(result, name, scope, index)
+					self.SaveFail:Fire(result, name, scope, index)
 					
 					task.spawn(callbacks.SetAsync.Failed, result, name, scope, options)
 					
@@ -484,7 +486,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within BaseStorage
 	]=]
-	function object:SoftSave(index: string, newData: any): SaveResult
+	function object.SoftSave(self: BaseStorage, index: string, newData: any): SaveResult
 		local data = members[index]
 		
 		if data then
@@ -499,7 +501,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					task.wait()
 				until (data.saveStatus ~= "Saving") or (members[index] == nil)
 				
-				if data.saveStatus == "Ready" then
+				if data.saveStatus :: string == "Ready" then
 					data.data = newData
 					
 					return {
@@ -531,12 +533,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within BaseStorage
 	]=]
-	function object:Update(index: string, key: (string | number), newData: any): SaveResult
+	function object.Update(self: BaseStorage, index: string, key: (string | number), newData: any): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
 			if data.saveStatus == "Ready" then
-				object.KeyUpdated:Fire(index, key, newData, data.data[key])
+				self.KeyUpdated:Fire(index, key, newData, data.data[key])
 				
 				data.data[key] = newData
 				
@@ -548,8 +550,8 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					task.wait()
 				until (data.saveStatus ~= "Saving") or (members[index] == nil)
 				
-				if data.saveStatus == "Ready" then
-					object.KeyUpdated:Fire(index, key, newData, data.data[key])
+				if data.saveStatus :: string == "Ready" then
+					self.KeyUpdated:Fire(index, key, newData, data.data[key])
 					
 					data.data[key] = newData
 					
@@ -583,7 +585,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@within BaseStorage
 	]=]
-	function object:DeepUpdate(index: string, newData: any, key: (string | number), ...: (string | number)): SaveResult
+	function object.DeepUpdate(self: BaseStorage, index: string, newData: any, key: (string | number), ...: (string | number)): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -604,7 +606,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					end
 				end
 				
-				object.DeepKeyUpdated:Fire(index, newData, oldData, {...})
+				self.DeepKeyUpdated:Fire(index, newData, oldData, {...})
 				
 				return {
 					success = true,
@@ -614,7 +616,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					task.wait()
 				until (data.saveStatus ~= "Saving") or (members[index] == nil)
 				
-				if data.saveStatus == "Ready" then
+				if data.saveStatus :: string == "Ready" then
 					local indexedData = data.data[key]
 					local array = {...}
 					local oldData
@@ -631,7 +633,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						end
 					end
 					
-					object.DeepKeyUpdated:Fire(index, newData, oldData, {...})
+					self.DeepKeyUpdated:Fire(index, newData, oldData, {...})
 					
 					return {
 						success = true,
@@ -661,11 +663,11 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within BaseStorage
 		@yields
 	]=]
-	function object:Clear(index: string)
+	function object.Clear(self: BaseStorage, index: string)
 		local data = members[index]
 		
 		if data then
-			object:HardSave(index)
+			self:HardSave(index)
 			
 			members[index] = nil
 		end
@@ -676,10 +678,10 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@within BaseStorage
 		@yields
 	]=]
-	function object:Close()
+	function object.Close(self: BaseStorage)
 		for key, data in pairs(members) do
 			task.spawn(function()
-				object:Clear(key)
+				self:Clear(key)
 			end)
 		end
 	end

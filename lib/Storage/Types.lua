@@ -3,9 +3,9 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
 
 --[=[
-	@type StorageType "Player" | "Base"
-	The type of DataStore; Player contains specific functionality used for players, and Base creates a general-purpose
-		DataStore.
+	@type StorageType "Player" | "Base" | "Ordered"
+	The type of DataStore; Player contains specific functionality used for players, Ordered creates a OrderedDataStore,
+		and Base creates a general-purpose DataStore.
 	
 	@within Storage
 ]=]
@@ -96,7 +96,7 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 	@within OrderedStorage
 ]=]
 --[=[
-	@type StorageResult Result<(PlayerStorage | BaseStorage)?>
+	@type StorageResult Result<(OrderedStorage | PlayerStorage | BaseStorage)?>
 	A dictionary containing a success boolean, a message (if getting the DataStore fails), and a result (if getting the
 		DataStore succeeds, this is the Storage object).
 	
@@ -104,8 +104,9 @@ local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 ]=]
 
 
-export type StorageType = "Player" | "Base"
-export type Default = {[string | number]: any}
+type StringOrNumber = string | number
+export type StorageType = "Player" | "Base" | "Ordered"
+export type Default = {[StringOrNumber]: any}
 
 type Result<a> = {
 	success: boolean,
@@ -135,17 +136,17 @@ export type BaseStorage = {
 	SaveFail: Signal.Signal<string, string, string?, string>,
 	SaveSuccess: Signal.Signal<string>,
 	FilledBlankStorage: Signal.Signal<string, string?, string>,
-	KeyUpdated: Signal.Signal<string, string | number, any, any>,
-	DeepKeyUpdated: Signal.Signal<string, any, any, {string | number}>,
+	KeyUpdated: Signal.Signal<string, StringOrNumber, any, any>,
+	DeepKeyUpdated: Signal.Signal<string, any, any, {StringOrNumber}>,
 	
-	HardLoad: <a>(self: a, index: string) -> (DataResult),
-	SoftLoad: <a>(self: a, index: string) -> (DataResult),
-	HardSave: <a>(self: a, index: string, ids: {[number]: number}?, setOptions: DataStoreSetOptions?) -> (SaveResult),
-	SoftSave: <a>(self: a, index: string, newData: any) -> (SaveResult),
-	Update: <a>(self: a, index: string, key: (string | number), newData: any) -> (SaveResult),
-	DeepUpdate: <a>(self: a, index: string, newData: any, key: (string | number), ...(string | number)) -> (SaveResult),
-	Clear: <a>(self: a, index: string) -> (),
-	Close: <a>(self: a) -> (),
+	HardLoad: (self: BaseStorage, index: string) -> (DataResult),
+	SoftLoad: (self: BaseStorage, index: string) -> (DataResult),
+	HardSave: (self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?) -> (SaveResult),
+	SoftSave: (self: BaseStorage, index: string, newData: any) -> (SaveResult),
+	Update: (self: BaseStorage, index: string, key: StringOrNumber, newData: any) -> (SaveResult),
+	DeepUpdate: (self: BaseStorage, index: string, newData: any, key: StringOrNumber, ...StringOrNumber) -> (SaveResult),
+	Clear: (self: BaseStorage, index: string) -> (),
+	Close: (self: BaseStorage) -> (),
 }
 export type BaseStorageResult = Result<BaseStorage?>
 
@@ -157,17 +158,17 @@ export type PlayerStorage = {
 	SaveFail: Signal.Signal<string, string, string?, string>,
 	SaveSuccess: Signal.Signal<string>,
 	FilledBlankStorage: Signal.Signal<string, string?, string>,
-	KeyUpdated: Signal.Signal<string, string | number, any, any>,
-	DeepKeyUpdated: Signal.Signal<string, any, any, {string | number}>,
+	KeyUpdated: Signal.Signal<string, StringOrNumber, any, any>,
+	DeepKeyUpdated: Signal.Signal<string, any, any, {StringOrNumber}>,
 	
-	HardLoad: <a>(self: a, index: number) -> (DataResult),
-	SoftLoad: <a>(self: a, index: number) -> (DataResult),
-	HardSave: <a>(self: a, index: number, setOptions: DataStoreSetOptions?) -> (SaveResult),
-	SoftSave: <a>(self: a, index: number, newData: any) -> (SaveResult),
-	Update: <a>(self: a, index: number, key: (string | number), newData: any) -> (SaveResult),
-	DeepUpdate: <a>(self: a, index: string, newData: any, key: (string | number), ...(string | number)) -> (SaveResult),
-	Clear: <a>(self: a, index: number) -> (),
-	Close: <a>(self: a) -> (),
+	HardLoad: (self: PlayerStorage, index: number) -> (DataResult),
+	SoftLoad: (self: PlayerStorage, index: number) -> (DataResult),
+	HardSave: (self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?) -> (SaveResult),
+	SoftSave: (self: PlayerStorage, index: number, newData: any) -> (SaveResult),
+	Update: (self: PlayerStorage, index: number, key: StringOrNumber, newData: any) -> (SaveResult),
+	DeepUpdate: (self: PlayerStorage, index: string, newData: any, key: StringOrNumber, ...StringOrNumber) -> (SaveResult),
+	Clear: (self: PlayerStorage, index: number) -> (),
+	Close: (self: PlayerStorage) -> (),
 }
 export type PlayerStorageResult = Result<PlayerStorage?>
 
@@ -182,16 +183,16 @@ export type OrderedStorage = {
 	GetSortedAsyncRetry: Signal.Signal<string, string, string?>,
 	GetSortedAsyncFail: Signal.Signal<string, string, string?>,
 	
-	HardLoad: <a>(self: a, index: string) -> (DataResult),
-	SoftLoad: <a>(self: a, index: string) -> (DataResult),
-	HardSave: <a>(self: a, index: string, ids: {[number]: number}?, setOptions: DataStoreSetOptions?) -> (SaveResult),
-	SoftSave: <a>(self: a, index: string, newData: any) -> (SaveResult),
-	GetPages: <a>(self: a, ascending: boolean, pageSize: number, min: number, max: number) -> (PageResult),
-	Clear: <a>(self: a, index: string) -> (),
-	Close: <a>(self: a) -> (),
+	HardLoad: (self: OrderedStorage, index: string) -> (DataResult),
+	SoftLoad: (self: OrderedStorage, index: string) -> (DataResult),
+	HardSave: (self: OrderedStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?) -> (SaveResult),
+	SoftSave: (self: OrderedStorage, index: string, newData: any) -> (SaveResult),
+	GetPages: (self: OrderedStorage, ascending: boolean, pageSize: number, min: number, max: number) -> (PageResult),
+	Clear: (self: OrderedStorage, index: string) -> (),
+	Close: (self: OrderedStorage) -> (),
 }
 export type OrderedStorageResult = Result<OrderedStorage?>
-export type StorageResult = Result<((PlayerStorage | BaseStorage)?)>
+export type StorageResult = Result<((OrderedStorage | PlayerStorage | BaseStorage)?)>
 export type BaseResult = Result<((GlobalDataStore | OrderedDataStore)?)>
 
 

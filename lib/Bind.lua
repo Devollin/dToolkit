@@ -1,13 +1,13 @@
 --!strict
 --[[================================================================================================
 
-Bind | Written by Devi (@Devollin) | 2022 | v1.0.0
+Bind | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A Bind class that is used as an interface for binding keys to ContextActionService.
 	
 ==================================================================================================]]
 
 
-local ContextActionService = game:GetService("ContextActionService")
+local ContextActionService: ContextActionService = game:GetService("ContextActionService")
 
 local Bind = {}
 
@@ -19,10 +19,10 @@ export type Bind = {
 	boundFunction: BoundFunction,
 	keys: Keys,
 	
-	Rebind: <a>(self: a, newKeys: Keys) -> (),
-	Enable: <a>(self: a) -> (),
-	Disable: <a>(self: a) -> (),
-	Destroy: <a>(self: a) -> (),
+	Rebind: (self: Bind, newKeys: Keys) -> (),
+	Enable: (self: Bind) -> (),
+	Disable: (self: Bind) -> (),
+	Destroy: (self: Bind) -> (),
 }
 
 
@@ -98,27 +98,27 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 		Replaces the bound function mapped to new keys.
 		@within Bind
 	]=]
-	function object:Rebind(newKeys: Keys)
+	function object.Rebind(self: Bind, newKeys: Keys)
 		local success, result = pcall(function()
 			ContextActionService:UnbindAction(name)
 		end)
 		
-		object.keys = newKeys
+		self.keys = newKeys
 		
 		ContextActionService:BindAction(name, function(actionName: string, state: Enum.UserInputState, input: InputObject)
 			if name == actionName then
 				if enabled then
-					object.boundFunction(actionName, state, input)
+					self.boundFunction(actionName, state, input)
 				end
 			end
-		end, mobileButton, table.unpack(newKeys))
+		end, mobileButton :: boolean, table.unpack(newKeys))
 	end
 	
 	--[=[
 		Enables the [Bind].
 		@within Bind
 	]=]
-	function object:Enable()
+	function object.Enable(self: Bind)
 		enabled = true
 	end
 	
@@ -126,7 +126,7 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 		Disables the [Bind].
 		@within Bind
 	]=]
-	function object:Disable()
+	function object.Disable(self: Bind)
 		enabled = false
 	end
 	
@@ -134,7 +134,7 @@ function Bind.new(name: string, keys: Keys, boundFunction: BoundFunction?, enabl
 		Destroys the [Bind].
 		@within Bind
 	]=]
-	function object:Destroy()
+	function object.Destroy(self: Bind)
 		ContextActionService:UnbindAction(name)
 	end
 	

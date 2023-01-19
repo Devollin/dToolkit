@@ -1,19 +1,17 @@
 --!strict
 --[[================================================================================================
 
-UIUtil | Written by Devi (@Devollin) | 2022 | v1.0.0
+UIUtil | Written by Devi (@Devollin) | 2022 | v1.0.1
 	Description: A library meant for use in solving UI-related problems.
 	
 ==================================================================================================]]
 
 
-local UserInputService = game:GetService("UserInputService")
-local GuiService = game:GetService("GuiService")
+local UserInputService: UserInputService = game:GetService("UserInputService")
 
-local Util = require(script.Parent:WaitForChild("Util"))
 local Platform = require(script.Parent:WaitForChild("Platform"))
 
-local PlayerGui: PlayerGui = Platform.PlayerGui
+local PlayerGui: PlayerGui = Platform.PlayerGui :: PlayerGui
 
 local interface = {}
 

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.0.1
+PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: Library of helpful player / character related functions.
 	
 Additional credits to:
@@ -10,8 +10,8 @@ Additional credits to:
 ==================================================================================================]]
 
 
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
+local RunService: RunService = game:GetService("RunService")
+local Players: Players = game:GetService("Players")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
 local Value = require(script.Parent:WaitForChild("Value"))
@@ -32,9 +32,9 @@ local interface = {}
 	@within PlayerUtil
 ]=]
 function interface:GetCharacterFromPlayerAsync(player: Player?): Model?
-	local character: Model? = if player then player.Character else nil
-	
-	return character
+	return
+		if player then player.Character
+		else nil
 end
 
 --[=[
@@ -43,9 +43,9 @@ end
 	@yields
 ]=]
 function interface:GetCharacterFromPlayer(player: Player?): Model?
-	local character: Model? = if player then (player.Character or player.CharacterAdded:Wait()) else nil
-	
-	return character
+	return
+		if player then (player.Character or player.CharacterAdded:Wait())
+		else nil
 end
 
 --[=[
@@ -54,9 +54,9 @@ end
 	@yields
 ]=]
 function interface:GetHumanoidFromCharacter(character: Model?): Humanoid?
-	local humanoid = if character then character:WaitForChild("Humanoid", 1) else nil
-	
-	return humanoid :: Humanoid?
+	return
+		if character then character:WaitForChild("Humanoid", 1) :: Humanoid
+		else nil
 end
 
 --[=[
@@ -64,9 +64,9 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetHumanoidFromCharacterAsync(character: Model?): Humanoid?
-	local humanoid: Humanoid? = if character then character:FindFirstChildOfClass("Humanoid") else nil
-	
-	return humanoid
+	return
+		if character then character:FindFirstChildOfClass("Humanoid")
+		else nil
 end
 
 --[=[
@@ -92,9 +92,9 @@ end
 	@yields
 ]=]
 function interface:GetRootFromCharacter(character: Model?): BasePart?
-	local root: BasePart? = if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart else nil
-	
-	return root
+	return
+		if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart
+		else nil
 end
 
 --[=[
@@ -102,9 +102,9 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetRootFromCharacterAsync(character: Model?): BasePart?
-	local root: BasePart? = if character then character:FindFirstChild("HumanoidRootPart") :: BasePart else nil
-	
-	return root
+	return
+		if character then character:FindFirstChild("HumanoidRootPart") :: BasePart
+		else nil
 end
 
 --[=[
@@ -113,10 +113,11 @@ end
 	@yields
 ]=]
 function interface:GetRootFromPlayer(player: Player?): BasePart?
-	local character: Model? = interface:GetCharacterFromPlayer(player)
-	local root: BasePart? = if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart else nil
+	local character = interface:GetCharacterFromPlayer(player)
 	
-	return root
+	return
+		if character then character:WaitForChild("HumanoidRootPart", 1) :: BasePart
+		else nil
 end
 
 --[=[
@@ -124,10 +125,11 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetRootFromPlayerAsync(player: Player?): BasePart?
-	local character: Model? = interface:GetCharacterFromPlayerAsync(player)
-	local root: BasePart? = if character then character:FindFirstChild("HumanoidRootPart") :: BasePart else nil
+	local character = interface:GetCharacterFromPlayerAsync(player)
 	
-	return root
+	return
+		if character then character:FindFirstChild("HumanoidRootPart") :: BasePart
+		else nil
 end
 
 --[=[
@@ -234,9 +236,10 @@ end
 ]=]
 function interface:GetCharacterFromPart(part: BasePart?): Model?
 	local player = interface:GetPlayerFromPart(part)
-	local character = if player then player.Character else nil
 	
-	return character
+	return
+		if player then player.Character
+		else nil
 end
 
 --[=[
@@ -244,20 +247,24 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetToolFromPlayerByName(player: Player?, name: string): Tool?
-	local character: Model? = if player then interface:GetCharacterFromPlayerAsync(player) else nil
+	local character =
+		if player then interface:GetCharacterFromPlayerAsync(player)
+		else nil
 	
 	if character then
-		local find: Instance? = character:FindFirstChild(name)
+		local find = character:FindFirstChild(name)
 		
 		if find and find:IsA("Tool") then
 			return find
 		end
 	end
 	
-	local backpack: Backpack? = if player then player:FindFirstChildOfClass("Backpack") else nil
+	local backpack =
+		if player then player:FindFirstChildOfClass("Backpack")
+		else nil
 	
 	if backpack then
-		local find: Instance? = backpack:FindFirstChild(name)
+		local find = backpack:FindFirstChild(name)
 		
 		if find and find:IsA("Tool") then
 			return find
@@ -280,13 +287,13 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetHeadFromCharacterAsync(character: Model?): BasePart?
-	local head = if character then character:FindFirstChild("Head") else nil
-	
-	if head and head:IsA("BasePart") then
-		return head
-	end
+	local head =
+		if character then character:FindFirstChild("Head")
+		else nil
 	
 	return
+		if head and head:IsA("BasePart") then head
+		else nil
 end
 
 --[=[
@@ -295,13 +302,13 @@ end
 	@yields
 ]=]
 function interface:GetHeadFromCharacter(character: Model?): BasePart?
-	local head = if character then character:WaitForChild("Head", 1) else nil
-	
-	if head and head:IsA("BasePart") then
-		return head
-	end
+	local head =
+		if character then character:WaitForChild("Head", 1)
+		else nil
 	
 	return
+		if head and head:IsA("BasePart") then head
+		else nil
 end
 
 --[=[
@@ -309,14 +316,17 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetHeadFromPlayerAsync(player: Player?): BasePart?
-	local character: Model? = if player then interface:GetCharacterFromPlayerAsync(player) else nil
-	local head = if character then character:FindFirstChild("Head") else nil
+	local character =
+		if player then interface:GetCharacterFromPlayerAsync(player)
+		else nil
 	
-	if head and head:IsA("BasePart") then
-		return head
-	end
+	local head =
+		if character then character:FindFirstChild("Head")
+		else nil
 	
 	return
+		if head and head:IsA("BasePart") then head
+		else nil
 end
 
 --[=[
@@ -325,14 +335,17 @@ end
 	@yields
 ]=]
 function interface:GetHeadFromPlayer(player: Player?): BasePart?
-	local character: Model? = if player then interface:GetCharacterFromPlayer(player) else nil
-	local head = if character then character:WaitForChild("Head", 1) else nil
+	local character =
+		if player then interface:GetCharacterFromPlayer(player)
+		else nil
 	
-	if head and head:IsA("BasePart") then
-		return head
-	end
+	local head =
+		if character then character:WaitForChild("Head", 1)
+		else nil
 	
 	return
+		if head and head:IsA("BasePart") then head
+		else nil
 end
 
 --[=[
@@ -340,9 +353,9 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetAnimatorFromHumanoidAsync(humanoid: Humanoid?): Animator?
-	local animator: Animator? = if humanoid then humanoid:FindFirstChildOfClass("Animator") else nil
-	
-	return animator
+	return
+		if humanoid then humanoid:FindFirstChildOfClass("Animator")
+		else nil
 end
 
 --[=[
@@ -351,13 +364,13 @@ end
 	@yields
 ]=]
 function interface:GetAnimatorFromHumanoid(humanoid: Humanoid?): Animator?
-	local animator = if humanoid then humanoid:WaitForChild("Animator", 1) else nil
-	
-	if animator and animator:IsA("Animator") then
-		return animator
-	end
+	local animator =
+		if humanoid then humanoid:WaitForChild("Animator", 1)
+		else nil
 	
 	return
+		if animator and animator:IsA("Animator") then animator
+		else nil
 end
 
 --[=[
@@ -365,10 +378,13 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetAnimatorFromCharacterAsync(character: Model?): Animator?
-	local humanoid: Humanoid? = if character then interface:GetHumanoidFromCharacterAsync(character) else nil
-	local animator: Animator? = if humanoid then interface:GetAnimatorFromHumanoidAsync(humanoid) else nil
+	local humanoid =
+		if character then interface:GetHumanoidFromCharacterAsync(character)
+		else nil
 	
-	return animator
+	return
+		if humanoid then interface:GetAnimatorFromHumanoidAsync(humanoid)
+		else nil
 end
 
 --[=[
@@ -377,10 +393,13 @@ end
 	@yields
 ]=]
 function interface:GetAnimatorFromCharacter(character: Model?): Animator?
-	local humanoid: Humanoid? = if character then interface:GetHumanoidFromCharacter(character) else nil
-	local animator: Animator? = if humanoid then interface:GetAnimatorFromHumanoid(humanoid) else nil
+	local humanoid =
+		if character then interface:GetHumanoidFromCharacter(character)
+		else nil
 	
-	return animator
+	return
+		if humanoid then interface:GetAnimatorFromHumanoid(humanoid)
+		else nil
 end
 
 --[=[
@@ -388,10 +407,13 @@ end
 	@within PlayerUtil
 ]=]
 function interface:GetAnimatorFromPlayerAsync(player: Player?): Animator?
-	local character: Model? = if player then interface:GetCharacterFromPlayerAsync(player) else nil
-	local animator: Animator? = if character then interface:GetAnimatorFromCharacterAsync(character) else nil
+	local character =
+		if player then interface:GetCharacterFromPlayerAsync(player)
+		else nil
 	
-	return animator
+	return
+		if character then interface:GetAnimatorFromCharacterAsync(character)
+		else nil
 end
 
 --[=[
@@ -400,10 +422,13 @@ end
 	@yields
 ]=]
 function interface:GetAnimatorFromPlayer(player: Player?): Animator?
-	local character: Model? = if player then interface:GetCharacterFromPlayer(player) else nil
-	local animator: Animator? = if character then interface:GetAnimatorFromCharacter(character) else nil
+	local character =
+		if player then interface:GetCharacterFromPlayer(player)
+		else nil
 	
-	return animator
+	return
+		if character then interface:GetAnimatorFromCharacter(character)
+		else nil
 end
 
 
@@ -475,7 +500,7 @@ end
 
 
 if RunService:IsClient() then
-	local Player = Players.LocalPlayer
+	local Player = Players.LocalPlayer :: Player
 	
 	interface.player = Value.new(Player) :: Value<Player>
 	interface.character = Value.new() :: Value<Model?>
