@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Docusaurus v2.0.1">
+<title data-rh="true">Stack | dToolkit</title><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Devollin.github.io/dToolkit/api/Stack"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Stack | dToolkit"><meta data-rh="true" name="description" content="A Stack class is used to hold a list of items which are accessible through a last-in, first-out
+format.
+
+```lua
+local stack = Stack.new(1, 2, 3, 4)
+
+stack:Add(5)
+
+stack:Next()
+
+print(stack:Get())
+
+stack:Remove(1)
+
+print(stack:Pop())
+
+if not stack:IsEmpty() then
+	stack:Clear()
+end
+
+stack:Destroy()
+```"><meta data-rh="true" property="og:description" content="A Stack class is used to hold a list of items which are accessible through a last-in, first-out
+format.
+
+```lua
+local stack = Stack.new(1, 2, 3, 4)
+
+stack:Add(5)
+
+stack:Next()
+
+print(stack:Get())
+
+stack:Remove(1)
+
+print(stack:Pop())
+
+if not stack:IsEmpty() then
+	stack:Clear()
+end
+
+stack:Destroy()
+```"><link data-rh="true" rel="canonical" href="https://Devollin.github.io/dToolkit/api/Stack"><link data-rh="true" rel="alternate" href="https://Devollin.github.io/dToolkit/api/Stack" hreflang="en"><link data-rh="true" rel="alternate" href="https://Devollin.github.io/dToolkit/api/Stack" hreflang="x-default"><link rel="stylesheet" href="/dToolkit/assets/css/styles.ecf04e60.css">
+<link rel="preload" href="/dToolkit/assets/js/runtime~main.06a9d986.js" as="script">
+<link rel="preload" href="/dToolkit/assets/js/main.6bcadd15.js" as="script">
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
+<div role="region"><a href="#" class="skipToContent_fXgn">Skip to main content</a></div><nav class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Navigation bar toggle" class="navbar__toggle clean-btn" type="button" tabindex="0"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/dToolkit/"><b class="navbar__title text--truncate">dToolkit</b></a><a class="navbar__item navbar__link" href="/dToolkit/docs/intro">Docs</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/dToolkit/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Devollin/dToolkit" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="searchBox_ZlJk"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input type="search" id="search_input_react" placeholder="Press S to Search..." aria-label="Search" class="navbar__search-input search-bar"></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Bind">Client</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Signal">Signal</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/dToolkit/api/Storage">Storage</a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Color3Util">​Color3​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/DisplayUtil">​Display​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Flow">​Flow</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Network">​Network</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/PlayerUtil">​Player​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Queue">​Queue</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Serial">​Serial</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/SimpleFunction">​Simple​Function</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/SimpleSignal">​Simple​Signal</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/SimpleValue">​Simple​Value</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/dToolkit/api/Stack">​Stack</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Stopwatch">​Stopwatch</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Timer">​Timer</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Tween">​Tween</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Util">​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/dToolkit/api/Value">​Value</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">Stack</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>
+  A Stack class is used to hold a list of items which are accessible through a last-in, first-out
+  format.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> stack <span class="token operator">=</span> Stack<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
+
+stack<span class="token punctuation">:</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+
+stack<span class="token punctuation">:</span><span class="token function">Next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+stack<span class="token punctuation">:</span><span class="token function">Remove</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> <span class="token keyword">not</span> stack<span class="token punctuation">:</span><span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">then</span>
+	stack<span class="token punctuation">:</span><span class="token function">Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+
+stack<span class="token punctuation">:</span><span class="token function">Destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a class="hash-link" href="#functions" title="Direct link to heading">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new"><code style="text-decoration:none">new</code><a class="hash-link" href="#new" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L64"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">new</code><code>(</code><div class="inset_uKQm"><div><code>...<!-- -->: </code><code class="blue_P4bS">a</code><span class="inlineDescription_G7Er">-- <span>
+<p>The initial list of items to hold in the <a href="/dToolkit/api/Stack">Stack</a>.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code></div><div>
+<p>Creates a new <a href="/dToolkit/api/Stack">Stack</a> object.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> stack <span class="token operator">=</span> Stack<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Add"><code style="text-decoration:none">Add</code><a class="hash-link" href="#Add" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L78"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Add</code><code>(</code><div class="inset_uKQm"><div><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>item<!-- -->: </code><code class="blue_P4bS">a</code></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Adds an item to the top of the <a href="/dToolkit/api/Stack">Stack</a>.</p>
+<pre class="language-lua"><code class="language-lua">stack<span class="token punctuation">:</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Pop"><code style="text-decoration:none">Pop</code><a class="hash-link" href="#Pop" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L93"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Pop</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code class="blue_P4bS">a</code></div><div>
+<p>
+  Returns the item at the top of the <a href="/dToolkit/api/Stack">Stack</a> and removes it from the <a href="/dToolkit/api/Stack">Stack</a>. This will return
+  nil if the <a href="/dToolkit/api/Stack">Stack</a> is empty. It is recommended to check if the <a href="/dToolkit/api/Stack">Stack</a> is empty by using
+  <a href="/dToolkit/api/Stack">Stack</a>:IsEmpty() before using this.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Next"><code style="text-decoration:none">Next</code><a class="hash-link" href="#Next" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L114"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Next</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Removes the item at the top of the <a href="/dToolkit/api/Stack">Stack</a>.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+stack<span class="token punctuation">:</span><span class="token function">Next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Get"><code style="text-decoration:none">Get</code><a class="hash-link" href="#Get" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L132"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Get</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code class="blue_P4bS">a</code></div><div>
+<p>
+  Returns the item at the top of the <a href="/dToolkit/api/Stack">Stack</a>. This will return nil if the <a href="/dToolkit/api/Stack">Stack</a> is empty. It
+  is recommended to check if the <a href="/dToolkit/api/Stack">Stack</a> is empty by using <a href="/dToolkit/api/Stack">Stack</a>:IsEmpty() before using this.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token function">print</span><span class="token punctuation">(</span>stack<span class="token punctuation">:</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Clear"><code style="text-decoration:none">Clear</code><a class="hash-link" href="#Clear" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L151"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Clear</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Clears out the <a href="/dToolkit/api/Stack">Stack</a> of all values. The <a href="/dToolkit/api/Stack">Stack</a> object remains usable.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">if</span> <span class="token keyword">not</span> stack<span class="token punctuation">:</span><span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">then</span>
+	stack<span class="token punctuation">:</span><span class="token function">Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Remove"><code style="text-decoration:none">Remove</code><a class="hash-link" href="#Remove" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L164"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Remove</code><code>(</code><div class="inset_uKQm"><div><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>item<!-- -->: </code><code class="blue_P4bS">a</code></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Removes a value from the <a href="/dToolkit/api/Stack">Stack</a> if is in the list.</p>
+<pre class="language-lua"><code class="language-lua">stack<span class="token punctuation">:</span><span class="token function">Remove</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="IsEmpty"><code style="text-decoration:none">IsEmpty</code><a class="hash-link" href="#IsEmpty" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L183"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">IsEmpty</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code class="blue_P4bS">boolean</code></div><div>
+<p>Returns a boolean describing if the <a href="/dToolkit/api/Stack">Stack</a> is empty.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">if</span> <span class="token keyword">not</span> stack<span class="token punctuation">:</span><span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">then</span>
+	stack<span class="token punctuation">:</span><span class="token function">Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Destroy"><code style="text-decoration:none">Destroy</code><a class="hash-link" href="#Destroy" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Devollin/dToolkit/blob/main/lib/Stack.lua#L196"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>Stack<!-- -->.</code><code class="green_DgR4">Destroy</code><code>(</code><code>self<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/dToolkit/api/Stack">Stack</a></code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">a</code><code class="op_lSLc">&gt;</code><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Clears the list and renders the <a href="/dToolkit/api/Stack">Stack</a> object unusable.</p>
+<pre class="language-lua"><code class="language-lua">stack<span class="token punctuation">:</span><span class="token function">Destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;new&quot;,
+            &quot;desc&quot;: &quot;Creates a new [Stack] object.\n\n```lua\nlocal stack = Stack.new(1, 2, 3, 4)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;...&quot;,
+                    &quot;desc&quot;: &quot;The initial list of items to hold in the [Stack].&quot;,
+                    &quot;lua_type&quot;: &quot;a&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 64,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Add&quot;,
+            &quot;desc&quot;: &quot;Adds an item to the top of the [Stack].\n\n```lua\nstack:Add(5)\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;item&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;a&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 78,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Pop&quot;,
+            &quot;desc&quot;: &quot;Returns the item at the top of the [Stack] and removes it from the [Stack]. This will return\nnil if the [Stack] is empty. It is recommended to check if the [Stack] is empty by using\n[Stack]:IsEmpty() before using this.\n\n```lua\nprint(stack:Pop())\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;a\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 93,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Next&quot;,
+            &quot;desc&quot;: &quot;Removes the item at the top of the [Stack].\n\n```lua\nprint(stack:Get())\n\nstack:Next()\n\nprint(stack:Get())\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 114,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Get&quot;,
+            &quot;desc&quot;: &quot;Returns the item at the top of the [Stack]. This will return nil if the [Stack] is empty. It\nis recommended to check if the [Stack] is empty by using [Stack]:IsEmpty() before using this.\n\n```lua\nprint(stack:Get())\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;a\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 132,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Clear&quot;,
+            &quot;desc&quot;: &quot;Clears out the [Stack] of all values. The [Stack] object remains usable.\n\n```lua\nif not stack:IsEmpty() then\n\tstack:Clear()\nend\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 151,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Remove&quot;,
+            &quot;desc&quot;: &quot;Removes a value from the [Stack] if is in the list.\n\n```lua\nstack:Remove(1)\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;item&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;a&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 164,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;IsEmpty&quot;,
+            &quot;desc&quot;: &quot;Returns a boolean describing if the [Stack] is empty.\n\n```lua\nif not stack:IsEmpty() then\n\tstack:Clear()\nend\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;boolean\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 183,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;Destroy&quot;,
+            &quot;desc&quot;: &quot;Clears the list and renders the [Stack] object unusable.\n\n```lua\nstack:Destroy()\n```\n\n\t&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;self&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Stack&lt;a&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 196,
+                &quot;path&quot;: &quot;lib/Stack.lua&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [],
+    &quot;types&quot;: [],
+    &quot;name&quot;: &quot;Stack&quot;,
+    &quot;desc&quot;: &quot;A Stack class is used to hold a list of items which are accessible through a last-in, first-out\nformat.\n\n```lua\nlocal stack = Stack.new(1, 2, 3, 4)\n\nstack:Add(5)\n\nstack:Next()\n\nprint(stack:Get())\n\nstack:Remove(1)\n\nprint(stack:Pop())\n\nif not stack:IsEmpty() then\n\tstack:Clear()\nend\n\nstack:Destroy()\n```&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 50,
+        &quot;path&quot;: &quot;lib/Stack.lua&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Add" class="table-of-contents__link toc-highlight">.Add</a></li><li><a href="#Clear" class="table-of-contents__link toc-highlight">.Clear</a></li><li><a href="#Destroy" class="table-of-contents__link toc-highlight">.Destroy</a></li><li><a href="#Get" class="table-of-contents__link toc-highlight">.Get</a></li><li><a href="#IsEmpty" class="table-of-contents__link toc-highlight">.IsEmpty</a></li><li><a href="#new" class="table-of-contents__link toc-highlight">.new</a></li><li><a href="#Next" class="table-of-contents__link toc-highlight">.Next</a></li><li><a href="#Pop" class="table-of-contents__link toc-highlight">.Pop</a></li><li><a href="#Remove" class="table-of-contents__link toc-highlight">.Remove</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2023 Devollin. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/dToolkit/assets/js/runtime~main.06a9d986.js"></script>
+<script src="/dToolkit/assets/js/main.6bcadd15.js"></script>
+</body>
+</html>
