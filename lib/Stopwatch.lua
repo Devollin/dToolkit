@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.0.2
+Timer | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: A stopwatch class.
 	
 ==================================================================================================]]
@@ -9,18 +9,14 @@ Timer | Written by Devi (@Devollin) | 2022 | v1.0.2
 
 export type Stopwatch = {
 	ClassName: "Stopwatch",
-	destroyed: boolean,
 	
 	Start: (self: Stopwatch) -> (),
-	Stop: (self: Stopwatch) -> (number?),
+	Stop: (self: Stopwatch) -> (number),
 	Pause: (self: Stopwatch) -> (number?),
-	GetElapsed: (self: Stopwatch) -> (number?, number?),
+	GetElapsed: (self: Stopwatch) -> (number, number?),
 	IsRunning: (self: Stopwatch) -> (boolean),
 	Destroy: (self: Stopwatch) -> (),
 }
-
-
-local Stopwatch = {}
 
 
 --[=[
@@ -36,13 +32,8 @@ local Stopwatch = {}
 	print(totalDelay)
 	```
 ]=]
---[=[
-	@prop destroyed boolean
-	Describes if the [Stopwatch] is destroyed.
-	
-	@within Stopwatch
-	@readonly
-]=]
+local Stopwatch = {}
+
 
 --[=[
 	Creates a new [Stopwatch] object.
@@ -57,12 +48,8 @@ function Stopwatch.new(): Stopwatch
 	local startTime = 0
 	local totalElapsed = 0
 	local running = false
-	local destroyed = false
 	
-	local object = {
-		ClassName = "Stopwatch" :: "Stopwatch",
-	}
-	object.destroyed = false
+	local object = {ClassName = "Stopwatch" :: "Stopwatch"}
 	
 	--[=[
 		Starts or resumes the [Stopwatch].
@@ -74,10 +61,6 @@ function Stopwatch.new(): Stopwatch
 		@within Stopwatch
 	]=]
 	function object.Start(self: Stopwatch)
-		if destroyed then
-			return
-		end
-		
 		if running then
 			return
 		end
@@ -95,11 +78,7 @@ function Stopwatch.new(): Stopwatch
 		
 		@within Stopwatch
 	]=]
-	function object.Stop(self: Stopwatch): number?
-		if destroyed then
-			return
-		end
-		
+	function object.Stop(self: Stopwatch): number
 		local total = totalElapsed
 		
 		totalElapsed = 0
@@ -123,10 +102,6 @@ function Stopwatch.new(): Stopwatch
 		@within Stopwatch
 	]=]
 	function object.Pause(self: Stopwatch): number?
-		if destroyed then
-			return
-		end
-		
 		if running then
 			running = false
 			
@@ -166,11 +141,7 @@ function Stopwatch.new(): Stopwatch
 		
 		@within Stopwatch
 	]=]
-	function object.GetElapsed(self: Stopwatch): (number?, number?)
-		if destroyed then
-			return
-		end
-		
+	function object.GetElapsed(self: Stopwatch): (number, number?)
 		if running then
 			return totalElapsed, time() - startTime
 		else
@@ -196,10 +167,6 @@ function Stopwatch.new(): Stopwatch
 		@within Stopwatch
 	]=]
 	function object.IsRunning(self: Stopwatch): boolean
-		if destroyed then
-			return false
-		end
-		
 		return running
 	end
 	
@@ -213,13 +180,9 @@ function Stopwatch.new(): Stopwatch
 		@within Stopwatch
 	]=]
 	function object.Destroy(self: Stopwatch)
-		if destroyed then
-			return
-		end
+		object:Stop()
 		
-		self:Stop()
-		
-		self.destroyed = true
+		table.clear(object)
 	end
 	
 	

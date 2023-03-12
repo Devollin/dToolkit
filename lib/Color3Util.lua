@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Color3Util | Written by Devi (@Devollin) | 2022 | v1.0.0
+Color3Util | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: A library with helpful Color3 functions.
 	
 ==================================================================================================]]
@@ -223,6 +223,38 @@ end
 ]=]
 function interface:GetRandomColorOnSequence(sequence: ColorSequence): Color3
 	return interface:GetColorAtPointFromSequence(sequence, math.random())
+end
+
+--[=[
+	Returns a ColorSequence with all given Color3s evenly spread out.
+	
+	```lua
+	local sequence = Color3Util:GetColorSequenceFromColor3s(Color3.new(1, 0.5, 1), Color3.new(1, 1, 0), Color3.new(1, 0.5, 0))
+	```
+	
+	@within Color3Util
+]=]
+function interface:GetColorSequenceFromColor3s(...: Color3): ColorSequence
+	local originalColors = {...}
+	
+	if #originalColors == 1 then
+		return ColorSequence.new(originalColors[1])
+	elseif #originalColors == 0 then
+		return ColorSequence.new(Color3.new(0, 0, 0))
+	end
+	
+	local keypoints = {}
+	
+	for index, color in originalColors do
+		local time =
+			if index == 1 then 0
+			elseif index == #originalColors then 1
+			else (index - 1) / (#originalColors - 1)
+		
+		table.insert(keypoints, ColorSequenceKeypoint.new(time, color))
+	end
+	
+	return ColorSequence.new(keypoints)
 end
 
 

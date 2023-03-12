@@ -2,6 +2,9 @@
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
 
+type Signal<a...> = Signal.Signal<a...>
+
+
 --[=[
 	@type StorageType "Player" | "Base" | "Ordered"
 	The type of DataStore; Player contains specific functionality used for players, Ordered creates a OrderedDataStore,
@@ -129,15 +132,16 @@ export type BaseData = {
 export type DataResult = Result<any>
 
 export type BaseStorage = {
-	LoadRetry: Signal.Signal<string, string, string?, string>,
-	LoadFail: Signal.Signal<string, string, string?, string>,
-	SaveStart: Signal.Signal<string>,
-	SaveRetry: Signal.Signal<string, string, string?, string>,
-	SaveFail: Signal.Signal<string, string, string?, string>,
-	SaveSuccess: Signal.Signal<string>,
-	FilledBlankStorage: Signal.Signal<string, string?, string>,
-	KeyUpdated: Signal.Signal<string, StringOrNumber, any, any>,
-	DeepKeyUpdated: Signal.Signal<string, any, any, {StringOrNumber}>,
+	LoadSuccess: Signal<string>,
+	LoadRetry: Signal<string, string, string?, string>,
+	LoadFail: Signal<string, string, string?, string>,
+	SaveStart: Signal<string>,
+	SaveRetry: Signal<string, string, string?, string>,
+	SaveFail: Signal<string, string, string?, string>,
+	SaveSuccess: Signal<string>,
+	FilledBlankStorage: Signal<string, string?, string>,
+	KeyUpdated: Signal<string, StringOrNumber, any, any>,
+	DeepKeyUpdated: Signal<string, any, any, {StringOrNumber}>,
 	
 	HardLoad: (self: BaseStorage, index: string) -> (DataResult),
 	SoftLoad: (self: BaseStorage, index: string) -> (DataResult),
@@ -151,15 +155,16 @@ export type BaseStorage = {
 export type BaseStorageResult = Result<BaseStorage?>
 
 export type PlayerStorage = {
-	LoadRetry: Signal.Signal<string, string, string?, string>,
-	LoadFail: Signal.Signal<string, string, string?, string>,
-	SaveStart: Signal.Signal<string>,
-	SaveRetry: Signal.Signal<string, string, string?, string>,
-	SaveFail: Signal.Signal<string, string, string?, string>,
-	SaveSuccess: Signal.Signal<string>,
-	FilledBlankStorage: Signal.Signal<string, string?, string>,
-	KeyUpdated: Signal.Signal<string, StringOrNumber, any, any>,
-	DeepKeyUpdated: Signal.Signal<string, any, any, {StringOrNumber}>,
+	LoadSuccess: Signal<string>,
+	LoadRetry: Signal<string, string, string?, string>,
+	LoadFail: Signal<string, string, string?, string>,
+	SaveStart: Signal<string>,
+	SaveRetry: Signal<string, string, string?, string>,
+	SaveFail: Signal<string, string, string?, string>,
+	SaveSuccess: Signal<string>,
+	FilledBlankStorage: Signal<string, string?, string>,
+	KeyUpdated: Signal<string, StringOrNumber, any, any>,
+	DeepKeyUpdated: Signal<string, any, any, {StringOrNumber}>,
 	
 	HardLoad: (self: PlayerStorage, index: number) -> (DataResult),
 	SoftLoad: (self: PlayerStorage, index: number) -> (DataResult),
@@ -173,15 +178,16 @@ export type PlayerStorage = {
 export type PlayerStorageResult = Result<PlayerStorage?>
 
 export type OrderedStorage = {
-	LoadRetry: Signal.Signal<string, string, string?, string>,
-	LoadFail: Signal.Signal<string, string, string?, string>,
-	SaveStart: Signal.Signal<string>,
-	SaveRetry: Signal.Signal<string, string, string?, string>,
-	SaveFail: Signal.Signal<string, string, string?, string>,
-	SaveSuccess: Signal.Signal<string>,
-	FilledBlankStorage: Signal.Signal<string, string?, string>,
-	GetSortedAsyncRetry: Signal.Signal<string, string, string?>,
-	GetSortedAsyncFail: Signal.Signal<string, string, string?>,
+	LoadSuccess: Signal<string>,
+	LoadRetry: Signal<string, string, string?, string>,
+	LoadFail: Signal<string, string, string?, string>,
+	SaveStart: Signal<string>,
+	SaveRetry: Signal<string, string, string?, string>,
+	SaveFail: Signal<string, string, string?, string>,
+	SaveSuccess: Signal<string>,
+	FilledBlankStorage: Signal<string, string?, string>,
+	GetSortedAsyncRetry: Signal<string, string, string?>,
+	GetSortedAsyncFail: Signal<string, string, string?>,
 	
 	HardLoad: (self: OrderedStorage, index: string) -> (DataResult),
 	SoftLoad: (self: OrderedStorage, index: string) -> (DataResult),

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-DataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
+DataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to aid in general DataStore-related functions.
 	
 ==================================================================================================]]
@@ -14,6 +14,8 @@ local Util = require(script.Parent.Parent:WaitForChild("Util"))
 
 local Types = require(script.Parent:WaitForChild("Types"))
 
+
+type Signal<a...> = Signal.Signal<a...>
 
 type BaseStorageResult = Types.BaseStorageResult
 type DataStoreResult = Types.DataStoreResult
@@ -108,6 +110,14 @@ local interface = {}
 	@class BaseStorage
 	A basic [GlobalDataStore] wrapper object.
 	@server
+]=]
+--[=[
+	@prop LoadSuccess Signal<string>
+	Fired when Storage succeeds in loading from the [GlobalDataStore].
+	The only param passed is the index.
+	
+	@within BaseStorage
+	@tag Event
 ]=]
 --[=[
 	@prop LoadRetry Signal<string, string, string?, string>
@@ -256,15 +266,16 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 	
 	local members: {[string]: Data} = {}
 	local object = {
-		LoadRetry = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		LoadFail = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveStart = Signal.new() :: Signal.Signal<string>,
-		SaveRetry = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveFail = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveSuccess = Signal.new() :: Signal.Signal<string>,
-		FilledBlankStorage = Signal.new() :: Signal.Signal<string, string?, string>,
-		KeyUpdated = Signal.new() :: Signal.Signal<string, string | number, any, any>,
-		DeepKeyUpdated = Signal.new() :: Signal.Signal<string, any, any, {string | number}>,
+		LoadSuccess = Signal.new() :: Signal<string>,
+		LoadRetry = Signal.new() :: Signal<string, string, string?, string>,
+		LoadFail = Signal.new() :: Signal<string, string, string?, string>,
+		SaveStart = Signal.new() :: Signal<string>,
+		SaveRetry = Signal.new() :: Signal<string, string, string?, string>,
+		SaveFail = Signal.new() :: Signal<string, string, string?, string>,
+		SaveSuccess = Signal.new() :: Signal<string>,
+		FilledBlankStorage = Signal.new() :: Signal<string, string?, string>,
+		KeyUpdated = Signal.new() :: Signal<string, string | number, any, any>,
+		DeepKeyUpdated = Signal.new() :: Signal<string, any, any, {string | number}>,
 	}
 	
 	
@@ -334,11 +345,17 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 			members[index].canSave = success
 			
 			if success then
+				self.LoadSuccess:Fire(index)
+				
 				if result == nil then
 					self.FilledBlankStorage:Fire(name, scope, index)
 				end
 				
-				members[index].data = if result == nil then Util:DeepCloneTable(default) else result
+				result =
+					if result == nil then Util:DeepCloneTable(default)
+					else result
+				
+				members[index].data = result
 				members[index].loadStatus = "Ready"
 				members[index].saveStatus = "Ready"
 				

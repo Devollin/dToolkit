@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.2
+Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.1.0
 	Description: Batched Yield-Safe Signal Implementation
 		This is a Signal class which has effectively identical behavior to a normal RBXScriptSignal,
 		with the only difference being a couple extra stack frames at the bottom of the stack trace
@@ -14,24 +14,39 @@ Signal | Written by stravant; Modified by Devi (@Devollin) | 2022 | v1.0.2
 ==================================================================================================]]
 
 
-export type Connection<b...> = {
+export type Connection<a...> = {
 	ClassName: "Connection",
 	_connected: boolean,
-	_callback: (b...) -> (),
-	_next: Connection<b...>?,
+	_callback: (a...) -> (),
+	_next: Connection<a...>?,
 	
-	Disconnect: (self: Connection<b...>) -> (),
+	Disconnect: (self: Connection<a...>) -> (),
 }
 
-export type Signal<b...> = {
-	ClassName: "Signal",
-	_handlerListHead: Connection<b...>?,
+export type InternalConnection<a...> = {
+	ClassName: "Connection",
 	
-	Connect: (self: Signal<b...>, callback: (b...) -> ()) -> (Connection<b...>),
-	Destroy: (self: Signal<b...>) -> (),
-	Fire: (self: Signal<b...>, b...) -> (),
-	Wait: (self: Signal<b...>) -> (b...),
-	Once: (self: Signal<b...>, callback: (b...) -> ()) -> (Connection<b...>),
+	Disconnect: (self: InternalConnection<a...>) -> (),
+}
+
+export type Signal<a...> = {
+	ClassName: "Signal",
+	_handlerListHead: Connection<a...>?,
+	
+	Connect: (self: Signal<a...>, callback: (a...) -> ()) -> (Connection<a...>),
+	Destroy: (self: Signal<a...>) -> (),
+	Clear: (self: Signal<a...>) -> (),
+	Fire: (self: Signal<a...>, a...) -> (),
+	Wait: (self: Signal<a...>) -> (a...),
+	Once: (self: Signal<a...>, callback: (a...) -> ()) -> (Connection<a...>),
+}
+
+export type InternalSignal<a...> = {
+	ClassName: "Signal",
+	
+	Connect: (self: InternalSignal<a...>, callback: (a...) -> ()) -> (InternalConnection<a...>),
+	Wait: (self: InternalSignal<a...>) -> (a...),
+	Once: (self: InternalSignal<a...>, callback: (a...) -> ()) -> (InternalConnection<a...>),
 }
 
 
@@ -43,7 +58,7 @@ local freeRunnerThread = nil :: thread?
 -- currently idle one.
 -- If there was a currently idle runner thread already, that's okay, that old
 -- one will just get thrown and eventually GCed.
-local function acquireRunnerThreadAndCallEventHandler<b>(callback: (...b) -> (...b), ...: b)
+local function acquireRunnerThreadAndCallEventHandler<a>(callback: (...a) -> (...a), ...: a)
 	local acquiredRunnerThread = freeRunnerThread
 	freeRunnerThread = nil
 	
@@ -70,6 +85,10 @@ end
 --[=[
 	@class Connection
 	A class used to manage connections to a [Signal].
+	
+	:::info
+	There is an alternative type named InternalConnection, which can be used for classes built using it! The primary
+	difference is that InternalConnection drops all internal members, but removes them from the type, but not from the object.
 ]=]
 local Connection = {}
 
@@ -79,19 +98,17 @@ local Connection = {}
 	@within Connection
 	@ignore
 ]=]
-function Connection.new<b...>(signal: Signal<b...>, callback: (b...) -> ()): Connection<b...>
-	local object = {
-		ClassName = "Connection" :: "Connection",
-	}
+function Connection.new<a...>(signal: Signal<a...>, callback: (a...) -> ()): Connection<a...>
+	local object = {ClassName = "Connection" :: "Connection"}
 	object._connected = true
 	object._callback = callback
-	object._next = nil :: Connection<b...>?
+	object._next = nil :: Connection<a...>?
 	
 	--[=[
 		Disconnects the [Connection] object from the given [Signal]; renders it unusable.
 		@within Connection
 	]=]
-	function object.Disconnect(self: Connection<b...>)
+	function object.Disconnect(self: Connection<a...>)
 		self._connected = false
 		
 		-- Unhook the node, but DON'T clear it. That way any fire calls that are
@@ -112,6 +129,7 @@ function Connection.new<b...>(signal: Signal<b...>, callback: (b...) -> ()): Con
 			end
 		end
 	end
+	
 	
 	return object
 end
@@ -136,6 +154,11 @@ end
 	
 	newConnection:Disconnect()
 	```
+	
+	:::info
+	There is an alternative type named InternalSignal, which can be used for classes built using it! The primary difference is
+	that InternalSignal drops the :Fire(), :Destroy(), and :Clear() methods, but only removes them from the type, not from the
+	object.
 ]=]
 local Signal = {}
 
@@ -149,11 +172,9 @@ local Signal = {}
 	
 	@within Signal
 ]=]
-function Signal.new<b...>(): Signal<b...>
-	local object = {
-		ClassName = "Signal" :: "Signal",
-	}
-	object._handlerListHead = nil :: (Connection<b...>?)
+function Signal.new<a...>(): Signal<a...>
+	local object = {ClassName = "Signal" :: "Signal"}
+	object._handlerListHead = nil :: (Connection<a...>?)
 	
 	--[=[
 		Adds a listener for the [Signal], and returns a [Connection].
@@ -170,7 +191,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object.Connect(self: Signal<b...>, callback: (b...) -> ()): Connection<b...>
+	function object.Connect(self: Signal<a...>, callback: (a...) -> ()): Connection<a...>
 		local connection = Connection.new(object, callback)
 		
 		if object._handlerListHead then
@@ -191,7 +212,22 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object.Destroy(self: Signal<b...>)
+	function object.Destroy(self: Signal<a...>)
+		object:Clear()
+		
+		table.clear(object)
+	end
+	
+	--[=[
+		Disconnects every [Connection] to the [Signal].
+		
+		```lua
+		newSignal:Destroy()
+		```
+		
+		@within Signal
+	]=]
+	function object.Clear(self: Signal<a...>)
 		object._handlerListHead = nil
 	end
 	
@@ -204,7 +240,7 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object.Fire(self: Signal<b...>, ...: b...): ()
+	function object.Fire(self: Signal<a...>, ...: a...): ()
 		local item = object._handlerListHead
 		
 		while typeof(item) == "table" do
@@ -240,11 +276,11 @@ function Signal.new<b...>(): Signal<b...>
 		@within Signal
 		@yields
 	]=]
-	function object.Wait(self: Signal<b...>): (b...)
+	function object.Wait(self: Signal<a...>): (a...)
 		local waitingCoroutine = coroutine.running()
-		local connection: Connection<b...>
+		local connection: Connection<a...>
 		
-		connection = object:Connect(function(...: b...)
+		connection = object:Connect(function(...: a...)
 			connection:Disconnect()
 			
 			task.spawn(waitingCoroutine, ...)
@@ -267,10 +303,10 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within Signal
 	]=]
-	function object.Once(self: Signal<b...>, callback: (b...) -> ()): Connection<b...>
-		local connection: Connection<b...>
+	function object.Once(self: Signal<a...>, callback: (a...) -> ()): Connection<a...>
+		local connection: Connection<a...>
 		
-		connection = object:Connect(function(...: b...)
+		connection = object:Connect(function(...: a...)
 			if connection._connected then
 				connection:Disconnect()
 			end

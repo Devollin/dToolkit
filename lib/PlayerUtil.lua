@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.0.2
+PlayerUtil | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: Library of helpful player / character related functions.
 	
 Additional credits to:
@@ -13,11 +13,16 @@ Additional credits to:
 local RunService: RunService = game:GetService("RunService")
 local Players: Players = game:GetService("Players")
 
+local SimpleValue = require(script.Parent:WaitForChild("SimpleValue"))
 local Signal = require(script.Parent:WaitForChild("Signal"))
 local Value = require(script.Parent:WaitForChild("Value"))
 
-type Value<b...> = Value.Value<b...>
-type Signal<b...> = Signal.Signal<b...>
+type Value<a...> = Value.Value<a...>
+type InternalValue<a...> = Value.InternalValue<a...>
+type Signal<a...> = Signal.Signal<a...>
+type InternalSignal<a...> = Signal.InternalSignal<a...>
+type SimpleValue<a> = SimpleValue.SimpleValue<a>
+type InternalSimpleValue<a> = SimpleValue.InternalSimpleValue<a>
 
 local interface = {}
 
@@ -433,42 +438,42 @@ end
 
 
 --[=[
-	@prop player Value<Player>
+	@prop player SimpleValue<Player>
 	A reference to the [Player].
 	
 	@within PlayerUtil
 	@client
 ]=]
 --[=[
-	@prop character Value<Model?>
+	@prop character SimpleValue<Model?>
 	A reference to the [Player]'s character [Model].
 	
 	@within PlayerUtil
 	@client
 ]=]
 --[=[
-	@prop humanoid Value<Humanoid>
+	@prop humanoid SimpleValue<Humanoid>
 	A reference to the [Humanoid] of the [Player].
 	
 	@within PlayerUtil
 	@client
 ]=]
 --[=[
-	@prop animator Value<Animator?>
+	@prop animator SimpleValue<Animator?>
 	A reference to the [Player]'s [Animator].
 	
 	@within PlayerUtil
 	@client
 ]=]
 --[=[
-	@prop head Value<BasePart?>
+	@prop head SimpleValue<BasePart?>
 	A reference to the [Player]'s head [BasePart].
 	
 	@within PlayerUtil
 	@client
 ]=]
 --[=[
-	@prop root Value<BasePart?>
+	@prop root SimpleValue<BasePart?>
 	A reference to the [Player]'s root [BasePart].
 	
 	@within PlayerUtil
@@ -502,41 +507,57 @@ end
 if RunService:IsClient() then
 	local Player = Players.LocalPlayer :: Player
 	
-	interface.player = Value.new(Player) :: Value<Player>
-	interface.character = Value.new() :: Value<Model?>
-	interface.humanoid = Value.new() :: Value<Humanoid?>
+	local internal = {
+		player = SimpleValue.new(Player) :: SimpleValue<Player>,
+		character = SimpleValue.new(nil :: Model?) :: SimpleValue<Model?>,
+		humanoid = SimpleValue.new(nil :: Humanoid?) :: SimpleValue<Humanoid?>,
+		
+		animator = SimpleValue.new(nil :: Animator?) :: SimpleValue<Animator?>,
+		head = SimpleValue.new(nil :: BasePart?) :: SimpleValue<BasePart?>,
+		root = SimpleValue.new(nil :: BasePart?) :: SimpleValue<BasePart?>,
+		
+		state = Value.new() :: Value<Enum.HumanoidStateType?, Enum.HumanoidStateType?>,
+		
+		Respawned = Signal.new() :: Signal<Humanoid>,
+		Died = Signal.new() :: Signal<Model, Humanoid>,
+	}
 	
-	interface.animator = Value.new() :: Value<Animator?>
-	interface.head = Value.new() :: Value<BasePart?>
-	interface.root = Value.new() :: Value<BasePart?>
+	interface.player = (internal.player :: any) :: InternalValue<Player>
+	interface.character = (internal.character :: any) :: InternalValue<Model?>
+	interface.humanoid = (internal.humanoid :: any) :: InternalValue<Humanoid?>
 	
-	interface.state = Value.new() :: Value<Enum.HumanoidStateType?, Enum.HumanoidStateType?>
+	interface.animator = (internal.animator :: any) :: InternalValue<Animator?>
+	interface.head = (internal.head :: any) :: InternalValue<BasePart?>
+	interface.root = (internal.root :: any) :: InternalValue<BasePart?>
 	
-	interface.Respawned = Signal.new() :: Signal<Humanoid>
-	interface.Died = Signal.new() :: Signal<Model, Humanoid>
+	interface.state = internal.state :: InternalValue<Enum.HumanoidStateType?, Enum.HumanoidStateType?>
 	
-	interface.character.Changed:Connect(function(newValue)
-		interface.humanoid:Set(interface:GetHumanoidFromCharacter(newValue))
-		interface.head:Set(interface:GetHeadFromCharacter(newValue))
-		interface.root:Set(interface:GetRootFromCharacter(newValue))
+	interface.Respawned = (internal.Respawned :: any) :: InternalSignal<Humanoid>
+	interface.Died = (internal.Died :: any) :: InternalSignal<Model, Humanoid>
+	
+	
+	internal.character.Changed:Connect(function(newValue)
+		internal.humanoid:Set(interface:GetHumanoidFromCharacter(newValue))
+		internal.head:Set(interface:GetHeadFromCharacter(newValue))
+		internal.root:Set(interface:GetRootFromCharacter(newValue))
 	end)
 	
-	interface.humanoid.Changed:Connect(function(newValue)
+	internal.humanoid.Changed:Connect(function(newValue)
 		if newValue then
 			local connection, stateConnection
 			
-			interface.Respawned:Fire(newValue)
+			internal.Respawned:Fire(newValue)
 			
-			interface.animator:Set(interface:GetAnimatorFromHumanoid(newValue))
+			internal.animator:Set(interface:GetAnimatorFromHumanoid(newValue))
 			
 			stateConnection = newValue.StateChanged:Connect(function(old, new)
-				interface.state:Set(old, new)
+				internal.state:Set(old, new)
 			end)
 			
-			interface.state:Set(interface.state:Get(), newValue:GetState())
+			internal.state:Set(internal.state:Get(), newValue:GetState())
 			
 			connection = newValue.Died:Connect(function()
-				interface.Died:Fire(interface.character:Get() :: Model, newValue)
+				internal.Died:Fire(internal.character:Get() :: Model, newValue)
 				
 				connection:Disconnect()
 				stateConnection:Disconnect()
@@ -544,16 +565,16 @@ if RunService:IsClient() then
 		end
 	end)
 	
-	interface.player:Set(Player)
+	internal.player:Set(Player)
 	
 	local character = interface:GetCharacterFromPlayerAsync(Player)
 	
 	if character then
-		interface.character:Set(character)
+		internal.character:Set(character)
 	end
 	
 	Player.CharacterAdded:Connect(function(newCharacter)
-		interface.character:Set(newCharacter)
+		internal.character:Set(newCharacter)
 	end)
 end
 

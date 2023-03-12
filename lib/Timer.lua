@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.0.2
+Timer | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -11,16 +11,19 @@ local RunService: RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
 
-local timerSignal: Signal.Signal<number> = Signal.new()
 
+export type Signal<a...> = Signal.Signal<a...>
+export type InternalSignal<a...> = Signal.InternalSignal<a...>
+export type Connection<a...> = Signal.Connection<a...>
+export type InternalConnection<a...> = Signal.InternalConnection<a...>
 
 export type Timer = {
 	ClassName: "Timer",
 	id: string,
 	
-	Finished: Signal.Signal<nil>,
-	Paused: Signal.Signal<nil>,
-	Updated: Signal.Signal<number, number>,
+	Finished: Signal.InternalSignal<nil>,
+	Paused: Signal.InternalSignal<nil>,
+	Updated: Signal.InternalSignal<number, number>,
 	
 	Start: (self: Timer) -> (),
 	Stop: (self: Timer) -> (),
@@ -32,6 +35,8 @@ export type Timer = {
 	Destroy: (self: Timer) -> (),
 }
 
+
+local timerSignal: Signal<number> = Signal.new()
 
 local Timer = {}
 
@@ -81,19 +86,22 @@ local Timer = {}
 ]=]
 function Timer.new(duration: number?): Timer
 	local finished = false
-	local destroyed = false
 	local initDuration = duration or 0
 	local remaining = duration or 0
 	local elapsed = 0
-	local connection: Signal.Connection<number>?
+	local connection: Connection<number>?
 	
-	local object = {
-		ClassName = "Timer" :: "Timer",
+	local object = {ClassName = "Timer" :: "Timer"}
+	
+	local internal = {
+		Finished = Signal.new(),
+		Paused = Signal.new(),
+		Updated = Signal.new(),
 	}
 	
-	object.Finished = Signal.new()
-	object.Paused = Signal.new()
-	object.Updated = Signal.new()
+	object.Finished = (internal.Finished :: any) :: Signal.InternalSignal<nil>
+	object.Paused = (internal.Paused :: any) :: Signal.InternalSignal<nil>
+	object.Updated = (internal.Updated :: any) :: Signal.InternalSignal<number, number>
 	
 	object.id = tostring(object)
 	
@@ -103,10 +111,6 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Start(self: Timer)
-		if destroyed then
-			return
-		end
-		
 		if connection then
 			return
 		end
@@ -120,7 +124,7 @@ function Timer.new(duration: number?): Timer
 			remaining = math.clamp(remaining - delta, 0, math.huge)
 			elapsed = initDuration - remaining
 			
-			self.Updated:Fire(remaining, elapsed)
+			internal.Updated:Fire(remaining, elapsed)
 			
 			if remaining <= 0 then
 				if connection then
@@ -131,7 +135,7 @@ function Timer.new(duration: number?): Timer
 				finished = true
 				elapsed = initDuration
 				
-				self.Finished:Fire()
+				internal.Finished:Fire()
 			end
 		end)
 	end
@@ -141,10 +145,6 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Stop(self: Timer)
-		if destroyed then
-			return
-		end
-		
 		if finished then
 			return
 		end
@@ -164,10 +164,6 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Pause(self: Timer)
-		if destroyed then
-			return
-		end
-		
 		if finished then
 			return
 		end
@@ -177,7 +173,7 @@ function Timer.new(duration: number?): Timer
 			connection = nil
 		end
 		
-		self.Paused:Fire()
+		internal.Paused:Fire()
 	end
 	
 	--[=[
@@ -193,11 +189,7 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.SetDuration(self: Timer, newDuration: number)
-		if destroyed then
-			return
-		end
-		
-		if self:IsRunning() then
+		if object:IsRunning() then
 			return
 		end
 		
@@ -227,17 +219,13 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Destroy(self: Timer)
-		if destroyed then
-			return
-		end
+		object:Stop()
 		
-		self:Stop()
+		internal.Finished:Destroy()
+		internal.Paused:Destroy()
+		internal.Updated:Destroy()
 		
-		destroyed = true
-		
-		self.Finished:Destroy()
-		self.Paused:Destroy()
-		self.Updated:Destroy()
+		table.clear(object)
 	end
 	
 	

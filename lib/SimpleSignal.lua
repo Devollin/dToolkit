@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.2
+Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.1.0
 	Description: Lua-side duplication of the API of events on Roblox objects.
 		Signals are needed for to ensure that for local events objects are passed by reference
 		rather than by value where possible, as the BindableEvent objects always pass signal
@@ -11,16 +11,24 @@ Signal | Written by ???; Modified by Devi (@Devollin) | 2022 | v1.0.2
 ==================================================================================================]]
 
 
-export type Signal<b...> = {
+export type SimpleSignal<a...> = {
 	ClassName: "SimpleSignal",
-	Fire: (self: Signal<b...>, b...) -> (),
-	Connect: (self: Signal<b...>, (b...) -> ()) -> (RBXScriptConnection?),
-	Wait: (self: Signal<b...>) -> (b...),
-	Destroy: (self: Signal<b...>) -> (),
+	
+	Fire: (self: SimpleSignal<a...>, a...) -> (),
+	Connect: (self: SimpleSignal<a...>, (a...) -> ()) -> (RBXScriptConnection),
+	Wait: (self: SimpleSignal<a...>) -> (a...),
+	Destroy: (self: SimpleSignal<a...>) -> (),
+}
+
+export type InternalSimpleSignal<a...> = {
+	ClassName: "SimpleSignal",
+	
+	Connect: (self: InternalSimpleSignal<a...>, (a...) -> ()) -> (RBXScriptConnection),
+	Wait: (self: InternalSimpleSignal<a...>) -> (a...),
 }
 
 
-local Signal = {}
+local SimpleSignal = {}
 
 
 --[=[
@@ -53,15 +61,12 @@ local Signal = {}
 	
 	@within SimpleSignal
 ]=]
-function Signal.new<b...>(): Signal<b...>
-	local event: BindableEvent? = Instance.new("BindableEvent")
-	
+function SimpleSignal.new<a...>(): SimpleSignal<a...>
+	local event: BindableEvent = Instance.new("BindableEvent")
 	local argCount: any = nil -- Prevent edge case of :Fire("A", nil) --> "A" instead of "A", nil
 	local argData: any = nil
 	
-	local object = {
-		ClassName = "SimpleSignal" :: "SimpleSignal"
-	}
+	local object = {ClassName = "SimpleSignal" :: "SimpleSignal"}
 	
 	
 	--[=[
@@ -75,16 +80,14 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object.Fire(self: Signal<b...>, ...: b...)
-		if event then
-			argData = table.pack(...)
-			argCount = select("#", ...)
-			
-			event:Fire()
-			
-			argData = nil
-			argCount = nil
-		end
+	function object.Fire(self: SimpleSignal<a...>, ...: a...)
+		argData = table.pack(...)
+		argCount = select("#", ...)
+		
+		event:Fire()
+		
+		argData = nil
+		argCount = nil
 	end
 	
 	--[=[
@@ -102,18 +105,14 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@param callback -- Function handler called with arguments passed when :Fire(...) is called.
 		
-		@return RBXScriptConnection? -- Connection object that can be disconnected.
+		@return RBXScriptConnection -- Connection object that can be disconnected.
 		
 		@within SimpleSignal
 	]=]
-	function object.Connect(self: Signal<b...>, callback: (b...) -> ()): RBXScriptConnection?
-		if event then
-			return event.Event:Connect(function()
-				callback(unpack(argData, 1, argCount))
-			end)
-		end
-		
-		return
+	function object.Connect(self: SimpleSignal<a...>, callback: (a...) -> ()): RBXScriptConnection
+		return event.Event:Connect(function()
+			callback(unpack(argData, 1, argCount))
+		end)
 	end
 	
 	--[=[
@@ -133,14 +132,12 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object.Wait(self: Signal<b...>): (b...)
-		if event then
-			event.Event:Wait()
-			
-			assert(argData, "Missing arg data, likely due to :TweenSize/Position corrupting threadrefs.")
-			
-			return unpack(argData, 1, argCount)
-		end
+	function object.Wait(self: SimpleSignal<a...>): (a...)
+		event.Event:Wait()
+		
+		assert(argData, "Missing arg data, likely due to :TweenSize/Position corrupting threadrefs.")
+		
+		return unpack(argData, 1, argCount)
 	end
 	
 	--[=[
@@ -152,13 +149,11 @@ function Signal.new<b...>(): Signal<b...>
 		
 		@within SimpleSignal
 	]=]
-	function object.Destroy(self: Signal<b...>)
-		if event then
-			event:Destroy()
-			
-			event = nil
-		end
+	function object.Destroy(self: SimpleSignal<a...>)
+		table.clear(object)
 		
+		event:Destroy()
+		event = nil :: any
 		argData = nil
 		argCount = nil
 	end
@@ -168,4 +163,4 @@ function Signal.new<b...>(): Signal<b...>
 end
 
 
-return Signal
+return SimpleSignal

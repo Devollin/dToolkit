@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Storage | Written by Devi (@Devollin) | 2022 | v1.0.1
+Storage | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to aid in Data-related functions.
 	
 ==================================================================================================]]
@@ -59,7 +59,7 @@ if RunService:IsServer() then
 				},
 			},
 		})
-
+		
 		if storageResult.success then
 			local storage = storageResult.result
 			

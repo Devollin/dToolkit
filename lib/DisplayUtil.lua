@@ -210,9 +210,9 @@ function interface:PlaceCommasInNumber(number: number): string
 	
 	local i, j, minus, int, fraction = tostring(number):find("([-]?)(%d+)([.]?%d*)")
 	
-	int = int:reverse():gsub("(%d%d%d)", "%1,")
+	int = (int :: string):reverse():gsub("(%d%d%d)", "%1,")
 	
-	return minus .. int:reverse():gsub("^,", "") .. fraction
+	return (minus :: string) .. (int :: string):reverse():gsub("^,", "") .. (fraction :: string)
 end
 
 --[=[

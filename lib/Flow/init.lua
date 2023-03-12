@@ -57,7 +57,6 @@ export type FlowModifiers = Modifiers
 local RunService: RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent:WaitForChild("Signal"))
-local Util = require(script.Parent:WaitForChild("Util"))
 
 local Styles = require(script:WaitForChild("Styles"))
 local Types = require(script:WaitForChild("Types"))
@@ -363,7 +362,9 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 					end)
 				end
 				
-				self.Stepped:Fire()
+				if object.Stepped then
+					object.Stepped:Fire()
+				end
 			end)
 		end)
 	end
@@ -423,6 +424,8 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 		if typeof(newTargets) == "table" then
 			table.clear(newTargets)
 		end
+		
+		table.clear(object)
 	end
 	
 	--[=[

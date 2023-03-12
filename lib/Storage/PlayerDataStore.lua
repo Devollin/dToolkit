@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
+PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to aid in DataStore-related functions.
 	
 ==================================================================================================]]
@@ -34,6 +34,14 @@ local interface = {}
 	@class PlayerStorage
 	A player-focused [GlobalDataStore] wrapper object.
 	@server
+]=]
+--[=[
+	@prop LoadSuccess Signal<string>
+	Fired when Storage succeeds in loading from the [GlobalDataStore].
+	The only param passed is the index.
+	
+	@within PlayerStorage
+	@tag Event
 ]=]
 --[=[
 	@prop LoadRetry Signal<string, string, string?, string>
@@ -139,6 +147,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 	
 	local autosaveTimers: {[number]: Timer.Timer} = {}
 	local object = {
+		LoadSuccess = dataStore.LoadSuccess,
 		LoadRetry = dataStore.LoadRetry,
 		LoadFail = dataStore.LoadFail,
 		SaveStart = dataStore.SaveStart,
@@ -161,8 +170,17 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@yields
 	]=]
 	function object.HardLoad(self: PlayerStorage, index: number): DataResult
+		local oldTimer = autosaveTimers[index]
+		
+		if oldTimer then
+			oldTimer:Stop()
+			oldTimer:Destroy()
+			
+			autosaveTimers[index] = nil
+		end
+		
 		local timer = Timer.new()
-		timer:SetDuration(120)
+		timer:SetDuration(150)
 		
 		timer.Finished:Connect(function()
 			self:HardSave(index)
@@ -286,8 +304,10 @@ end
 Players.PlayerAdded:Connect(function(player)
 	local id = player.UserId
 	
-	for name, dataStore in pairs(dataStores) do
-		task.spawn(dataStore.HardLoad, dataStore, id)
+	for name, dataStore in dataStores do
+		task.spawn(function()
+			dataStore:HardLoad(id)
+		end)
 	end
 end)
 
@@ -296,9 +316,11 @@ Players.PlayerRemoving:Connect(function(player)
 	
 	task.wait(0.5)
 	
-	if Util:GetDictionaryLength(Players:GetPlayers()) > 0 then
-		for name, dataStore in pairs(dataStores) do
-			task.spawn(dataStore.HardSave, dataStore, id)
+	if #(Players:GetPlayers()) > 0 then
+		for name, dataStore in dataStores do
+			task.spawn(function()
+				dataStore:Clear(id)
+			end)
 		end
 	end
 end)

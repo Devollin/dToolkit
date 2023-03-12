@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Value | Written by Devi (@Devollin) | 2022 | v1.0.1
+Value | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: Interface for creating custom values with changed events.
 	
 ==================================================================================================]]
@@ -10,18 +10,30 @@ Value | Written by Devi (@Devollin) | 2022 | v1.0.1
 local Signal = require(script.Parent:WaitForChild("Signal"))
 
 
-type Signal<b...> = Signal.Signal<b...>
+export type Signal<a...> = Signal.Signal<a...>
+export type InternalSignal<a...> = Signal.InternalSignal<a...>
+export type Connection<a...> = Signal.Connection<a...>
+export type InternalConnection<a...> = Signal.InternalConnection<a...>
 
-export type Value<b...> = {
+export type Value<a...> = {
 	ClassName: "Value",
-	WillChange: Signal<b...>,
-	Changed: Signal<b...>,
+	WillChange: InternalSignal<a...>,
+	Changed: InternalSignal<a...>,
 	
-	Set: (self: Value<b...>, b...) -> (),
-	Get: (self: Value<b...>) -> (b...),
-	Clone: (self: Value<b...>) -> (Value<b...>),
-	RawSet: (self: Value<b...>, b...) -> (),
-	Destroy: (self: Value<b...>) -> (),
+	Set: (self: Value<a...>, a...) -> (),
+	Get: (self: Value<a...>) -> (a...),
+	Clone: (self: Value<a...>) -> (Value<a...>),
+	RawSet: (self: Value<a...>, a...) -> (),
+	Destroy: (self: Value<a...>) -> (),
+}
+
+export type InternalValue<a...> = {
+	ClassName: "Value",
+	WillChange: InternalSignal<a...>,
+	Changed: InternalSignal<a...>,
+	
+	Get: (self: InternalValue<a...>) -> (a...),
+	Clone: (self: InternalValue<a...>) -> (Value<a...>),
 }
 
 
@@ -53,6 +65,10 @@ export type Value<b...> = {
 	
 	:::caution String Literals
 	It should be noted that for one reason or another, Value is not able to typecheck string literals properly.
+	
+	:::info
+	There is an alternative type named InternalValue, which can be used for classes built using it! The primary difference
+	is that InternalValue drops the :Set(), :Destroy(), and :RawSet() methods, but only from the type, not the object.
 ]=]
 
 --[=[
@@ -95,15 +111,15 @@ local Value = {}
 	
 	@within Value
 ]=]
-function Value.new<b...>(...: b...): Value<b...>
+function Value.new<a...>(...: a...): Value<a...>
 	local deleted = false
 	local value: any = table.pack(...)
 	
 	local object = {
 		ClassName = "Value" :: "Value",
 	}
-	object.WillChange = Signal.new() :: Signal<b...>
-	object.Changed = Signal.new() :: Signal<b...>
+	object.WillChange = Signal.new() :: Signal<a...>
+	object.Changed = Signal.new() :: Signal<a...>
 	
 	
 	--[=[
@@ -115,9 +131,9 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object.Set(self: Value<b...>, ...: b...)
+	function object.Set(self: Value<a...>, ...: a...)
 		if not deleted then
-			object.WillChange:Fire(object:Get())
+			(object.WillChange :: any):Fire((object :: any):Get())
 			
 			value = table.pack(...)
 			
@@ -134,7 +150,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object.Get(self: Value<b...>): (b...)
+	function object.Get(self: Value<a...>): (a...)
 		if not deleted then
 			return table.unpack(value)
 		end
@@ -149,7 +165,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object.Clone(self: Value<b...>): Value<b...>
+	function object.Clone(self: Value<a...>): Value<a...>
 		return Value.new(table.unpack(value)) :: any
 	end
 	
@@ -158,7 +174,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object.RawSet(self: Value<b...>, ...: b...)
+	function object.RawSet(self: Value<a...>, ...: a...)
 		value = table.pack(...)
 	end
 	
@@ -171,7 +187,7 @@ function Value.new<b...>(...: b...): Value<b...>
 		
 		@within Value
 	]=]
-	function object.Destroy(self: Value<b...>)
+	function object.Destroy(self: Value<a...>)
 		if deleted then
 			return
 		end
@@ -183,7 +199,7 @@ function Value.new<b...>(...: b...): Value<b...>
 	end
 	
 	
-	return object
+	return (object :: any) :: Value<a...>
 end
 
 

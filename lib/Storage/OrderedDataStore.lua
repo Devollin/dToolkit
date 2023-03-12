@@ -1,13 +1,21 @@
 --!strict
 --[[================================================================================================
 
-OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.1
+OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
 	Description: A library to aid in OrderedDataStore-related functions.
 	
 ==================================================================================================]]
 
 
+local DataStoreService: DataStoreService = game:GetService("DataStoreService")
+
+local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
+local Util = require(script.Parent.Parent:WaitForChild("Util"))
+
 local Types = require(script.Parent:WaitForChild("Types"))
+
+
+type Signal<a...> = Signal.Signal<a...>
 
 type OrderedDataStoreResult = Types.OrderedDataStoreResult
 type OrderedStorageResult = Types.OrderedStorageResult
@@ -18,11 +26,6 @@ type SaveResult = Types.SaveResult
 type DataResult = Types.DataResult
 type Data = Types.BaseData
 
-
-local DataStoreService: DataStoreService = game:GetService("DataStoreService")
-
-local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
-local Util = require(script.Parent.Parent:WaitForChild("Util"))
 
 local dataStores = {}
 
@@ -277,15 +280,16 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 	
 	local members: {[string]: Data} = {}
 	local object = {
-		LoadRetry = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		LoadFail = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveStart = Signal.new() :: Signal.Signal<string>,
-		SaveRetry = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveFail = Signal.new() :: Signal.Signal<string, string, string?, string>,
-		SaveSuccess = Signal.new() :: Signal.Signal<string>,
-		FilledBlankStorage = Signal.new() :: Signal.Signal<string, string?, string>,
-		GetSortedAsyncRetry = Signal.new() :: Signal.Signal<string, string, string?>,
-		GetSortedAsyncFail = Signal.new() :: Signal.Signal<string, string, string?>,
+		LoadSuccess = Signal.new() :: Signal<string>,
+		LoadRetry = Signal.new() :: Signal<string, string, string?, string>,
+		LoadFail = Signal.new() :: Signal<string, string, string?, string>,
+		SaveStart = Signal.new() :: Signal<string>,
+		SaveRetry = Signal.new() :: Signal<string, string, string?, string>,
+		SaveFail = Signal.new() :: Signal<string, string, string?, string>,
+		SaveSuccess = Signal.new() :: Signal<string>,
+		FilledBlankStorage = Signal.new() :: Signal<string, string?, string>,
+		GetSortedAsyncRetry = Signal.new() :: Signal<string, string, string?>,
+		GetSortedAsyncFail = Signal.new() :: Signal<string, string, string?>,
 	}
 	
 	--[=[
@@ -355,11 +359,18 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 			members[index].canSave = success
 			
 			if success then
+				self.LoadSuccess:Fire(index)
+				
 				if result == nil then
 					self.FilledBlankStorage:Fire(name, scope, index)
 				end
 				
-				members[index].data = if result == nil then default else result
+				result =
+					if result == nil then default
+					else result
+				
+				members[index].data = result
+				members[index].saveStatus = "Ready"
 				members[index].loadStatus = "Ready"
 				
 				return {
