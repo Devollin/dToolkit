@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Platform | Written by Devi (@Devollin) | 2022 | v1.0.2
+Platform | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A set of variables meant to aide in determining the platform a player is on.
 	
 ==================================================================================================]]
@@ -139,7 +139,7 @@ ui.Parent = PlayerGui
 ]=]
 
 
-local internal = {
+local internal: {[string]: SimpleValue<any>} = {
 	platform = SimpleValue.new("Unknown"),
 	
 	mobile = SimpleValue.new(false),
@@ -210,11 +210,7 @@ local function DeterminePlatform()
 			internal.pc:Set(true)
 			internal.mobile:Set(false)
 			
-			if isDesktop then
-				internal.platform:Set("Desktop")
-			else
-				internal.platform:Set("Laptop")
-			end
+			internal.platform:Set(if isDesktop then "Desktop" else "Laptop")
 		else
 			internal.pc:Set(false)
 			
@@ -294,8 +290,8 @@ return {
 	platform = internal.platform :: InternalSimpleValue<string>,
 	
 	mobile = internal.mobile :: InternalSimpleValue<boolean>,
-	pc = SimpleValue.new(false) :: InternalSimpleValue<boolean>,
-	xbox = SimpleValue.new(GuiService:IsTenFootInterface()) :: InternalSimpleValue<boolean>,
+	pc = internal.pc :: InternalSimpleValue<boolean>,
+	xbox = internal.xbox :: InternalSimpleValue<boolean>,
 	vr = internal.vr :: InternalSimpleValue<boolean>,
 	
 	keyboard = internal.keyboard :: InternalSimpleValue<boolean>,
