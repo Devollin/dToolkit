@@ -180,7 +180,7 @@ function interface:GetColorAtPointFromSequence(sequence: ColorSequence, point: n
 	if #keypoints == 2 then
 		finalColor = keypoints[1].Value:Lerp(keypoints[2].Value, point)
 	else
-		for index, value in ipairs(sequence.Keypoints) do
+		for index, value in sequence.Keypoints do
 			if value.Time <= point then
 				local otherValue = sequence.Keypoints[index + 1]
 				

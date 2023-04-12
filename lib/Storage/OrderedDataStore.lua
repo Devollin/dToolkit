@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
+OrderedDataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A library to aid in OrderedDataStore-related functions.
 	
 ==================================================================================================]]

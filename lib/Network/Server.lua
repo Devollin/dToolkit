@@ -144,7 +144,7 @@ end
 	@server
 ]=]
 function interface:FirePlayers(name: string, players: {Player}, ...: any)
-	for _, player in ipairs(players) do
+	for _, player in players do
 		remote:FireClient(player, GenerateMetadata(name, "Normal"), ...)
 	end
 end

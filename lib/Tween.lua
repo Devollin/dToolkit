@@ -245,25 +245,25 @@ function interface.fromGroup(objects: {Instance}, properties: Properties, modifi
 	object.Completed = tweens[1].Completed :: RBXScriptSignal
 	
 	function object.Play(self: TweenGroup)
-		for _, tween in ipairs(tweens) do
+		for _, tween in tweens do
 			tween:Play()
 		end
 	end
 	
 	function object.Pause(self: TweenGroup)
-		for _, tween in ipairs(tweens) do
+		for _, tween in tweens do
 			tween:Pause()
 		end
 	end
 	
 	function object.Cancel(self: TweenGroup)
-		for _, tween in ipairs(tweens) do
+		for _, tween in tweens do
 			tween:Cancel()
 		end
 	end
 	
 	function object.Destroy(self: TweenGroup)
-		for _, tween in ipairs(tweens) do
+		for _, tween in tweens do
 			tween:Destroy()
 		end
 		

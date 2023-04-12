@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
+PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A library to aid in DataStore-related functions.
 	
 ==================================================================================================]]
@@ -20,12 +20,11 @@ type Default = Types.Default
 
 local Players: Players = game:GetService("Players")
 
-local Timer = require(script.Parent.Parent:WaitForChild("Timer"))
 local Util = require(script.Parent.Parent:WaitForChild("Util"))
 
 local DataStore = require(script.Parent:WaitForChild("DataStore"))
 
-local dataStores = {}
+local dataStores: {[string]: Types.PlayerStorage} = {}
 
 local interface = {}
 
@@ -121,6 +120,15 @@ local interface = {}
 	@within PlayerStorage
 	@tag Event
 ]=]
+--[=[
+	@prop MiscMessage Signal<ErrorCode, string, string>
+	Fired when an error (or warning) code is thrown by Storage.
+	The first param is the error code, the second param is a debug.traceback() string, and the last param is the name of the
+	index.
+	
+	@within PlayerStorage
+	@tag Event
+]=]
 
 --[=[
 	Creates a new [PlayerStorageResult] object.
@@ -145,7 +153,6 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 	
 	local dataStore = dataStore.result :: BaseStorage
 	
-	local autosaveTimers: {[number]: Timer.Timer} = {}
 	local object = {
 		LoadSuccess = dataStore.LoadSuccess,
 		LoadRetry = dataStore.LoadRetry,
@@ -157,6 +164,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		KeyUpdated = dataStore.KeyUpdated,
 		SaveSuccess = dataStore.SaveSuccess,
 		DeepKeyUpdated = dataStore.DeepKeyUpdated,
+		MiscMessage = dataStore.MiscMessage,
 	}
 	
 	
@@ -170,28 +178,6 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@yields
 	]=]
 	function object.HardLoad(self: PlayerStorage, index: number): DataResult
-		local oldTimer = autosaveTimers[index]
-		
-		if oldTimer then
-			oldTimer:Stop()
-			oldTimer:Destroy()
-			
-			autosaveTimers[index] = nil
-		end
-		
-		local timer = Timer.new()
-		timer:SetDuration(150)
-		
-		timer.Finished:Connect(function()
-			self:HardSave(index)
-			
-			timer:Start()
-		end)
-		
-		timer:Start()
-		
-		autosaveTimers[index] = timer
-		
 		return dataStore:HardLoad(tostring(index))
 	end
 	
@@ -268,10 +254,6 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 	]=]
 	function object.Clear(self: PlayerStorage, index: number)
 		dataStore:Clear(tostring(index))
-		
-		autosaveTimers[index]:Stop()
-		autosaveTimers[index]:Destroy()
-		autosaveTimers[index] = nil
 	end
 	
 	--[=[
@@ -284,7 +266,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 	end
 	
 	
-	for _, player in pairs(Players:GetPlayers()) do
+	for _, player in Players:GetPlayers() do
 		task.spawn(function()
 			object:HardLoad(player.UserId)
 		end)
