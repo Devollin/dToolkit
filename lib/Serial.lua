@@ -88,7 +88,7 @@ end
 function serializers.ColorSequence(input: ColorSequence): {{t: number, color: string}}
 	local sequences = {}
 	
-	for _, keypoint in ipairs(input.Keypoints) do
+	for _, keypoint in input.Keypoints do
 		table.insert(sequences, serializers.ColorSequenceKeypoint(keypoint))
 	end
 	
@@ -102,7 +102,7 @@ end
 function serializers.NumberSequence(input: NumberSequence): {NumberSequenceKeypointData}
 	local sequences = {}
 	
-	for _, keypoint in ipairs(input.Keypoints) do
+	for _, keypoint in input.Keypoints do
 		table.insert(sequences, serializers.NumberSequenceKeypoint(keypoint))
 	end
 	
@@ -193,7 +193,7 @@ end
 function deserializers.ColorSequence(input: {{t: number, color: string}}): ColorSequence
 	local sequences = {}
 	
-	for _, keypoint in ipairs(input) do
+	for _, keypoint in input do
 		table.insert(sequences, deserializers.ColorSequenceKeypoint(keypoint))
 	end
 	
@@ -207,7 +207,7 @@ end
 function deserializers.NumberSequence(input: {NumberSequenceKeypointData}): NumberSequence
 	local sequences = {}
 	
-	for _, keypoint in ipairs(input) do
+	for _, keypoint in input do
 		table.insert(sequences, deserializers.NumberSequenceKeypoint(keypoint))
 	end
 	

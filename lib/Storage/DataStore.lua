@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-DataStore | Written by Devi (@Devollin) | 2022 | v1.0.2
+DataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A library to aid in general DataStore-related functions.
 	
 ==================================================================================================]]
@@ -197,6 +197,15 @@ local interface = {}
 	@within BaseStorage
 	@tag Event
 ]=]
+--[=[
+	@prop MiscMessage Signal<ErrorCode, string, string>
+	Fired when an error (or warning) code is thrown by Storage.
+	The first param is the error code, the second param is a debug.traceback() string, and the last param is the name of the
+	index.
+	
+	@within BaseStorage
+	@tag Event
+]=]
 
 --[=[
 	Returns a [DataStoreResult] object, given a name and optional scope and [DataStoreOptions] parameters.
@@ -237,6 +246,7 @@ function interface:GetDataStore(name: string, scope: string?, options: DataStore
 		return {
 			success = false,
 			message = result :: any,
+			code = ("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode,
 		}
 	end
 end
@@ -259,6 +269,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		return {
 			success = false,
 			message = dataStore.message,
+			code = dataStore.code,
 		}
 	end
 	
@@ -276,6 +287,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		FilledBlankStorage = Signal.new() :: Signal<string, string?, string>,
 		KeyUpdated = Signal.new() :: Signal<string, string | number, any, any>,
 		DeepKeyUpdated = Signal.new() :: Signal<string, any, any, {string | number}>,
+		MiscMessage = Signal.new() :: Signal<Types.ErrorCode, string, string>,
 	}
 	
 	
@@ -307,14 +319,22 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						result = data.data
 					}
 				else
+					object.MiscMessage:Fire("L101", debug.traceback(), index)
+					
 					return {
 						success = false,
+						code = "L101",
+						message = debug.traceback(),
 					}
 				end
 			end
 			
+			object.MiscMessage:Fire("L101", debug.traceback(), index)
+			
 			return {
 				success = false,
+				code = "L101",
+				message = debug.traceback(),
 			}
 		else
 			members[index] = {
@@ -371,9 +391,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				
 				task.spawn(callbacks.GetAsync.Failed, result, name, scope, index)
 				
+				object.MiscMessage:Fire(("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode, debug.traceback(), index)
+				
 				return {
 					success = false,
-					message = result,
+					code = ("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode,
+					message = debug.traceback(),
 				}
 			end
 		end
@@ -401,8 +424,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						result = data.data,
 					}
 				else
+					object.MiscMessage:Fire("L101", debug.traceback(), index)
+					
 					return {
 						success = false,
+						code = "L101",
+						message = debug.traceback(),
 					}
 				end
 			elseif data.loadStatus == "Ready" then
@@ -411,13 +438,21 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					result = data.data,
 				}
 			else
+				object.MiscMessage:Fire("L101", debug.traceback(), index)
+				
 				return {
 					success = false,
+					code = "L101",
+					message = debug.traceback(),
 				}
 			end
 		else
+			object.MiscMessage:Fire("L102", debug.traceback(), index)
+			
 			return {
 				success = false,
+				code = "L102",
+				message = debug.traceback(),
 			}
 		end
 	end
@@ -437,8 +472,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		if data and data.canSave then
 			if data.saveStatus == "Saving" then
+				object.MiscMessage:Fire("S104", debug.traceback(), index)
+				
 				return {
 					success = true,
+					code = "S104",
+					message = debug.traceback(),
 				}
 			elseif (data.saveStatus == "Ready") or (data.saveStatus == "Failed") then
 				local success, result
@@ -479,19 +518,30 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					
 					task.spawn(callbacks.SetAsync.Failed, result, name, scope, options)
 					
+					object.MiscMessage:Fire(("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode, debug.traceback(), index)
+					
 					return {
 						success = false,
-						message = result,
+						code = ("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode,
+						message = debug.traceback(),
 					}
 				end
 			else
+				object.MiscMessage:Fire("S101", debug.traceback(), index)
+				
 				return {
 					success = false,
+					code = "S101",
+					message = debug.traceback(),
 				}
 			end
 		else
+			object.MiscMessage:Fire("S103", debug.traceback(), index)
+			
 			return {
 				success = true,
+				code = "S103",
+				message = debug.traceback(),
 			}
 		end
 	end
@@ -525,18 +575,30 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						success = true,
 					}
 				else
+					object.MiscMessage:Fire("S102", debug.traceback(), index)
+					
 					return {
 						success = false,
+						code = "S102",
+						message = debug.traceback(),
 					}
 				end
 			else
+				object.MiscMessage:Fire("S102", debug.traceback(), index)
+				
 				return {
 					success = false,
+					code = "S102",
+					message = debug.traceback(),
 				}
 			end
 		else
+			object.MiscMessage:Fire("S103", debug.traceback(), index)
+			
 			return {
 				success = false,
+				code = "S103",
+				message = debug.traceback(),
 			}
 		end
 	end
@@ -576,18 +638,30 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						success = true,
 					}
 				else
+					object.MiscMessage:Fire("S102", debug.traceback(), index)
+					
 					return {
 						success = false,
+						code = "S102",
+						message = debug.traceback(),
 					}
 				end
 			else
+				object.MiscMessage:Fire("S102", debug.traceback(), index)
+				
 				return {
 					success = false,
+					code = "S102",
+					message = debug.traceback(),
 				}
 			end
 		else
+			object.MiscMessage:Fire("S103", debug.traceback(), index)
+			
 			return {
 				success = false,
+				code = "S103",
+				message = debug.traceback(),
 			}
 		end
 	end
@@ -611,7 +685,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				local array = {...}
 				local oldData
 				
-				for otherKey, newKey in ipairs(array) do
+				for otherKey, newKey in array do
 					if indexedData ~= nil then
 						if otherKey == #array then
 							oldData = indexedData[newKey]
@@ -638,7 +712,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					local array = {...}
 					local oldData
 					
-					for otherKey, newKey in ipairs(array) do
+					for otherKey, newKey in array do
 						if indexedData ~= nil then
 							if otherKey == #array then
 								oldData = indexedData[newKey]
@@ -656,18 +730,30 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 						success = true,
 					}
 				else
+					object.MiscMessage:Fire("S102", debug.traceback(), index)
+					
 					return {
 						success = false,
+						code = "S102",
+						message = debug.traceback(),
 					}
 				end
 			else
+				object.MiscMessage:Fire("S102", debug.traceback(), index)
+				
 				return {
 					success = false,
+					code = "S102",
+					message = debug.traceback(),
 				}
 			end
 		else
+			object.MiscMessage:Fire("S103", debug.traceback(), index)
+			
 			return {
 				success = false,
+				code = "S103",
+				message = debug.traceback(),
 			}
 		end
 	end
@@ -696,11 +782,20 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@yields
 	]=]
 	function object.Close(self: BaseStorage)
+		local total = Util:GetDictionaryLength(members)
+		local finished = 0
+		
 		for key, data in pairs(members) do
 			task.spawn(function()
 				self:Clear(key)
+				
+				finished += 1
 			end)
 		end
+		
+		repeat
+			task.wait()
+		until total == finished
 	end
 	
 	
@@ -715,9 +810,20 @@ end
 
 
 game:BindToClose(function()
+	local total = Util:GetDictionaryLength(dataStores)
+	local finished = 0
+	
 	for name, dataStore in pairs(dataStores) do
-		dataStore:Close()
+		task.defer(function()
+			dataStore:Close()
+			
+			finished += 1
+		end)
 	end
+	
+	repeat
+		task.wait()
+	until total == finished
 end)
 
 

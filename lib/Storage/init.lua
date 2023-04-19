@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Storage | Written by Devi (@Devollin) | 2022 | v1.0.2
+Storage | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A library to aid in Data-related functions.
 	
 ==================================================================================================]]
@@ -16,6 +16,7 @@ export type OrderedStorage = Types.OrderedStorage
 export type PlayerStorage = Types.PlayerStorage
 export type BaseStorage = Types.BaseStorage
 export type StorageResult = Types.StorageResult
+export type ErrorCode = Types.ErrorCode
 
 type BaseResult = Types.BaseResult
 type BaseTypes = "Base" | "Ordered"

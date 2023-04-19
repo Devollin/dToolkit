@@ -144,6 +144,8 @@ end
 --[=[
 	@class Flow
 	Interface for tweening.
+	@deprecated v1.1.0 -- Flow is an older and a very underperforming customized tweening system. It may be replaced
+	eventually, but for the time being, it will not be maintained.
 ]=]
 
 --[=[
@@ -346,7 +348,7 @@ function Flow.new(targets: Target, goals: Properties, modifiers: ModifierInput?)
 					end
 				end
 				
-				for _, applicator in ipairs(applicators) do
+				for _, applicator in applicators do
 					task.defer(function()
 						if (not connection) then
 							applicator(died and 1 or 0)
