@@ -274,14 +274,23 @@ end
 
 --[=[
 	Creates and returns a new [Timer] object, with an Updated [Signal].
+	
+	@param initDuration -- Duration applied after initializing the [Timer].
+	
 	@within Timer
 ]=]
-function Timer.withUpdate(): TimerWithUpdate
-	local object = Timer.new();
+function Timer.withUpdate(initDuration: number?): TimerWithUpdate
+	local object = Timer.new(initDuration);
 	(object :: any).Updated = Signal.new() :: Signal.Signal<Remaining>
 	
 	
-	timerSignal:Connect(function()
+	local connection; connection = timerSignal:Connect(function()
+		if not object.ClassName then
+			connection:Disconnect()
+			
+			return
+		end
+		
 		if object:IsRunning() then
 			(object :: any).Updated:Fire(object:GetRemaining())
 		end
