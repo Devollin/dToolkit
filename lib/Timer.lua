@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2022 | v1.1.0
+Timer | Written by Devi (@Devollin) | 2023 | v2.0.0
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -12,54 +12,66 @@ local RunService: RunService = game:GetService("RunService")
 local Signal = require(script.Parent:WaitForChild("Signal"))
 
 
-export type Signal<a...> = Signal.Signal<a...>
-export type InternalSignal<a...> = Signal.InternalSignal<a...>
-export type Connection<a...> = Signal.Connection<a...>
-export type InternalConnection<a...> = Signal.InternalConnection<a...>
+export type Remaining = {
+	remaining: number,
+	elapsed: number,
+}
 
 export type Timer = {
 	ClassName: "Timer",
-	id: string,
 	
-	Finished: Signal.InternalSignal<nil>,
 	Paused: Signal.InternalSignal<nil>,
-	Updated: Signal.InternalSignal<number, number>,
+	Finished: Signal.InternalSignal<nil>,
 	
 	Start: (self: Timer) -> (),
-	Stop: (self: Timer) -> (),
 	Pause: (self: Timer) -> (),
+	Stop: (self: Timer) -> (),
 	IsRunning: (self: Timer) -> (boolean),
 	SetDuration: (self: Timer, newDuration: number) -> (),
-	GetDuration: (self: Timer) -> (number),
-	GetElapsed: (self: Timer) -> (number),
+	GetRemaining: (self: Timer) -> (Remaining),
 	Destroy: (self: Timer) -> (),
 }
 
+export type TimerWithUpdate = Timer & {Updated: Signal.Signal<Remaining>}
 
-local timerSignal: Signal<number> = Signal.new()
+
+local timerSignal = Signal.new()
 
 local Timer = {}
-
 
 --[=[
 	@class Timer
 	A timer class.
+	
+	:::note V2.0.0
+	As of v2.0.0, the Updated [Signal] is no longer a part of the default Timer class. It can be restored by using .withUpdate().
 ]=]
 --[=[
-	@type Finished Signal<>
+	@prop Finished Signal<>
 	Fired when the Timer finishes running.
 	
 	@within Timer
 ]=]
 --[=[
-	@type Paused Signal<>
+	@prop Paused Signal<>
 	Fired when the Timer has been paused.
 	
 	@within Timer
 ]=]
 --[=[
-	@type Updated Signal<number, number>
+	@prop Updated Signal<number, number>
 	Fired when the Timer has been updated. The first number is the time remaining, the second is the time elapsed.
+	
+	:::note
+	This [Signal] member is not available in the base version of [Timer]. Use .withUpdate() to implement it.
+	
+	@deprecated v2.0.0 -- Create your own updating method instead; removed due to a performance hit after the v2 revisions.
+	@within Timer
+]=]
+
+--[=[
+	@type Remaining {remaining: number, elapsed: number}
+	A data type used to display how much time is remaining / has elapsed in the Timer.
 	
 	@within Timer
 ]=]
@@ -80,83 +92,52 @@ local Timer = {}
 	newTimer:Start()
 	```
 	
-	@param duration -- The duration you want to give to the [Timer]; or nil, if you need to set it dynamically.
+	@param initDuration -- Duration applied after initializing the [Timer].
 	
 	@within Timer
 ]=]
-function Timer.new(duration: number?): Timer
-	local finished = false
-	local initDuration = duration or 0
-	local remaining = duration or 0
-	local elapsed = 0
-	local connection: Connection<number>?
-	
+function Timer.new(initDuration: number?): Timer
 	local object = {ClassName = "Timer" :: "Timer"}
+	object.Finished = (Signal.new() :: any) :: Signal.InternalSignal<nil>
+	object.Paused = (Signal.new() :: any) :: Signal.InternalSignal<nil>
 	
-	local internal = {
-		Finished = Signal.new(),
-		Paused = Signal.new(),
-		Updated = Signal.new(),
-	}
+	local timerThread: thread?
 	
-	object.Finished = (internal.Finished :: any) :: Signal.InternalSignal<nil>
-	object.Paused = (internal.Paused :: any) :: Signal.InternalSignal<nil>
-	object.Updated = (internal.Updated :: any) :: Signal.InternalSignal<number, number>
+	local duration: number
+	local remainingDuration: number
+	local resumeTimestamp: number
 	
-	object.id = tostring(object)
+	local running = false
 	
 	
 	--[=[
 		Starts the [Timer].
+		
+		:::caution
+		This will error if the [Timer] has not been given a duration yet.
+		
 		@within Timer
 	]=]
 	function object.Start(self: Timer)
-		if connection then
+		if not (duration and remainingDuration) then
+			error("Duration has not been set yet! Do that before starting a timer!")
+		end
+		
+		if running then
 			return
 		end
 		
-		if finished then
-			finished = false
-			remaining = initDuration
-		end
+		running = true
 		
-		connection = timerSignal:Connect(function(delta: number)
-			remaining = math.clamp(remaining - delta, 0, math.huge)
-			elapsed = initDuration - remaining
+		resumeTimestamp = time()
+		
+		timerThread = task.delay(remainingDuration, function()
+			timerThread = nil
+			running = false
+			remainingDuration = 0
 			
-			internal.Updated:Fire(remaining, elapsed)
-			
-			if remaining <= 0 then
-				if connection then
-					connection:Disconnect()
-					connection = nil
-				end
-				
-				finished = true
-				elapsed = initDuration
-				
-				internal.Finished:Fire()
-			end
+			((object.Finished :: any) :: Signal.Signal<nil>):Fire()
 		end)
-	end
-	
-	--[=[
-		Stops the [Timer].
-		@within Timer
-	]=]
-	function object.Stop(self: Timer)
-		if finished then
-			return
-		end
-		
-		if connection then
-			connection:Disconnect()
-			connection = nil
-		end
-		
-		finished = true
-		remaining = initDuration
-		elapsed = 0
 	end
 	
 	--[=[
@@ -164,16 +145,45 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Pause(self: Timer)
-		if finished then
+		if not running then
 			return
 		end
 		
-		if connection then
-			connection:Disconnect()
-			connection = nil
+		if not timerThread then
+			return
 		end
 		
-		internal.Paused:Fire()
+		running = false
+		
+		task.cancel(timerThread)
+		
+		timerThread = nil
+		
+		remainingDuration = time() - resumeTimestamp;
+		
+		((object.Paused :: any) :: Signal.Signal<nil>):Fire()
+	end
+	
+	--[=[
+		Stops the [Timer].
+		@within Timer
+	]=]
+	function object.Stop(self: Timer)
+		if not running then
+			return
+		end
+		
+		if not timerThread then
+			return
+		end
+		
+		running = false
+		
+		task.cancel(timerThread)
+		
+		timerThread = nil
+		
+		remainingDuration = duration
 	end
 	
 	--[=[
@@ -181,37 +191,56 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.IsRunning(self: Timer): boolean
-		return (connection ~= nil)
+		return running
 	end
 	
 	--[=[
-		Sets the duration of the [Timer].
+		Sets the duration of the [Timer]. Durations MUST be a positive number and not zero.
+		
+		:::caution
+		This will error if the [Timer] is running. Utilize :IsRunning() to prevent the error from propagating.
+		
 		@within Timer
 	]=]
 	function object.SetDuration(self: Timer, newDuration: number)
-		if object:IsRunning() then
-			return
+		if running then
+			error("You cannot set a duration of a timer while it is running!")
 		end
 		
-		initDuration = newDuration
-		remaining = newDuration
+		if newDuration <= 0 then
+			error("You cannot use a negative number or 0 for the duration of a Timer!")
+		end
+		
+		duration = newDuration
+		remainingDuration = newDuration
 	end
 	
 	--[=[
-		Gets the duration of the [Timer]. Returns 0 if the duration has not been set, otherwise, returns the duration.
+		Gets the duration and elapsed time of the [Timer].
+		
+		:::caution
+		This will error if the [Timer] has not been given a duration yet.
+		
 		@within Timer
 	]=]
-	function object.GetDuration(self: Timer): number
-		return remaining
-	end
-	
-	--[=[
-		Gets the elapsed time of the [Timer]. Returns 0 if the duration has not been set or if the [Timer] finished;
-		otherwise returns the duration.
-		@within Timer
-	]=]
-	function object.GetElapsed(self: Timer): number
-		return elapsed
+	function object.GetRemaining(self: Timer): Remaining
+		if not (duration and remainingDuration) then
+			error("Duration has not been set! Make sure to set it before using this function.")
+		end
+		
+		if running then
+			local newRemainingDuration = time() - resumeTimestamp
+			
+			return {
+				remaining = remainingDuration - newRemainingDuration,
+				elapsed = duration - remainingDuration + newRemainingDuration,
+			}
+		else
+			return {
+				remaining = remainingDuration,
+				elapsed = duration - remainingDuration,
+			}
+		end
 	end
 	
 	--[=[
@@ -219,29 +248,53 @@ function Timer.new(duration: number?): Timer
 		@within Timer
 	]=]
 	function object.Destroy(self: Timer)
-		object:Stop()
+		if (object :: any).Updated then
+			(object :: any).Updated:Destroy()
+		end
 		
-		internal.Finished:Destroy()
-		internal.Paused:Destroy()
-		internal.Updated:Destroy()
+		((object.Finished :: any) :: Signal.Signal<nil>):Destroy()
+		
+		if timerThread then
+			task.cancel(timerThread)
+			
+			timerThread = nil
+		end
 		
 		table.clear(object)
+	end
+	
+	
+	if initDuration then
+		object:SetDuration(initDuration)
 	end
 	
 	
 	return object
 end
 
+--[=[
+	Creates and returns a new [Timer] object, with an Updated [Signal].
+	@within Timer
+]=]
+function Timer.withUpdate(): TimerWithUpdate
+	local object = Timer.new();
+	(object :: any).Updated = Signal.new() :: Signal.Signal<Remaining>
+	
+	
+	timerSignal:Connect(function()
+		if object:IsRunning() then
+			(object :: any).Updated:Fire(object:GetRemaining())
+		end
+	end)
+	
+	
+	return object :: TimerWithUpdate
+end
+
 
 do
-	local previousTick = time()
-	
 	RunService.Heartbeat:Connect(function()
-		local currentTime = time()
-		
-		timerSignal:Fire(currentTime - previousTick)
-		
-		previousTick = currentTime
+		timerSignal:Fire()
 	end)
 end
 
