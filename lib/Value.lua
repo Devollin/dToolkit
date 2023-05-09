@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Value | Written by Devi (@Devollin) | 2022 | v1.1.0
+Value | Written by Devi (@Devollin) | 2022 | v1.1.1
 	Description: Interface for creating custom values with changed events.
 	
 ==================================================================================================]]
@@ -12,8 +12,6 @@ local Signal = require(script.Parent:WaitForChild("Signal"))
 
 export type Signal<a...> = Signal.Signal<a...>
 export type InternalSignal<a...> = Signal.InternalSignal<a...>
-export type Connection<a...> = Signal.Connection<a...>
-export type InternalConnection<a...> = Signal.InternalConnection<a...>
 
 export type Value<a...> = {
 	ClassName: "Value",
@@ -64,7 +62,8 @@ export type InternalValue<a...> = {
 	```
 	
 	:::caution String Literals
-	It should be noted that for one reason or another, Value is not able to typecheck string literals properly.
+	It should be noted that for one reason or another, Value is not able to typecheck string literals properly when defined
+	normally. To get around this, make sure to typecast the Value to any, then typecast to Value<a...>.
 	
 	:::info
 	There is an alternative type named InternalValue, which can be used for classes built using it! The primary difference
@@ -112,14 +111,13 @@ local Value = {}
 	@within Value
 ]=]
 function Value.new<a...>(...: a...): Value<a...>
-	local deleted = false
 	local value: any = table.pack(...)
 	
 	local object = {
 		ClassName = "Value" :: "Value",
 	}
-	object.WillChange = Signal.new() :: Signal<a...>
-	object.Changed = Signal.new() :: Signal<a...>
+	object.WillChange = (Signal.new() :: any) :: InternalSignal<a...>
+	object.Changed = (Signal.new() :: any) :: InternalSignal<a...>
 	
 	
 	--[=[
@@ -132,13 +130,11 @@ function Value.new<a...>(...: a...): Value<a...>
 		@within Value
 	]=]
 	function object.Set(self: Value<a...>, ...: a...)
-		if not deleted then
-			(object.WillChange :: any):Fire((object :: any):Get())
-			
-			value = table.pack(...)
-			
-			object.Changed:Fire(...)
-		end
+		((object.WillChange :: any) :: Signal<a...>):Fire(object:Get())
+		
+		value = table.pack(...);
+		
+		((object.Changed :: any) :: Signal<a...>):Fire(...)
 	end
 	
 	--[=[
@@ -151,9 +147,7 @@ function Value.new<a...>(...: a...): Value<a...>
 		@within Value
 	]=]
 	function object.Get(self: Value<a...>): (a...)
-		if not deleted then
-			return table.unpack(value)
-		end
+		return table.unpack(value)
 	end
 	
 	--[=[
@@ -188,18 +182,14 @@ function Value.new<a...>(...: a...): Value<a...>
 		@within Value
 	]=]
 	function object.Destroy(self: Value<a...>)
-		if deleted then
-			return
-		end
+		((object.WillChange :: any) :: Signal<a...>):Destroy();
+		((object.Changed :: any) :: Signal<a...>):Destroy()
 		
-		deleted = true
-		
-		object.WillChange:Destroy()
-		object.Changed:Destroy()
+		table.clear(object)
 	end
 	
 	
-	return (object :: any) :: Value<a...>
+	return object
 end
 
 

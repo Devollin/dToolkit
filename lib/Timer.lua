@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2023 | v2.0.0
+Timer | Written by Devi (@Devollin) | 2023 | v2.0.1
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -134,7 +134,7 @@ function Timer.new(initDuration: number?): Timer
 		timerThread = task.delay(remainingDuration, function()
 			timerThread = nil
 			running = false
-			remainingDuration = 0
+			remainingDuration = duration;
 			
 			((object.Finished :: any) :: Signal.Signal<nil>):Fire()
 		end)
@@ -149,11 +149,11 @@ function Timer.new(initDuration: number?): Timer
 			return
 		end
 		
+		running = false
+		
 		if not timerThread then
 			return
 		end
-		
-		running = false
 		
 		task.cancel(timerThread)
 		
@@ -173,11 +173,11 @@ function Timer.new(initDuration: number?): Timer
 			return
 		end
 		
+		running = false
+		
 		if not timerThread then
 			return
 		end
-		
-		running = false
 		
 		task.cancel(timerThread)
 		

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Tween | Written by Devi (@Devollin) | 2022 | v1.0.2
+Tween | Written by Devi (@Devollin) | 2022 | v1.0.3
 	Description: A wrapper function for interfacing with TweenService.
 
 ==================================================================================================]]
@@ -233,7 +233,7 @@ end
 function interface.fromGroup(objects: {Instance}, properties: Properties, modifiers: ModifierInput?): TweenGroup
 	local tweens = {}
 	
-	for _, value in pairs(objects) do
+	for _, value in objects do
 		table.insert(tweens, interface.new(value, properties, modifiers))
 	end
 	
