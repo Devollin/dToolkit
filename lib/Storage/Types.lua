@@ -1,7 +1,9 @@
 --!strict
+local SimpleFunction = require(script.Parent.Parent:WaitForChild("SimpleFunction"))
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 
 
+type SimpleFunction<a..., b...> = SimpleFunction.SimpleFunction<a..., b...>
 type Signal<a...> = Signal.Signal<a...>
 
 
@@ -19,7 +21,7 @@ type Signal<a...> = Signal.Signal<a...>
 	@within Storage
 ]=]
 --[=[
-	@type Result <a>{success: boolean, message: string?, result: a, metadata: DataStoreKeyInfo?, code: ErrorCode?}
+	@type Result <a>{success: boolean, message: string?, result: a, metadata: DataStoreKeyInfo?}
 	@within Storage
 ]=]
 --[=[
@@ -58,34 +60,6 @@ type Signal<a...> = Signal.Signal<a...>
 	@type LoadStatus "Loading" | "Failed" | "Ready"
 	@within Storage
 	@ignore
-]=]
---[=[
-	@type DataStoreErrorCode "D101" | "D102" | "D103" | "D104" | "D105" | "D301" | "D302" | "D303" | "D304" | "D306" | "D401" | "D402" | "D403" | "D501" | "D502" | "D503" | "D504" | "D511" | "D512" | "D513"
-	An error code that is only produced by a DataStore. The error code numbers are directly referenced from the DataStore API
-	documentation.
-	
-	@within Storage
-]=]
---[=[
-	@type LoadingErrorCode "L101" | "L102"
-	An error code that is produced from loading an index in Storage.
-	L101: Data failed to load (loadStatus was Failed). L102: No data has been loaded for this index yet.
-	
-	@within Storage
-]=]
---[=[
-	@type SavingErrorCode "S101" | "S102" | "S103" | "S104"
-	An error code that is produced from saving an index in Storage.
-	S101: Data could not be saved (saveStatus was NotReady). S102: Data could not be saved (saveStatus was Failed). S103: No
-	data has been loaded for this index yet, or canSave was false. S104: Data is already being saved.
-	
-	@within Storage
-]=]
---[=[
-	@type ErrorCode DataStoreErrorCode | LoadingErrorCode | SavingErrorCode
-	An error code that is produced from any area in Storage. Refer to the other error code types for more information.
-	
-	@within Storage
 ]=]
 --[=[
 	@type BaseData {saveStatus: SaveStatus, loadStatus: LoadStatus, canSave: boolean, data: any}
@@ -206,14 +180,15 @@ export type BaseStorage = {
 	KeyUpdated: Signal<string, StringOrNumber, any, any>,
 	DeepKeyUpdated: Signal<string, any, any, {StringOrNumber}>,
 	MiscMessage: Signal<ErrorCode, string, string>,
+	VerifyData: SimpleFunction<(string, Default, Default, string), (Default?)>,
 	
 	HardLoad: (self: BaseStorage, index: string) -> (DataResult),
 	SoftLoad: (self: BaseStorage, index: string) -> (DataResult),
-	HardSave: (self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?) -> (SaveResult),
+	HardSave: (self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?, context: string) -> (SaveResult),
 	SoftSave: (self: BaseStorage, index: string, newData: any) -> (SaveResult),
 	Update: (self: BaseStorage, index: string, key: StringOrNumber, newData: any) -> (SaveResult),
 	DeepUpdate: (self: BaseStorage, index: string, newData: any, key: StringOrNumber, ...StringOrNumber) -> (SaveResult),
-	Clear: (self: BaseStorage, index: string) -> (),
+	Clear: (self: BaseStorage, index: string, context: string) -> (),
 	Close: (self: BaseStorage) -> (),
 }
 export type BaseStorageResult = Result<BaseStorage?>
@@ -230,14 +205,15 @@ export type PlayerStorage = {
 	KeyUpdated: Signal<string, StringOrNumber, any, any>,
 	DeepKeyUpdated: Signal<string, any, any, {StringOrNumber}>,
 	MiscMessage: Signal<ErrorCode, string, string>,
+	VerifyData: SimpleFunction<(string, Default, Default, string), (Default?)>,
 	
 	HardLoad: (self: PlayerStorage, index: number) -> (DataResult),
 	SoftLoad: (self: PlayerStorage, index: number) -> (DataResult),
-	HardSave: (self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?) -> (SaveResult),
+	HardSave: (self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?, context: string) -> (SaveResult),
 	SoftSave: (self: PlayerStorage, index: number, newData: any) -> (SaveResult),
 	Update: (self: PlayerStorage, index: number, key: StringOrNumber, newData: any) -> (SaveResult),
 	DeepUpdate: (self: PlayerStorage, index: string, newData: any, key: StringOrNumber, ...StringOrNumber) -> (SaveResult),
-	Clear: (self: PlayerStorage, index: number) -> (),
+	Clear: (self: PlayerStorage, index: number, context: string) -> (),
 	Close: (self: PlayerStorage) -> (),
 }
 export type PlayerStorageResult = Result<PlayerStorage?>

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
+PlayerDataStore | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: A library to aid in DataStore-related functions.
 	
 ==================================================================================================]]
@@ -122,12 +122,19 @@ local interface = {}
 ]=]
 --[=[
 	@prop MiscMessage Signal<ErrorCode, string, string>
-	Fired when an error (or warning) code is thrown by Storage.
-	The first param is the error code, the second param is a debug.traceback() string, and the last param is the name of the
-	index.
+	Fired when an error or warning code has been propagated by Storage.
+	The first param is the code, the second param is the trackback, and the last param is the name of the key.
 	
 	@within PlayerStorage
 	@tag Event
+]=]
+--[=[
+	@prop VerifyData SimpleFunction<(string, Default, Default, string), (Default?)>
+	Invoked when the callback is filled and Storage is requesting to save data. Use this to prevent overwriting new data.
+	The first parameter passed is the name of the key, the second parameter old data, the third is the new data, and the last
+	is the context it was called from (this is useful for debugging).
+	
+	@within PlayerStorage
 ]=]
 
 --[=[
@@ -165,6 +172,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		SaveSuccess = dataStore.SaveSuccess,
 		DeepKeyUpdated = dataStore.DeepKeyUpdated,
 		MiscMessage = dataStore.MiscMessage,
+		VerifyData = dataStore.VerifyData,
 	}
 	
 	
@@ -197,12 +205,13 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		@param index -- The key within the [GlobalDataStore].
 		@param setOptions -- Options used to adjust SetAsync.
+		@param context -- The context from which this function was called. Useful for debugging.
 		
 		@within PlayerStorage
 		@yields
 	]=]
-	function object.HardSave(self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?): SaveResult
-		return dataStore:HardSave(tostring(index), {index}, setOptions)
+	function object.HardSave(self: PlayerStorage, index: number, setOptions: DataStoreSetOptions?, context: string): SaveResult
+		return dataStore:HardSave(tostring(index), {index}, setOptions, context)
 	end
 	
 	--[=[
@@ -248,12 +257,13 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 			autosave timer.
 		
 		@param index -- The key within the [GlobalDataStore].
+		@param context -- The context from which this function was called. Useful for debugging.
 		
 		@within PlayerStorage
 		@yields
 	]=]
-	function object.Clear(self: PlayerStorage, index: number)
-		dataStore:Clear(tostring(index))
+	function object.Clear(self: PlayerStorage, index: number, context: string)
+		dataStore:Clear(tostring(index), context)
 	end
 	
 	--[=[
@@ -301,7 +311,7 @@ Players.PlayerRemoving:Connect(function(player)
 	if #(Players:GetPlayers()) > 0 then
 		for name, dataStore in dataStores do
 			task.spawn(function()
-				dataStore:Clear(id)
+				dataStore:Clear(id, "LEAVING")
 			end)
 		end
 	end

@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-DataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
+DataStore | Written by Devi (@Devollin) | 2022 | v1.1.0
 	Description: A library to aid in general DataStore-related functions.
 	
 ==================================================================================================]]
@@ -9,12 +9,14 @@ DataStore | Written by Devi (@Devollin) | 2022 | v1.0.3
 
 local DataStoreService: DataStoreService = game:GetService("DataStoreService")
 
+local SimpleFunction = require(script.Parent.Parent:WaitForChild("SimpleFunction"))
 local Signal = require(script.Parent.Parent:WaitForChild("Signal"))
 local Util = require(script.Parent.Parent:WaitForChild("Util"))
 
 local Types = require(script.Parent:WaitForChild("Types"))
 
 
+type SimpleFunction<a..., b...> = SimpleFunction.SimpleFunction<a..., b...>
 type Signal<a...> = Signal.Signal<a...>
 
 type BaseStorageResult = Types.BaseStorageResult
@@ -199,12 +201,19 @@ local interface = {}
 ]=]
 --[=[
 	@prop MiscMessage Signal<ErrorCode, string, string>
-	Fired when an error (or warning) code is thrown by Storage.
-	The first param is the error code, the second param is a debug.traceback() string, and the last param is the name of the
-	index.
+	Fired when an error or warning code has been propagated by Storage.
+	The first param is the code, the second param is the trackback, and the last param is the name of the key.
 	
 	@within BaseStorage
 	@tag Event
+]=]
+--[=[
+	@prop VerifyData SimpleFunction<(string, Default, Default, string), (Default?)>
+	Invoked when the callback is filled and Storage is requesting to save data. Use this to prevent overwriting new data.
+	The first parameter passed is the name of the key, the second parameter old data, the third is the new data, and the last
+	is the context it was called from (this is useful for debugging).
+	
+	@within BaseStorage
 ]=]
 
 --[=[
@@ -288,6 +297,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		KeyUpdated = Signal.new() :: Signal<string, string | number, any, any>,
 		DeepKeyUpdated = Signal.new() :: Signal<string, any, any, {string | number}>,
 		MiscMessage = Signal.new() :: Signal<Types.ErrorCode, string, string>,
+		VerifyData = SimpleFunction.new() :: SimpleFunction<(string, Default, Default, string), (Default?)>,
 	}
 	
 	
@@ -463,11 +473,12 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		@param index -- The key within the [GlobalDataStore].
 		@param ids -- An optional list of user IDs associated with the data.
 		@param setOptions -- Options used to adjust SetAsync.
+		@param context -- The context from which this function was called. Useful for debugging.
 		
 		@within BaseStorage
 		@yields
 	]=]
-	function object.HardSave(self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?): SaveResult
+	function object.HardSave(self: BaseStorage, index: string, ids: {number}?, setOptions: DataStoreSetOptions?, context: string): SaveResult
 		local data = members[index]
 		
 		if data and data.canSave then
@@ -489,7 +500,17 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				
 				repeat
 					success, result = pcall(function()
-						return dataStore:SetAsync(index, data.data, ids, setOptions)
+						if object.VerifyData:IsCallbackSet() then
+							return dataStore:UpdateAsync(index, function(previousData: Default)
+								if previousData == nil then
+									return data.data
+								end
+								
+								return object.VerifyData:Invoke(index, previousData, data.data, context)
+							end)
+						else
+							return dataStore:SetAsync(index, data.data, ids, setOptions)
+						end
 					end)
 					
 					if not success then
@@ -518,7 +539,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					
 					task.spawn(callbacks.SetAsync.Failed, result, name, scope, options)
 					
-					object.MiscMessage:Fire(("D" .. ((result :: any) :: string):sub(1, 3)) :: Types.ErrorCode, debug.traceback(), index)
+					object.MiscMessage:Fire(("D" .. (result :: any):sub(1, 3)) :: Types.ErrorCode, debug.traceback(), index)
 					
 					return {
 						success = false,
@@ -685,7 +706,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 				local array = {...}
 				local oldData
 				
-				for otherKey, newKey in array do
+				for otherKey, newKey in ipairs(array) do
 					if indexedData ~= nil then
 						if otherKey == #array then
 							oldData = indexedData[newKey]
@@ -712,7 +733,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 					local array = {...}
 					local oldData
 					
-					for otherKey, newKey in array do
+					for otherKey, newKey in ipairs(array) do
 						if indexedData ~= nil then
 							if otherKey == #array then
 								oldData = indexedData[newKey]
@@ -762,15 +783,16 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		Hard saves the data, then removes the data associated with the index.
 		
 		@param index -- The key within the [GlobalDataStore].
+		@param context -- The context from which this function was called. Useful for debugging.
 		
 		@within BaseStorage
 		@yields
 	]=]
-	function object.Clear(self: BaseStorage, index: string)
+	function object.Clear(self: BaseStorage, index: string, context: string)
 		local data = members[index]
 		
 		if data then
-			self:HardSave(index)
+			self:HardSave(index, nil, nil, context)
 			
 			members[index] = nil
 		end
@@ -787,7 +809,7 @@ function interface.new(name: string, scope: string?, options: DataStoreOptions?,
 		
 		for key, data in pairs(members) do
 			task.spawn(function()
-				self:Clear(key)
+				self:Clear(key, "CLOSE")
 				
 				finished += 1
 			end)
