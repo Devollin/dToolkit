@@ -102,26 +102,26 @@ local callbacks = {
 			end
 		end,
 	}, GetSortedAsync = {
-		Retry = function(message: string, name: string, scope: string?, key: string)
+		Retry = function(message: string, name: string, scope: string?)
 			if scope then
-				warn("Failed to get page data for key \"" .. key ..
+				warn("Failed to get page data for " ..
 					"\" OrderedDataStore of name \"" .. name ..
 					"\", and scope \"" .. scope ..
 					"\", retrying in 5 seconds...")
 			else
-				warn("Failed to get page data for key \"" .. key ..
+				warn("Failed to get page data for " ..
 					"\" OrderedDataStore of name \"" .. name ..
 					"\", retrying in 5 seconds...")
 			end
 		end,
-		Failed = function(message: string, name: string, scope: string?, key: string)
+		Failed = function(message: string, name: string, scope: string?)
 			if scope then
-				warn("Failed to get page data for key \"" .. key ..
+				warn("Failed to get page data for " ..
 					"\" OrderedDataStore of name \"" .. name ..
 					"\", and scope \"" .. scope ..
 					"\"; exhausted retries.")
 			else
-				warn("Failed to get page data for key \"" .. key ..
+				warn("Failed to get page data for " ..
 					"\" OrderedDataStore of name \"" .. name ..
 					"\"; exhausted retries.")
 			end
@@ -233,7 +233,7 @@ function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDat
 		end)
 		
 		if not success then
-			task.spawn(callbacks.GetOrderedDataStore.Retry, result, name, scope)
+			task.spawn(callbacks.GetOrderedDataStore.Retry, result :: any, name, scope)
 			
 			task.wait(5)
 			
@@ -247,7 +247,7 @@ function interface:GetOrderedDataStore(name: string, scope: string?): OrderedDat
 			result = result,
 		}
 	else
-		task.spawn(callbacks.GetOrderedDataStore.Failed, result, name, scope)
+		task.spawn(callbacks.GetOrderedDataStore.Failed, result :: any, name, scope)
 		
 		return {
 			success = false,
@@ -347,7 +347,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				if not success then
 					self.LoadRetry:Fire(result, name, scope, index)
 					
-					task.spawn(callbacks.GetAsync.Retry, result, name, scope)
+					task.spawn(callbacks.GetAsync.Retry, result, name, scope, index)
 					
 					task.wait(5)
 					
@@ -382,7 +382,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 				
 				members[index].loadStatus = "Failed"
 				
-				task.spawn(callbacks.GetAsync.Failed, result, name, scope)
+				task.spawn(callbacks.GetAsync.Failed, result, name, scope, index)
 				
 				return {
 					success = false,
@@ -467,7 +467,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					if not success then
 						self.SaveRetry:Fire(result, name, scope, index)
 						
-						task.spawn(callbacks.SetAsync.Retry, result, name, scope, setOptions)
+						task.spawn(callbacks.SetAsync.Retry, result, name, scope, index)
 						
 						task.wait(5)
 						
@@ -487,7 +487,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 					
 					data.saveStatus = "Failed"
 					
-					task.spawn(callbacks.SetAsync.Failed, result, name, scope, setOptions)
+					task.spawn(callbacks.SetAsync.Failed, result, name, scope, index)
 					
 					return {
 						success = false,
@@ -574,7 +574,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 			if not success then
 				self.GetSortedAsyncRetry:Fire(result :: any, name, scope)
 				
-				task.spawn(callbacks.GetSortedAsync.Retry, result, name, scope)
+				task.spawn(callbacks.GetSortedAsync.Retry, result :: any, name, scope)
 				
 				task.wait(5)
 				
@@ -590,7 +590,7 @@ function interface.new(name: string, scope: string?, default: number): OrderedSt
 		else
 			self.GetSortedAsyncFail:Fire(result :: any, name, scope)
 			
-			task.spawn(callbacks.GetSortedAsync.Failed, result, name, scope)
+			task.spawn(callbacks.GetSortedAsync.Failed, result :: any, name, scope)
 			
 			return {
 				success = false,
