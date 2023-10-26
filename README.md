@@ -5,7 +5,7 @@
 dToolkit is a set of libraries and classes meant to aide in the development of new experiences on Roblox! It is in a constant state of development!
 
 # What's Included?
-Plenty of things! But, we'll start by listing the classes:
+Plenty of libraries, some of which I'll list here:
 ### [Bind](https://devollin.github.io/api/Bind)
 A wrapper class for ContextActionService to help make managing keybinds easier!
 
@@ -32,8 +32,6 @@ A class that allows you to create tweens for arrays, and expands upon the existi
 
 ### [Storage](https://devollin.github.io/api/Storage)
 A wrapper class for DataStoreService to help make managing DataStores easier!
-
-Now, for some of the libraries inclued in dToolkit:
 
 ### [CameraUtil](https://devollin.github.io/api/CameraUtil)
 A library containing a few useful methods for the Camera.
