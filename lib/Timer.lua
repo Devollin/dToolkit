@@ -26,6 +26,8 @@ export type Timer = {
 	Start: (self: Timer) -> (),
 	Pause: (self: Timer) -> (),
 	Stop: (self: Timer) -> (),
+	SetElapsed: (self: Timer, amount: number) -> (),
+	AddElapsed: (self: Timer, amount: number) -> (),
 	IsRunning: (self: Timer) -> (boolean),
 	SetDuration: (self: Timer, newDuration: number) -> (),
 	GetRemaining: (self: Timer) -> (Remaining),
@@ -241,6 +243,53 @@ function Timer.new(initDuration: number?): Timer
 				elapsed = duration - remainingDuration,
 			}
 		end
+	end
+	
+	--[=[
+		Sets the elapsed time to the [Timer].
+		
+		:::caution
+		This will error if the [Timer] is not running, or if the amount is greater than the duration,
+		or less than or equal to 0, or the duration has not been set yet.
+		
+		@within Timer
+	]=]
+	function object.SetElapsed(self: Timer, amount: number)
+		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
+		assert(not running, "The Timer should be running before this function is called!")
+		assert((amount > duration) and (amount > 0), "The new elapsed time should be between 0 and the duration!")
+		
+		if not timerThread then
+			return
+		end
+		
+		task.cancel(timerThread)
+		
+		timerThread = nil
+		
+		remainingDuration = duration - amount
+		
+		resumeTimestamp = time() - amount
+		
+		timerThread = task.delay(remainingDuration, function()
+			timerThread = nil
+			running = false
+			remainingDuration = duration;
+			
+			((object.Finished :: any) :: Signal.Signal<nil>):Fire()
+		end)
+	end
+	
+	--[=[
+		Adds elapsed time to the [Timer].
+		
+		:::caution
+		This will error if the [Timer] is not running or the duration has not been set yet.
+		
+		@within Timer
+	]=]
+	function object.AddElapsed(self: Timer, amount: number)
+		object:SetElapsed(object:GetRemaining().elapsed + amount)
 	end
 	
 	--[=[
