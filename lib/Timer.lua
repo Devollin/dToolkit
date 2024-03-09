@@ -289,7 +289,10 @@ function Timer.new(initDuration: number?): Timer
 		@within Timer
 	]=]
 	function object.AddElapsed(self: Timer, amount: number)
-		object:SetElapsed(object:GetRemaining().elapsed + amount)
+		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
+		assert(not running, "The Timer should be running before this function is called!")
+		
+		object:SetElapsed(math.clamp(object:GetRemaining().elapsed + amount, 0, duration))
 	end
 	
 	--[=[
