@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2024 | v2.1.0
+Timer | Written by Devi (@Devollin) | 2023 | v2.0.1
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -26,7 +26,7 @@ export type Timer = {
 	Start: (self: Timer) -> (),
 	Pause: (self: Timer) -> (),
 	Stop: (self: Timer) -> (),
-	SetElapsed: (self: Timer, newElapsed: number, adjustment: number) -> (),
+	SetElapsed: (self: Timer, newElapsed: number) -> (),
 	AddElapsed: (self: Timer, amount: number) -> (),
 	IsRunning: (self: Timer) -> (boolean),
 	SetDuration: (self: Timer, newDuration: number) -> (),
@@ -253,9 +253,9 @@ function Timer.new(initDuration: number?): Timer
 		
 		@within Timer
 	]=]
-	function object.SetElapsed(self: Timer, newElapsed: number, adjustment: number)
+	function object.SetElapsed(self: Timer, newElapsed: number)
 		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
-		assert((newElapsed < duration) and (newElapsed >= 0), "The new elapsed time should be between 0 and the duration!" .. tostring(amount) .. " AMOUNT, " .. tostring(duration) .. " DURATION")
+		assert((newElapsed < duration) and (newElapsed >= 0), "The new elapsed time should be between 0 and the duration!")
 		
 		if timerThread then
 			task.cancel(timerThread)
@@ -286,7 +286,7 @@ function Timer.new(initDuration: number?): Timer
 	function object.AddElapsed(self: Timer, amount: number)
 		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
 		
-		object:SetElapsed(math.clamp(object:GetRemaining().elapsed + amount, 0, duration), amount)
+		object:SetElapsed(math.clamp(object:GetRemaining().elapsed + amount, 0, duration))
 	end
 	
 	--[=[
