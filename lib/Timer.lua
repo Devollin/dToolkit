@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2023 | v2.0.1
+Timer | Written by Devi (@Devollin) | 2024 | v2.1.0
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -26,7 +26,7 @@ export type Timer = {
 	Start: (self: Timer) -> (),
 	Pause: (self: Timer) -> (),
 	Stop: (self: Timer) -> (),
-	SetElapsed: (self: Timer, amount: number) -> (),
+	SetElapsed: (self: Timer, newElapsed: number, adjustment: number) -> (),
 	AddElapsed: (self: Timer, amount: number) -> (),
 	IsRunning: (self: Timer) -> (boolean),
 	SetDuration: (self: Timer, newDuration: number) -> (),
@@ -249,27 +249,22 @@ function Timer.new(initDuration: number?): Timer
 		Sets the elapsed time to the [Timer].
 		
 		:::caution
-		This will error if the [Timer] is not running, or if the amount is greater than the duration,
-		or less than or equal to 0, or the duration has not been set yet.
+		This will error if the amount is greater than the duration or less than 0, or the duration has not been set yet.
 		
 		@within Timer
 	]=]
-	function object.SetElapsed(self: Timer, amount: number)
+	function object.SetElapsed(self: Timer, newElapsed: number, adjustment: number)
 		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
-		assert(not running, "The Timer should be running before this function is called!")
-		assert((amount > duration) and (amount > 0), "The new elapsed time should be between 0 and the duration!")
+		assert((newElapsed < duration) and (newElapsed >= 0), "The new elapsed time should be between 0 and the duration!" .. tostring(amount) .. " AMOUNT, " .. tostring(duration) .. " DURATION")
 		
-		if not timerThread then
-			return
+		if timerThread then
+			task.cancel(timerThread)
 		end
-		
-		task.cancel(timerThread)
 		
 		timerThread = nil
 		
-		remainingDuration = duration - amount
-		
-		resumeTimestamp = time() - amount
+		resumeTimestamp = time()
+		remainingDuration = duration - newElapsed
 		
 		timerThread = task.delay(remainingDuration, function()
 			timerThread = nil
@@ -284,15 +279,14 @@ function Timer.new(initDuration: number?): Timer
 		Adds elapsed time to the [Timer].
 		
 		:::caution
-		This will error if the [Timer] is not running or the duration has not been set yet.
+		This will error if the duration has not been set yet.
 		
 		@within Timer
 	]=]
 	function object.AddElapsed(self: Timer, amount: number)
 		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
-		assert(not running, "The Timer should be running before this function is called!")
 		
-		object:SetElapsed(math.clamp(object:GetRemaining().elapsed + amount, 0, duration))
+		object:SetElapsed(math.clamp(object:GetRemaining().elapsed + amount, 0, duration), amount)
 	end
 	
 	--[=[
