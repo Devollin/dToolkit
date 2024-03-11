@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Timer | Written by Devi (@Devollin) | 2023 | v2.0.1
+Timer | Written by Devi (@Devollin) | 2024 | v2.1.0
 	Description: A timer class.
 	
 ==================================================================================================]]
@@ -30,6 +30,7 @@ export type Timer = {
 	AddElapsed: (self: Timer, amount: number) -> (),
 	IsRunning: (self: Timer) -> (boolean),
 	SetDuration: (self: Timer, newDuration: number) -> (),
+	GetDuration: (self: Timer) -> number,
 	GetRemaining: (self: Timer) -> (Remaining),
 	Destroy: (self: Timer) -> (),
 }
@@ -103,7 +104,7 @@ function Timer.new(initDuration: number?): Timer
 	object.Finished = (Signal.new() :: any) :: Signal.InternalSignal<nil>
 	object.Paused = (Signal.new() :: any) :: Signal.InternalSignal<nil>
 	
-	local timerThread: thread?
+	local timerThreads: {thread} = {}
 	
 	local duration: number
 	local remainingDuration: number
@@ -133,13 +134,24 @@ function Timer.new(initDuration: number?): Timer
 		
 		resumeTimestamp = time()
 		
-		timerThread = task.delay(remainingDuration, function()
-			timerThread = nil
+		local newThread; newThread = task.delay(remainingDuration, function()
+			for _, thread in timerThreads do
+				if thread == newThread then
+					continue
+				end
+				
+				task.cancel(thread)
+			end
+			
+			timerThreads = {}
+			
 			running = false
 			remainingDuration = duration;
 			
 			((object.Finished :: any) :: Signal.Signal<nil>):Fire()
 		end)
+		
+		table.insert(timerThreads, newThread)
 	end
 	
 	--[=[
@@ -153,13 +165,11 @@ function Timer.new(initDuration: number?): Timer
 		
 		running = false
 		
-		if not timerThread then
-			return
+		for _, thread in timerThreads do
+			task.cancel(thread)
 		end
 		
-		task.cancel(timerThread)
-		
-		timerThread = nil
+		timerThreads = {}
 		
 		remainingDuration = time() - resumeTimestamp;
 		
@@ -177,13 +187,11 @@ function Timer.new(initDuration: number?): Timer
 		
 		running = false
 		
-		if not timerThread then
-			return
+		for _, thread in timerThreads do
+			task.cancel(thread)
 		end
 		
-		task.cancel(timerThread)
-		
-		timerThread = nil
+		timerThreads = {}
 		
 		remainingDuration = duration
 	end
@@ -215,6 +223,15 @@ function Timer.new(initDuration: number?): Timer
 		
 		duration = newDuration
 		remainingDuration = newDuration
+	end
+	
+	--[=[
+		Gets the duration of the [Timer]. May be nil if the duration has not been set.
+		
+		@within Timer
+	]=]
+	function object.GetDuration(self: Timer): number
+		return duration
 	end
 	
 	--[=[
@@ -257,22 +274,33 @@ function Timer.new(initDuration: number?): Timer
 		assert(duration, "Duration has not been set! Make sure to set it before using this function.")
 		assert((newElapsed < duration) and (newElapsed >= 0), "The new elapsed time should be between 0 and the duration!")
 		
-		if timerThread then
-			task.cancel(timerThread)
+		for _, thread in timerThreads do
+			task.cancel(thread)
 		end
 		
-		timerThread = nil
+		timerThreads = {}
 		
 		resumeTimestamp = time()
 		remainingDuration = duration - newElapsed
 		
-		timerThread = task.delay(remainingDuration, function()
-			timerThread = nil
+		local newThread; newThread = task.delay(remainingDuration, function()
+			for _, thread in timerThreads do
+				if thread == newThread then
+					continue
+				end
+				
+				task.cancel(thread)
+			end
+			
+			timerThreads = {}
+			
 			running = false
 			remainingDuration = duration;
 			
 			((object.Finished :: any) :: Signal.Signal<nil>):Fire()
 		end)
+		
+		table.insert(timerThreads, newThread)
 	end
 	
 	--[=[
@@ -300,11 +328,11 @@ function Timer.new(initDuration: number?): Timer
 		
 		((object.Finished :: any) :: Signal.Signal<nil>):Destroy()
 		
-		if timerThread then
-			task.cancel(timerThread)
-			
-			timerThread = nil
+		for _, thread in timerThreads do
+			task.cancel(thread)
 		end
+		
+		timerThreads = nil :: any
 		
 		table.clear(object)
 	end
