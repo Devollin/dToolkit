@@ -1,7 +1,7 @@
 --!strict
 --[[================================================================================================
 
-Network | Written by Devi (@Devollin) | 2023 | v2.0.0
+Network | Written by Devi (@Devollin) | 2024 | v2.1.0
 	Description: A library to handle networking more reliably.
 	
 ==================================================================================================]]
@@ -63,6 +63,7 @@ local requestManifest: {[string]: boolean} = {}
 
 local random = Random.new()
 local remote: RemoteEvent
+local unreliableRemote: UnreliableRemoteEvent
 
 local interface = {}
 
@@ -106,8 +107,14 @@ end
 	@within NetworkEvent
 	@server
 ]=]
-function interface.event<a...>(name: string): Event<a...>
+function interface.event<a...>(name: string, isUnreliable: true?): Event<a...>
 	local metadata = GenerateMetadata(name, "Normal")
+	
+	-- RemoteEvents and UnreliableRemoteEvents share the same methods, so this is fine.
+	local hostedRemote =
+		if isUnreliable then (unreliableRemote :: any) :: RemoteEvent
+		else remote
+	
 	local queuedPackets: {{any}} = {}
 	local object = {
 		ClassName = "NetworkEvent" :: "NetworkEvent",
@@ -127,7 +134,7 @@ function interface.event<a...>(name: string): Event<a...>
 		local results
 		
 		repeat
-			results = {remote.OnServerEvent:Wait()}
+			results = {hostedRemote.OnServerEvent:Wait()}
 			
 			local newMetadata = (results[2] :: any) :: Metadata
 		until newMetadata.type == "Normal"
@@ -148,7 +155,7 @@ function interface.event<a...>(name: string): Event<a...>
 		@server
 	]=]
 	function object.Server.Fire(self: ServerEvent<a...>, player: Player, ...: a...)
-		remote:FireClient(player, metadata, ...)
+		hostedRemote:FireClient(player, metadata, ...)
 	end
 	
 	--[=[
@@ -160,7 +167,7 @@ function interface.event<a...>(name: string): Event<a...>
 		@server
 	]=]
 	function object.Server.FireAll(self: ServerEvent<a...>, ...: a...)
-		remote:FireAllClients(metadata, ...)
+		hostedRemote:FireAllClients(metadata, ...)
 	end
 	
 	--[=[
@@ -174,7 +181,7 @@ function interface.event<a...>(name: string): Event<a...>
 	]=]
 	function object.Server.FireSome(self: ServerEvent<a...>, players: {Player}, ...: a...)
 		for _, player in players do
-			remote:FireClient(player, metadata, ...)
+			hostedRemote:FireClient(player, metadata, ...)
 		end
 	end
 	
@@ -187,7 +194,7 @@ function interface.event<a...>(name: string): Event<a...>
 		@server
 	]=]
 	function object.Server.Connect(self: ServerEvent<a...>, callback: (player: Player, a...) -> ()): (() -> ())
-		local connection = remote.OnServerEvent:Connect(function(player, metadata: Metadata, ...)
+		local connection = hostedRemote.OnServerEvent:Connect(function(player, metadata: Metadata, ...)
 			if metadata.name == name then
 				callback(player, ...)
 			end
@@ -224,7 +231,7 @@ function interface.event<a...>(name: string): Event<a...>
 		local results
 		
 		repeat
-			results = {remote.OnClientEvent:Wait()}
+			results = {hostedRemote.OnClientEvent:Wait()}
 			
 			local newMetadata = (results[1] :: any) :: Metadata
 		until newMetadata.type == "Normal"
@@ -243,7 +250,7 @@ function interface.event<a...>(name: string): Event<a...>
 		@client
 	]=]
 	function object.Client.Fire(self: ClientEvent<a...>, ...: a...)
-		remote:FireServer(metadata, ...)
+		hostedRemote:FireServer(metadata, ...)
 	end
 	
 	--[=[
@@ -255,7 +262,7 @@ function interface.event<a...>(name: string): Event<a...>
 		@client
 	]=]
 	function object.Client.Connect(self: ClientEvent<a...>, callback: (a...) -> ()): (() -> ())
-		local connection = remote.OnClientEvent:Connect(function(metadata: Metadata, ...)
+		local connection = hostedRemote.OnClientEvent:Connect(function(metadata: Metadata, ...)
 			if metadata.name == name then
 				callback(...)
 			end
@@ -289,7 +296,7 @@ function interface.event<a...>(name: string): Event<a...>
 		manifest[name] = 0
 		
 		if RunService:IsClient() then
-			remote.OnClientEvent:Connect(function(metadata: Metadata, ...: any)
+			hostedRemote.OnClientEvent:Connect(function(metadata: Metadata, ...: any)
 				if name == metadata.name and metadata.type == "Normal" then
 					if manifest[name] == 0 then
 						table.insert(queuedPackets, {...})
@@ -299,7 +306,7 @@ function interface.event<a...>(name: string): Event<a...>
 				end
 			end)
 		else
-			remote.OnServerEvent:Connect(function(player: Player, metadata: Metadata, ...: any)
+			hostedRemote.OnServerEvent:Connect(function(player: Player, metadata: Metadata, ...: any)
 				if name == metadata.name and metadata.type == "Normal" then
 					if manifest[name] == 0 then
 						table.insert(queuedPackets, {player, ...})
@@ -332,7 +339,12 @@ end
 	@within NetworkRequest
 	@server
 ]=]
-function interface.request<a..., b...>(name: string): Request<a..., b...>
+function interface.request<a..., b...>(name: string, isUnreliable: true?): Request<a..., b...>
+	-- RemoteEvents and UnreliableRemoteEvents share the same methods, so this is fine.
+	local hostedRemote =
+		if isUnreliable then (unreliableRemote :: any) :: RemoteEvent
+		else remote
+	
 	local object = {
 		ClassName = "NetworkRequest" :: "NetworkRequest",
 		
@@ -358,12 +370,12 @@ function interface.request<a..., b...>(name: string): Request<a..., b...>
 	function object.Server.Invoke(self: ServerRequest<a..., b...>, player: Player, ...: a...): (b...)
 		local metadata = GenerateMetadata(name, "Request") :: RequestMetadata
 		
-		remote:FireClient(player, metadata, ...)
+		hostedRemote:FireClient(player, metadata, ...)
 		
 		local results
 		
 		repeat
-			results = {remote.OnServerEvent:Wait()}
+			results = {hostedRemote.OnServerEvent:Wait()}
 			
 			local newMetadata = (results[2] :: any) :: Metadata
 		until
@@ -422,12 +434,12 @@ function interface.request<a..., b...>(name: string): Request<a..., b...>
 	function object.Client.Invoke(self: ClientRequest<a..., b...>, ...: a...): (b...)
 		local metadata = GenerateMetadata(name, "Request") :: RequestMetadata
 		
-		remote:FireServer(metadata, ...)
+		hostedRemote:FireServer(metadata, ...)
 		
 		local results
 		
 		repeat
-			results = {remote.OnClientEvent:Wait()}
+			results = {hostedRemote.OnClientEvent:Wait()}
 			
 			local newMetadata = results[1] :: Metadata
 		until
@@ -484,12 +496,12 @@ function interface.request<a..., b...>(name: string): Request<a..., b...>
 	
 	
 	if RunService:IsServer() then
-		remote.OnServerEvent:Connect(function(player: Player, metadata: Metadata, ...)
+		hostedRemote.OnServerEvent:Connect(function(player: Player, metadata: Metadata, ...)
 			if metadata.name == name and metadata.type == "Request" then
 				if not requestManifest[name] then
 					table.insert(queuedPackets, {data = {...}, returnFunction = function(...)
 						if player and player.Parent then
-							remote:FireClient(player, metadata, callback(player, ...))
+							hostedRemote:FireClient(player, metadata, callback(player, ...))
 						end
 					end})
 					
@@ -500,15 +512,15 @@ function interface.request<a..., b...>(name: string): Request<a..., b...>
 				
 				metadata.type = "RequestResult"
 				
-				remote:FireClient(player, metadata, callback(player, ...))
+				hostedRemote:FireClient(player, metadata, callback(player, ...))
 			end
 		end)
 	else
-		remote.OnClientEvent:Connect(function(metadata: Metadata, ...)
+		hostedRemote.OnClientEvent:Connect(function(metadata: Metadata, ...)
 			if metadata.name == name and metadata.type == "Request" then
 				if not requestManifest[name] then
 					table.insert(queuedPackets, {data = {...}, returnFunction = function(...)
-						remote:FireServer(metadata, callback(...))
+						hostedRemote:FireServer(metadata, callback(...))
 					end})
 					
 					warn(`There are no listeners for "{name}" on the client! Waiting for a listener...`)
@@ -518,7 +530,7 @@ function interface.request<a..., b...>(name: string): Request<a..., b...>
 				
 				metadata.type = "RequestResult"
 				
-				remote:FireServer(metadata, callback(...))
+				hostedRemote:FireServer(metadata, callback(...))
 			end
 		end)
 	end
@@ -534,6 +546,9 @@ do -- This code block manages the remote event itself; this should be accessible
 		remote = Instance.new("RemoteEvent")
 		remote.Parent = script
 		
+		unreliableRemote = Instance.new("UnreliableRemoteEvent")
+		unreliableRemote.Parent = script
+		
 		remote.OnServerEvent:Connect(function(player, metadata: Metadata)
 			if manifest[metadata.name] then
 				if manifest[metadata.name] == 0 then
@@ -547,13 +562,15 @@ do -- This code block manages the remote event itself; this should be accessible
 		-- Find the remote event. If it isn't found in 5 seconds, we post a warning to the console that the developer may have
 		--  forgotten to require Network on the server.
 		remote = script:WaitForChild("RemoteEvent", 5) :: RemoteEvent
+		unreliableRemote = script:WaitForChild("UnreliableRemoteEvent", 5) :: UnreliableRemoteEvent
 		
 		if not remote then
-			warn("Failed to find remote event; did you forget to require Network on the server?")
+			warn("Failed to find remote event(s); did you forget to require Network on the server?")
 			
 			remote = script:WaitForChild("RemoteEvent") :: RemoteEvent
+			unreliableRemote = script:WaitForChild("UnreliableRemoteEvent") :: UnreliableRemoteEvent
 			
-			warn("Remote found!")
+			warn("Remote(s) found!")
 		end
 		
 		remote.OnClientEvent:Connect(function(metadata: Metadata)
